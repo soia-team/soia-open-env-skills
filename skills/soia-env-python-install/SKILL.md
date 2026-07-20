@@ -1,11 +1,11 @@
 ---
 name: soia-env-python-install
-description: 面向小白安装、验证和更新 Python 与 pip：识别系统和架构，优先 Python 官方来源，区分 python/python3/py、PATH、pip 和虚拟环境问题。触发：「安装 Python」「更新 Python」「安装 pip」「python 命令不存在」「pip 不能用」。
+description: 面向小白安装、验证和更新 Python 与 pip：识别系统和架构，优先 Python 官方来源，区分解释器、PATH、pip 和虚拟环境问题，并用固定六列列表汇报目标工具状态。触发：「安装 Python」「更新 Python」「安装 pip」「python 命令不存在」「pip 不能用」。
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-20 22:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -57,6 +57,16 @@ updated_by: gpt-5
 
 更新后分别验证解释器版本、`python -m pip --version`、项目虚拟环境和项目版本约束。更新失败时保留旧解释器、虚拟环境与错误证据，不自动删除环境。
 
+## 客户状态列表（强制）
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Python | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <无需重复安装/可更新/等待确认后安装/被阻塞：原因> |
+
+- 用户只问 Python 时只输出 `Python` 行，不额外输出 pip；用户明确问 pip 时才增加 `pip` 行。
+- 最新版本必须符合项目约束；无法取得时写“未取得”，不猜测。
+- 表格后只保留必要的权限确认、虚拟环境影响或阻塞说明，不展示内部探测流水账。
+
 ## 权限与回滚
 
 - 默认用户级安装；不自动使用 sudo、管理员权限或替换系统 Python。
@@ -66,19 +76,9 @@ updated_by: gpt-5
 ## 日志与完成回执
 
 ```markdown
-完成：Python/pip <已安装/已验证/被阻塞>。
-
-日志摘要：
-- started: <OS/架构/目标版本>
-- processed: <探测、安装、虚拟环境、验证>
-- updated: <Python/pip/venv 状态>
-- failed: <原因>
-
-验证：
-- <解释器、pip、虚拟环境和无副作用检查>
-
-问题与下一步：
-- <版本选择、系统权限、项目依赖或无>
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Python | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
 ```
 
 ## 前向测试

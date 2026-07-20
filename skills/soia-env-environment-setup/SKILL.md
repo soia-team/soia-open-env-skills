@@ -1,12 +1,12 @@
 ---
 name: soia-env-environment-setup
-description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，并输出可交给 SOIA 其他技能库的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
+description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，用固定六列列表汇报各目标状态，并输出可供下游消费的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install]
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-20 22:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -63,6 +63,19 @@ updated_by: gpt-5
 4. 按依赖顺序执行：Codex 先准备 Node/npm；同时涉及桌面版、CLI 或 Codex 故障时调用 `soia-env-codex-setup-support`；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
 5. 每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。
 
+## 客户状态列表（强制）
+
+先输出客户明确要求的目标，每个目标一行，列名和顺序固定：
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <处理结果> |
+
+- 只列客户要求的目标及其必要前置项，不把所有已安装工具全部展开。
+- 网络诊断的版本列写“不适用”；无法取得软件最新版本时写“未取得”。
+- 内部依赖检查正常时不单独成行；只有它阻塞目标时才增加前置项行。
+- 机器可读 YAML/JSON 摘要在客户列表之后提供，并保持下方固定结构。
+
 ## 跨库摘要
 
 输出不含秘密的 YAML 或 JSON 摘要，字段固定为：
@@ -94,19 +107,9 @@ next_handoff: <none|soia-open-skills|soia-private-skills>
 ## 日志与完成回执
 
 ```markdown
-完成：<已完成的环境范围>。
-
-日志摘要：
-- started: <OS/架构/目标，不打印秘密>
-- processed: <检查和安装步骤数量>
-- created/updated: <工具/版本类别>
-- skipped/failed: <数量和原因>
-
-验证：
-- <网络、命令、版本和无副作用检查>
-
-问题与下一步：
-- <阻塞、需客户授权的官方页面或下一步技能>
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| <客户要求的目标> | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
 ```
 
 ## 前向验收

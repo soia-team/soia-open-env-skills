@@ -1,11 +1,11 @@
 ---
 name: soia-env-workbuddy-install
-description: 面向小白通过 WorkBuddy 官方站点安装、验证和更新桌面客户端，识别 macOS/Windows 架构与代码签名，避免把 WorkBuddy 误当成 npm 包或 CLI。触发：「安装 WorkBuddy」「更新 WorkBuddy」「安装腾讯龙虾」「WorkBuddy 下载」「WorkBuddy 打不开」。
+description: 面向小白通过 WorkBuddy 官方站点安装、验证和更新桌面客户端，识别 macOS/Windows 架构与代码签名，并用固定六列列表汇报应用状态。触发：「安装 WorkBuddy」「更新 WorkBuddy」「安装腾讯龙虾」「WorkBuddy 下载」「WorkBuddy 打不开」。
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-20 22:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -56,6 +56,16 @@ WorkBuddy 是桌面应用，安装路径与 Node/Python 不同。先打开官方
 
 更新前保留旧版本、来源和验证结果。更新失败时保留旧版本和错误证据，不自动卸载、删除用户数据或绕过系统安全策略。
 
+## 客户状态列表（强制）
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| WorkBuddy | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <无需重复安装/可更新/等待确认后安装/被阻塞：原因> |
+
+- 只输出 WorkBuddy 行，不增加 Node.js、Python、npm 或其他工具行。
+- 签名或发布者验证失败时，`运行状态` 写“异常”，`处理结果` 写明来源阻塞。
+- 表格后只保留必须由客户在官方 UI 完成的安装、登录或系统安全步骤。
+
 ## 权限与回滚
 
 - 不关闭 Gatekeeper、SmartScreen、杀毒软件或系统安全策略。
@@ -65,19 +75,9 @@ WorkBuddy 是桌面应用，安装路径与 Node/Python 不同。先打开官方
 ## 日志与完成回执
 
 ```markdown
-完成：WorkBuddy <已安装并验证/已安装待登录/被阻塞>。
-
-日志摘要：
-- started: <OS/架构/官方来源>
-- processed: <下载入口、安装、启动检查>
-- updated: <应用状态>
-- failed: <原因>
-
-验证：
-- <安装器、应用启动、版本/关于页、登录状态>
-
-问题与下一步：
-- <客户需在 UI 完成的动作或无>
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| WorkBuddy | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
 ```
 
 ## 前向测试
