@@ -3,10 +3,10 @@ name: soia-env-environment-setup
 description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，用固定七列列表汇报各目标状态，并输出可供下游消费的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
 dependencies:
   hard: [soia-env-network-diagnose]
-  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install]
-version: 1.3.0
+  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
+version: 1.4.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 07:45:43
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -50,6 +50,7 @@ updated_by: gpt-5
 | `soia-env-codex-install` | 按目标启用 | 客户明确要使用 Codex 时调用 |
 | `soia-env-codex-setup-support` | 按目标启用 | 同时涉及桌面版、CLI 或 Codex 故障排查时调用 |
 | `soia-env-workbuddy-install` | 按目标启用 | 客户明确要使用 WorkBuddy 时调用 |
+| `soia-env-storage-cleanup` | 按目标启用 | 客户要求统计或清理 SOIA 受管空间时调用；删除必须先展示计划并重新取得明确授权 |
 | `soia-open-skills` | 方法邻居 | 完成环境摘要后再衔接 PKM/云盘技能，不复制其文件 |
 | `soia-private-skills` | 私有方法邻居 | 只有已安装且任务需要时才提示，不自动安装 |
 
@@ -62,6 +63,7 @@ updated_by: gpt-5
 3. 使用 `soia-env-network-diagnose` 的只读流程检查官方站点。出现代理、证书、DNS 或超时问题时，先输出诊断，不自动改网络配置。
 4. 按依赖顺序执行：Codex 先准备 Node/npm；同时涉及桌面版、CLI 或 Codex 故障时调用 `soia-env-codex-setup-support`；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
 5. 每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。
+6. 客户提出空间清理时调用 `soia-env-storage-cleanup`：本编排只能推进扫描和计划，必须等客户看过风险清单并明确授权后才能删除。
 
 ## 客户状态列表（强制）
 
@@ -69,7 +71,7 @@ updated_by: gpt-5
 
 | 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
 |---|---|---|---|---|---|---|
-| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <RFC3339-with-timezone> | <处理结果> |
+| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断/存储清理> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <RFC3339-with-timezone> | <处理结果> |
 
 - 只列客户要求的目标及其必要前置项，不把所有已安装工具全部展开。
 - `更新时间` 是该行完成最终验证的时间，不是技能文件的修改时间。

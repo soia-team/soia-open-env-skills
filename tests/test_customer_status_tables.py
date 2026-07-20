@@ -9,6 +9,7 @@ SKILLS = (
     "soia-env-node-install",
     "soia-env-python-install",
     "soia-env-workbuddy-install",
+    "soia-env-storage-cleanup",
 )
 HEADER = "| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |"
 CODEX_HEADER = (
@@ -77,6 +78,16 @@ class CustomerStatusTableTests(unittest.TestCase):
             "updated_by:",
         ):
             self.assertIn(key, text)
+
+    def test_storage_cleanup_requires_fresh_customer_authorization(self):
+        text = (
+            ROOT / "skills" / "soia-env-storage-cleanup" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("初始“帮我清理”请求不能同时授权", text)
+        self.assertIn("删除不可撤销", text)
+        self.assertIn("CUSTOMER_APPROVED_IRREVERSIBLE_DELETE", text)
+        self.assertIn("--confirmed-plan-id", text)
+        self.assertIn("没有客户新回复，不得进入第 4 步", text)
 
 
 if __name__ == "__main__":
