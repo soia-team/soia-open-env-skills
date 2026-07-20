@@ -1,4 +1,7 @@
-# soia-open-env-tools-skills
+# soia-open-env-skills
+
+> **定位**：给任何 AI 帮小白建立一套可用的基础开发环境——网络诊断、Node/Python/Codex/WorkBuddy 的安装、验证与更新，一步一步可跟做。进阶技能见 [soia-open-skills](https://github.com/soia-team/soia-open-skills)。
+
 
 面向小白的 SOIA 环境工具技能库：先判断系统和网络状态，再用官方来源安装、配置和验证 Codex、WorkBuddy、Node.js、Python 等基础工具。
 
@@ -15,7 +18,7 @@
 ## 三个技能库如何配合
 
 ```text
-soia-open-env-tools-skills  →  环境可用性 / 工具安装 / 网络诊断
+soia-open-env-skills  →  环境可用性 / 工具安装 / 网络诊断
              ↓ readiness summary
 soia-open-skills             →  云盘 / 知识库 / PKM 工作流
              ↓ optional handoff
@@ -30,13 +33,13 @@ soia-private-skills          →  私有 SOIA 治理、审计和内部执行
 从远程仓库安装单个技能：
 
 ```bash
-npx skills add soia-team/soia-open-env-tools-skills -g -a '*' -s soia-env-environment-setup -y
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-environment-setup -y
 ```
 
 安装全部技能：
 
 ```bash
-npx skills add soia-team/soia-open-env-tools-skills -g -a '*' -y
+npx skills add soia-team/soia-open-env-skills -g -a '*' -y
 ```
 
 ## 权限模型

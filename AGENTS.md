@@ -1,4 +1,4 @@
-# AGENTS.md - soia-open-env-tools-skills
+# AGENTS.md - soia-open-env-skills
 
 Rules for agents editing this public environment-tools skill repository.
 
@@ -66,7 +66,7 @@ For changed skills, run the available quick validator as an additional check.
 Final installation acceptance must use the pushed remote repository:
 
 ```bash
-npx skills add soia-team/soia-open-env-tools-skills -g -a '*' -s <skill-name> -y
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s <skill-name> -y
 ```
 
 ## GitHub workflow
