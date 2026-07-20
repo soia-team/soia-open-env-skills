@@ -39,6 +39,12 @@ updated_by: gpt-5
 | SQLite CLI | 日志数据库只读查询 | 缺失时报告未检查，不创建数据库 |
 | Node/npm、网络技能 | CLI 安装和登录 | 只在进入对应分支时加载 |
 
+## 桌面版与 CLI 的边界
+
+- Codex 桌面能力由 OpenAI 官方 ChatGPT 桌面应用承载；不能再用是否存在独立 `Codex.app` 作为判断依据。macOS 优先核对 `ChatGPT.app` 的 bundle id `com.openai.codex`、版本和代码签名。
+- CLI 使用官方 `@openai/codex` 或官方独立安装入口；桌面版和 CLI 的登录、版本、更新和工作区权限必须分别验证。
+- `soia-env-codex-install` 保留为 CLI 专门安装技能；本技能负责桌面版、CLI 与故障排查的编排，不重复发明登录流程。
+
 ## 交付规则
 
 每次检查先给一张结果表，再给结论和下一步。不要把命令回显当成报告，也不要把未检查写成正常：
