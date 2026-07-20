@@ -1,12 +1,12 @@
 ---
 name: soia-env-environment-setup
-description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，用固定六列列表汇报各目标状态，并输出可供下游消费的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
+description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，用固定七列列表汇报各目标状态，并输出可供下游消费的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install]
-version: 1.2.0
+version: 1.3.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 22:30:00
+updated_at: 2026-07-21 00:00:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -67,11 +67,12 @@ updated_by: gpt-5
 
 先输出客户明确要求的目标，每个目标一行，列名和顺序固定：
 
-| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
-|---|---|---|---|---|---|
-| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <处理结果> |
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|
+| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <RFC3339-with-timezone> | <处理结果> |
 
 - 只列客户要求的目标及其必要前置项，不把所有已安装工具全部展开。
+- `更新时间` 是该行完成最终验证的时间，不是技能文件的修改时间。
 - 网络诊断的版本列写“不适用”；无法取得软件最新版本时写“未取得”。
 - 内部依赖检查正常时不单独成行；只有它阻塞目标时才增加前置项行。
 - 机器可读 YAML/JSON 摘要在客户列表之后提供，并保持下方固定结构。
@@ -81,7 +82,8 @@ updated_by: gpt-5
 输出不含秘密的 YAML 或 JSON 摘要，字段固定为：
 
 ```yaml
-schema_version: 1
+schema_version: 2
+checked_at: <RFC3339-with-timezone>
 os: <macos|windows|linux|unknown>
 arch: <architecture>
 shell: <shell-or-unknown>
@@ -104,12 +106,19 @@ next_handoff: <none|soia-open-skills|soia-private-skills>
 - 安装失败时保留已安装状态，记录具体包/版本和回滚方式；不自动卸载、不覆盖现有版本。
 - 远程登录和服务授权由客户在官方界面完成，Agent 不代填密码或验证码。
 
+## 私密信息与中间数据
+
+- provider 登录凭据只使用官方登录态或系统凭据库；配置文件只保存非秘密偏好和路径。
+- 只读盘点默认不写文件；改变机器时如需追溯，只把脱敏后的动作、版本、结果和 `checked_at` 写入用户 state 目录。
+- 可重建元数据放 cache；下载、解压和探测文件放每次运行独立的系统临时目录，并在成功或失败后清理。
+- 不把仓库目录作为运行时存储，不在日志中打印 token、账号、响应正文或客户私有绝对路径。
+
 ## 日志与完成回执
 
 ```markdown
-| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
-|---|---|---|---|---|---|
-| <客户要求的目标> | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|
+| <客户要求的目标> | <状态> | <当前版本> | <最新版本> | <运行状态> | <RFC3339-with-timezone> | <处理结果> |
 ```
 
 ## 前向验收

@@ -1,7 +1,9 @@
 # Generic config example for your-skill-name.
-# Copy to ~/.config/soia-skills/soia-open-skills/<skill-type>/<your-skill-name>/config.yml
+# Copy to the config path returned by:
+# python3 scripts/resolve_storage.py --json
 # or point YOUR_SKILL_CONFIG_FILE to it.
-# Keep secrets out of this file. Store provider auth in provider-owned login flows.
+# This file is for non-secret settings only. Store provider auth in the
+# provider-owned login flow or the operating-system credential store.
 
 version: 1
 
@@ -23,10 +25,10 @@ providers:
     command: <command-name>
     auth_check: <safe-readonly-auth-check>
 
-credentials:
-  policy: env_or_provider_login
-  variables: []
+authentication:
+  policy: provider_login_or_os_keychain
+  profile: default
 
 env:
-  # Optional process env values the skill may load with scripts/resolve_config.py.
-  YOUR_SKILL_VARIABLE: "<value>"
+  # Optional non-secret process settings the resolver may load.
+  YOUR_SKILL_MODE: "default"

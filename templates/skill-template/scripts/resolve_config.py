@@ -8,10 +8,11 @@ import json
 import os
 from pathlib import Path
 
+from resolve_storage import storage_paths
+
 
 CONFIG_NAMES = ("config.yml", "config.yaml", "config.json")
 ENV_NAME = "YOUR_SKILL_CONFIG_FILE"
-REPO_NAME = "soia-open-skills"
 SKILL_TYPE = "your-skill-type"
 SKILL_NAME = "your-skill-name"
 
@@ -22,9 +23,9 @@ def candidate_paths(cwd: Path) -> list[Path]:
     if env_path:
         paths.append(Path(env_path).expanduser())
 
-    config_home = Path("~/.config/soia-skills").expanduser()
+    config_home = storage_paths(SKILL_TYPE, SKILL_NAME)["config"]
     for name in CONFIG_NAMES:
-        paths.append(config_home / REPO_NAME / SKILL_TYPE / SKILL_NAME / name)
+        paths.append(config_home / name)
 
     deduped: list[Path] = []
     seen: set[str] = set()
@@ -57,7 +58,7 @@ def main() -> int:
     else:
         print(
             "No config found. Set "
-            f"{ENV_NAME} or create ~/.config/soia-skills/{REPO_NAME}/{SKILL_TYPE}/{SKILL_NAME}/config.yml"
+            f"{ENV_NAME} or create {config_home / 'config.yml'}"
         )
     return 0
 

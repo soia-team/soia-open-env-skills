@@ -4,9 +4,9 @@ description: 面向小白安装、验证和更新 OpenAI Codex CLI：识别实�
 dependencies:
   hard: [soia-dev-ai-cli-upgrade]
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.3.0
+version: 1.4.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 23:40:00
+updated_at: 2026-07-21 00:00:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -70,13 +70,14 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 
 客户可见回复必须以以下 Markdown 表格开头，列名和顺序固定，只输出一行 `Codex CLI`：
 
-| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | 安装目录 | 配置文件目录 | 处理结果 |
-|---|---|---|---|---|---|---|---|---|
-| Codex CLI | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <npm 全局安装/Homebrew cask/官方独立安装/未取得> | <目录或未取得> | <目录或未取得> | <已更新/已是最新/等待安装/被阻塞：原因> |
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | 安装目录 | 配置文件目录 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|---|---|---|
+| Codex CLI | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <npm 全局安装/Homebrew cask/官方独立安装/未取得> | <目录或未取得> | <目录或未取得> | <RFC3339-with-timezone> | <已更新/已是最新/等待安装/被阻塞：原因> |
 
 输出规则：
 
 - 用户只问 Codex CLI 时，不增加 Node.js、npm、ChatGPT 桌面版或其他技能行。
+- `更新时间` 记录独立 CLI 的来源、版本和无害运行验证完成后的时间。
 - Node.js/npm 检查正常时不展示；仅当它们阻塞 Codex CLI 安装时，把原因压缩写入 `处理结果`。
 - `soia-dev-ai-cli-upgrade` 返回 `ALREADY_LATEST` 且验证通过：`处理结果` 写“已是最新”。
 - `soia-dev-ai-cli-upgrade` 返回 `UPDATED` 且复核成功：`处理结果` 写“已更新”。
@@ -113,14 +114,21 @@ TOOLS=codex DRY_RUN=1 \
 - 不覆盖项目的 `package.json`、锁文件或 Node 版本管理配置。
 - 升级前记录旧版本；失败时保留错误证据，不自动卸载或降级。
 
+## 私密信息与中间数据
+
+- Codex 登录凭据由官方 `codex login`/浏览器授权流程和系统凭据库管理；SOIA 配置只保存非秘密偏好与路径。
+- 安装或更新回执如需追溯，只在用户 state 目录保存脱敏后的来源、版本、结果和时间；只读检查默认不落盘。
+- 版本元数据可放 cache，安装器和解压内容放每次运行独立的系统临时目录并在成功或失败后清理。
+- 不读取或复制凭据内容，不记录授权码、token、账号、会话或客户私有绝对路径。
+
 ## 日志与完成回执
 
 ```markdown
-| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | 安装目录 | 配置文件目录 | 处理结果 |
-|---|---|---|---|---|---|---|---|---|
-| Codex CLI | <状态> | <当前版本> | <最新版本> | <运行状态> | <安装方式> | <安装目录> | <配置文件目录> | <处理结果> |
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | 安装目录 | 配置文件目录 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|---|---|---|
+| Codex CLI | <状态> | <当前版本> | <最新版本> | <运行状态> | <安装方式> | <安装目录> | <配置文件目录> | <RFC3339-with-timezone> | <处理结果> |
 ```
 
 ## 前向测试
 
-用 fake command runner 覆盖安装成功、独立 CLI 缺失、只存在 ChatGPT.app 内部二进制、npm 全局安装和存在新版本；验证来源识别与 `scripts/render_status.py` 的固定九列。升级行为由 `soia-dev-ai-cli-upgrade` 自己的测试覆盖；本技能只验证委托、独立 CLI 复核和客户状态映射。
+用 fake command runner 覆盖安装成功、独立 CLI 缺失、只存在 ChatGPT.app 内部二进制、npm 全局安装和存在新版本；验证来源识别与 `scripts/render_status.py` 的固定十列。升级行为由 `soia-dev-ai-cli-upgrade` 自己的测试覆盖；本技能只验证委托、独立 CLI 复核和客户状态映射。

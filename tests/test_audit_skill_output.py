@@ -21,7 +21,8 @@ def run_summary(summary):
 
 def valid_summary():
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "checked_at": "2026-07-21T00:00:00+08:00",
         "os": "macos",
         "arch": "arm64",
         "shell": "zsh",
@@ -54,6 +55,20 @@ class ReadinessSummaryTests(unittest.TestCase):
         result = run_summary(summary)
         self.assertEqual(result.returncode, 0)
         self.assertEqual(json.loads(result.stdout)["valid"], True)
+
+    def test_timestamp_requires_an_explicit_timezone(self):
+        summary = valid_summary()
+        summary["checked_at"] = "2026-07-21T00:00:00"
+        result = run_summary(summary)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("explicit timezone", result.stdout)
+
+    def test_missing_timestamp_fails(self):
+        summary = valid_summary()
+        del summary["checked_at"]
+        result = run_summary(summary)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("missing field: checked_at", result.stdout)
 
 
 if __name__ == "__main__":

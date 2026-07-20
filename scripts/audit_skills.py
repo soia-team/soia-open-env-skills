@@ -14,6 +14,7 @@ import yaml
 
 
 ALLOWED_FRONTMATTER = {"name", "description", "dependencies", "version", "created_at", "updated_at", "created_by", "updated_by"}
+REQUIRED_FRONTMATTER = {"name", "description", "version", "created_at", "updated_at", "created_by", "updated_by"}
 DEPENDENCY_KEYS = {"hard", "optional", "external"}
 MAX_SKILL_LINES = 500
 DISALLOWED_SKILL_DOCS = {
@@ -65,6 +66,7 @@ CUSTOMER_READABLE_RULES = (
     ("usage section", ("客户如何使用", "如何使用", "如何运行")),
     ("dependency/install section", ("依赖与安装", "首次安装与配置", "前置依赖", "强依赖")),
     ("log/completion receipt section", ("日志与完成回执", "客户可见日志与总结", "完成后回执", "执行后回执")),
+    ("private/intermediate data section", ("私密信息与中间数据",)),
 )
 
 
@@ -193,6 +195,8 @@ def audit_skill(root: Path, skill_dir: Path, findings: list[Finding]) -> None:
     fm, errors = parse_frontmatter(text)
     for error in errors:
         findings.append(Finding("ERROR", rel(skill_md, root), error))
+    for key in sorted(REQUIRED_FRONTMATTER - set(fm)):
+        findings.append(Finding("ERROR", rel(skill_md, root), f"missing frontmatter {key}"))
 
     if fm.get("name") != skill_name:
         findings.append(Finding("ERROR", rel(skill_md, root), f"frontmatter name must match folder name: {skill_name!r}"))
@@ -236,6 +240,14 @@ def audit_skill(root: Path, skill_dir: Path, findings: list[Finding]) -> None:
     for label, markers in CUSTOMER_READABLE_RULES:
         if not any(marker in text for marker in markers):
             findings.append(Finding("ERROR", rel(skill_md, root), f"missing customer-readable {label}"))
+    if "更新时间" not in text:
+        findings.append(
+            Finding(
+                "ERROR",
+                rel(skill_md, root),
+                "customer-facing status or diagnostic output must include 更新时间",
+            )
+        )
 
     for path in skill_dir.rglob("*"):
         if path.is_dir():
@@ -334,7 +346,11 @@ def audit_skill_links(root: Path, skill_dir: Path, findings: list[Finding]) -> N
 
 
 def audit_text_file(root: Path, path: Path, findings: list[Finding]) -> None:
-    if path.suffix not in TEXT_SUFFIXES and path.name not in {"SKILL.md", "config.example.yml"}:
+    if path.suffix not in TEXT_SUFFIXES and path.name not in {
+        "SKILL.md",
+        "SKILL.md.template",
+        "config.example.yml",
+    }:
         return
     text = read_text(path)
     for i, line in enumerate(text.splitlines(), start=1):
@@ -383,6 +399,8 @@ def collect_findings(root: Path) -> list[Finding]:
         root / "README.md",
         root / "README.en.md",
         root / "CONTRIBUTING.md",
+        root / "DATA_STORAGE_SPEC.md",
+        root / "templates",
         skills_root,
     ]
     for scan_root in scan_roots:

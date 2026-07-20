@@ -5,12 +5,24 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime
 from typing import Any
 
 
-REQUIRED = {"schema_version", "os", "arch", "shell", "tools", "network", "blockers", "next_handoff"}
+REQUIRED = {"schema_version", "checked_at", "os", "arch", "shell", "tools", "network", "blockers", "next_handoff"}
 TOOL_NAMES = {"node", "python", "codex", "workbuddy"}
 STATUSES = {"ready", "missing", "update_available", "blocked"}
+
+
+def timezone_aware_rfc3339(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None and parsed.utcoffset() is not None
 
 
 def validate(value: Any) -> list[str]:
@@ -19,8 +31,10 @@ def validate(value: Any) -> list[str]:
         return ["summary must be a JSON object"]
     missing = REQUIRED - set(value)
     errors.extend(f"missing field: {name}" for name in sorted(missing))
-    if value.get("schema_version") != 1:
-        errors.append("schema_version must be 1")
+    if value.get("schema_version") != 2:
+        errors.append("schema_version must be 2")
+    if not timezone_aware_rfc3339(value.get("checked_at")):
+        errors.append("checked_at must be RFC3339 with an explicit timezone")
     tools = value.get("tools")
     if not isinstance(tools, dict):
         errors.append("tools must be an object")

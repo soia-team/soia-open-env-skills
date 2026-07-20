@@ -1,6 +1,7 @@
 import importlib.util
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
@@ -99,6 +100,7 @@ class CodexInstallationInspectionTests(unittest.TestCase):
             self.assertEqual(result["current_status"], "未安装")
             self.assertEqual(result["cli_path"], "未取得")
             self.assertEqual(result["app_detected"], "是")
+            self.assertIsNotNone(datetime.fromisoformat(result["checked_at"]).tzinfo)
 
     def test_collapses_home_directory(self):
         home = Path("/home/example")

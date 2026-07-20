@@ -1,6 +1,11 @@
 ---
 name: your-skill-name
 description: 一句话说明这个 skill 做什么、何时触发。包含具体触发场景，保持简短，不写个人路径、账号或私有偏好。
+version: 1.0.0
+created_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 00:00:00
+created_by: <model-name>
+updated_by: <model-name>
 ---
 
 # your-skill-name
@@ -54,9 +59,18 @@ description: 一句话说明这个 skill 做什么、何时触发。包含具体
 SOIA_<TYPE>_<SHORT>_CONFIG_FILE=<custom-config-path>
 ```
 
-- 如果本技能不需要私有配置，可以不创建 `config.yml`。
-- API key、cookie、session、provider home、本机路径只放私有 `config.yml`、进程环境或 provider 自己的登录态里。
+- 如果本技能不需要非秘密配置，可以不创建 `config.yml`。
+- `config.yml` 只保存非秘密偏好和路径；token、cookie、session、密码和私钥优先保存在 provider 官方登录态或系统凭据库中。
 - 如果依赖第三方 skill，记录上游来源和安装方式，不直接修改第三方 skill 文件。
+
+### 私密信息与中间数据
+
+- 登录凭据：使用 provider 官方登录流程或系统凭据库；不写入 SOIA 配置、日志或回执。
+- 非秘密配置：由 `scripts/resolve_storage.py` 定位到当前用户配置目录。
+- 审计状态：只有改变机器且需要追溯时才写入 state 目录，内容必须脱敏并限制保留量。
+- 缓存：只保存可重新生成的数据，删除后不能影响登录或恢复。
+- 临时文件：使用操作系统临时目录和每次运行独立目录，成功或失败都清理。
+- 只读流程默认不落盘；客户要求保存的报告写入客户指定目录。
 
 ### 日志与完成回执
 
@@ -65,11 +79,16 @@ SOIA_<TYPE>_<SHORT>_CONFIG_FILE=<custom-config-path>
 - 开始做什么，使用了哪个配置/ provider，但不打印秘密值。
 - 关键进度：数量、当前阶段、输出类别、跳过/失败原因；涉及本地资源时只给泛化位置，不列本地绝对路径或文件名。
 - 最终总结：成功 / 跳过 / 失败数量，创建或更新了哪些资源类别。
+- 更新时间：完成最终验证后的 RFC 3339 时间，必须包含时区。
 - 下一步：需要客户确认、补 key、安装依赖或继续运行的具体命令。
 
 推荐最终回复格式：
 
 ```markdown
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|
+| <技能> | <状态> | <当前版本> | <最新版本> | <运行状态> | <RFC3339-with-timezone> | <处理结果> |
+
 完成：<一句话说明本次完成了什么>。
 
 日志摘要：
@@ -120,6 +139,7 @@ params:
 - Provider setup and fallback rules: [references/providers.md](references/providers.md)
 - Optional config example: [assets/config.example.yml](assets/config.example.yml)
 - Optional config resolver: `scripts/resolve_config.py`
+- Portable storage resolver: `scripts/resolve_storage.py`
 
 Delete unused resource bullets. Do not add README / INSTALL / CHANGELOG inside a skill.
 
@@ -130,5 +150,6 @@ Delete unused resource bullets. Do not add README / INSTALL / CHANGELOG inside a
 ## Validation
 
 - Static: run `python3 scripts/resolve_config.py --json` if the skill uses config.
+- Storage: run `python3 scripts/resolve_storage.py --json` and verify no repository path is returned.
 - Content: verify output exists and matches the requested target.
 - Safety: scan for hardcoded paths and secrets before commit.

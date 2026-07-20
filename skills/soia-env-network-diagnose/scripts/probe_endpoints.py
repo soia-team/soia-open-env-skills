@@ -8,13 +8,39 @@ import json
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime
 from urllib.parse import urlparse
+
+
+def now_rfc3339() -> str:
+    return datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+
+def sanitized_url(url: str) -> str:
+    parsed = urlparse(url)
+    netloc = parsed.netloc
+    if parsed.username or parsed.password:
+        host = parsed.hostname or "redacted-host"
+        try:
+            port = f":{parsed.port}" if parsed.port is not None else ""
+        except ValueError:
+            port = ""
+        netloc = f"{host}{port}"
+    return parsed._replace(netloc=netloc, query="", fragment="").geturl()
+
+
+def result(url: str, **fields: object) -> dict[str, object]:
+    return {
+        "url": sanitized_url(url),
+        **fields,
+        "checked_at": now_rfc3339(),
+    }
 
 
 def probe(url: str, timeout: float) -> dict[str, object]:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or parsed.username or parsed.password:
-        return {"url": url, "ok": False, "category": "invalid_url"}
+        return result(url, ok=False, category="invalid_url")
     started = time.monotonic()
     request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "soia-env-tools-probe/1"})
     try:
@@ -22,19 +48,19 @@ def probe(url: str, timeout: float) -> dict[str, object]:
             status = getattr(response, "status", None)
             if status is None:
                 status = response.getcode()
-            return {"url": url, "ok": 200 <= status < 400, "category": "reachable", "status": status, "elapsed_ms": round((time.monotonic() - started) * 1000)}
+            return result(url, ok=200 <= status < 400, category="reachable", status=status, elapsed_ms=round((time.monotonic() - started) * 1000))
     except urllib.error.HTTPError as exc:
-        return {"url": url, "ok": False, "category": "http_error", "status": exc.code, "elapsed_ms": round((time.monotonic() - started) * 1000)}
+        return result(url, ok=False, category="http_error", status=exc.code, elapsed_ms=round((time.monotonic() - started) * 1000))
     except urllib.error.URLError as exc:
         reason = str(exc.reason).lower()
         category = "tls_failed" if any(word in reason for word in ("certificate", "ssl", "tls")) else "dns_failed" if "name or service" in reason or "nodename" in reason else "unreachable"
-        return {"url": url, "ok": False, "category": category, "elapsed_ms": round((time.monotonic() - started) * 1000)}
+        return result(url, ok=False, category=category, elapsed_ms=round((time.monotonic() - started) * 1000))
     except TimeoutError:
-        return {"url": url, "ok": False, "category": "timeout", "elapsed_ms": round((time.monotonic() - started) * 1000)}
+        return result(url, ok=False, category="timeout", elapsed_ms=round((time.monotonic() - started) * 1000))
     except OSError as exc:
         message = str(exc).lower()
         category = "timeout" if "timed out" in message else "unreachable"
-        return {"url": url, "ok": False, "category": category, "elapsed_ms": round((time.monotonic() - started) * 1000)}
+        return result(url, ok=False, category=category, elapsed_ms=round((time.monotonic() - started) * 1000))
 
 
 def main() -> int:

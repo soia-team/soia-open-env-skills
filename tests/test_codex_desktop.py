@@ -1,6 +1,7 @@
 import importlib.util
 import pathlib
 import unittest
+from datetime import datetime
 
 
 SCRIPT = pathlib.Path(__file__).parents[1] / "skills/soia-env-codex-setup-support/scripts/check_codex_desktop.py"
@@ -21,6 +22,7 @@ class CodexDesktopTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "ready")
         self.assertEqual(result["application"], "ChatGPT.app (Codex host)")
+        self.assertIsNotNone(datetime.fromisoformat(result["checked_at"]).tzinfo)
 
     def test_missing_app_is_not_downloaded(self):
         result = MODULE.summarize(
