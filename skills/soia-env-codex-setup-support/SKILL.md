@@ -5,14 +5,14 @@ dependencies:
   optional: [soia-env-network-diagnose, soia-env-node-install, soia-env-codex-install]
 version: 1.0.0
 created_at: 2026-07-20 18:30:00
-updated_at: 2026-07-20 18:30:00
+updated_at: 2026-07-20 20:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
 
 # soia-env-codex-setup-support
 
-这是 Codex 环境问题的用户入口：先判断客户要用桌面版、CLI，还是两者都要，再用可复现的只读检查定位问题。安装、登录和管理员权限操作分开确认；客户只需要在官方图形界面完成登录、验证码和系统授权。
+这是 Codex 环境问题的用户入口：先判断客户要用 ChatGPT 桌面应用中的 Codex 能力、CLI，还是两者都要，再用可复现的只读检查定位问题。安装、登录和管理员权限操作分开确认；客户只需要在官方图形界面完成登录、验证码和系统授权。
 
 ## 客户可读说明
 
@@ -20,7 +20,7 @@ updated_by: gpt-5
 
 | 客户想要 | 技能会做 | 客户能看到 |
 |---|---|---|
-| 安装 Codex 桌面版 | 引导打开 OpenAI 官方下载/桌面入口，确认系统和架构 | 官方来源、安装状态和启动验证 |
+| 安装 Codex 桌面版 | 引导打开 OpenAI 官方 ChatGPT 桌面应用入口，确认系统和架构 | 官方来源、安装状态和启动验证 |
 | 安装 Codex CLI | 检查 Node/npm，调用 CLI 安装技能或使用官方 npm 包 | `codex` 版本、帮助命令和登录状态 |
 | Codex 打不开或卡住 | 按磁盘、网络、运行时、登录、权限、工作区顺序排查 | 当前阻塞、证据和下一步 |
 | 检查 Mac 磁盘是否影响 Codex | 先确认设备，再读取 SMART 健康、寿命、写入量和温度 | 安全摘要；不自动修复、抹盘或长测 |
@@ -44,7 +44,8 @@ updated_by: gpt-5
 
 ## 桌面版与 CLI 的边界
 
-- 桌面版是 OpenAI 官方桌面应用/新的 ChatGPT 桌面应用中的 Codex 能力。技能只提供官方入口，不猜测或传播第三方 DMG、破解包和未知下载地址。
+- Codex 桌面能力现在由 OpenAI 官方 ChatGPT 桌面应用承载；不能再用“是否存在独立 `Codex.app`”作为判断依据。macOS 上优先检查 `ChatGPT.app` 的 bundle id `com.openai.codex`、版本和代码签名。
+- 技能只提供官方 ChatGPT 桌面应用入口，不猜测或传播第三方 DMG、破解包和未知下载地址。
 - CLI 使用官方 npm 包 `@openai/codex`。安装后验证 `codex --version`、`codex --help`，需要登录时启动 `codex --login`，授权在浏览器中完成。
 - `soia-env-codex-install` 保留为 CLI 的专门安装技能；本技能是桌面版 + CLI + 故障排查的编排入口，必要时调用它，不重复发明另一套登录流程。
 - 桌面版和 CLI 的登录状态、工作区权限与网络可用性可能不同，不能因为其中一个能用就推断另一个正常。
@@ -59,7 +60,7 @@ updated_by: gpt-5
 2. **网络**：检查官方 OpenAI、npm、Node.js 和 Python 站点的 DNS/HTTPS 可达性；网络技能只读诊断，不自动改代理、DNS、证书或防火墙。
 3. **Mac 磁盘（本技能的第一故障分支）**：如果安装失败、应用异常退出、机器明显变慢或磁盘空间异常，优先做 SMART 读取和空间检查。
 4. **Node/npm/CLI**：检查 `node --version`、`npm --version`、全局 npm 前缀和 `codex --version`；缺 Node 时交给 `soia-env-node-install`，缺 CLI 时交给 `soia-env-codex-install`。
-5. **桌面应用**：检查官方应用是否安装、是否能启动、系统安全提示是否阻止、应用是否为当前架构；不删除应用数据，不绕过系统安全策略。
+5. **桌面应用**：macOS 先用 `scripts/check_codex_desktop.py` 检查 `ChatGPT.app` 的 bundle id、版本和签名，再由客户在官方 UI 启动验证；Windows 按官方 ChatGPT 桌面入口核对安装和架构。不把独立 `Codex.app` 缺失当成 Codex 桌面版缺失。
 6. **登录与权限**：区分浏览器授权未完成、账号/组织权限、网络阻断和本地权限；不索要或回显 token、cookie、API key。
 7. **工作区**：最后检查项目目录、写权限、Git 状态和项目依赖；不要把工作区报错误判为 Codex 安装失败。
 
@@ -99,6 +100,21 @@ sudo smartctl -a /dev/disk0 | grep -E "SMART|Percentage Used|Available Spare|Dat
 ```bash
 sudo smartctl -a /dev/disk0 | grep -E "SMART|Percentage Used|Available Spare|Data Units Written|Temperature" | python3 scripts/check_macos_disk.py --stdin --json
 ```
+
+## ChatGPT 桌面应用只读识别
+
+不要把 `codex app` 当作安装状态检查命令：当 CLI 没识别到桌面应用时，它可能直接下载约数百 MB 的安装器。先执行不启动、不下载的识别脚本：
+
+```bash
+python3 scripts/check_codex_desktop.py --json
+```
+
+脚本优先检查 `/Applications/ChatGPT.app` 和用户应用目录中的 `ChatGPT.app`，确认 bundle id 为 `com.openai.codex`、读取版本，并验证代码签名。结果含义：
+
+- `ready`：ChatGPT 桌面应用被识别为 Codex 宿主，签名验证通过；仍需由客户确认能否打开和登录。
+- `missing`：没有找到 ChatGPT 桌面应用；只展示官方入口，不自动下载。
+- `invalid_signature`：应用存在但签名验证失败；不要提示“安装正常”，也不要绕过系统安全策略。
+- `unexpected_bundle`：应用存在但不是 Codex 使用的官方 ChatGPT bundle；停止并让客户确认来源。
 
 ## 权限、隐私与回滚
 

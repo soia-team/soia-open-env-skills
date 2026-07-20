@@ -7,7 +7,7 @@
 - `soia-env-environment-setup`：从零规划环境，按依赖顺序编排网络、运行时和 AI 工具检查。
 - `soia-env-network-diagnose`：只读检查 DNS、HTTPS、代理、证书和下载源可达性。
 - `soia-env-codex-install`：安装并验证 OpenAI Codex CLI。
-- `soia-env-codex-setup-support`：安装和验证 Codex 桌面版、CLI，并排查磁盘、网络、登录和工作区问题。
+- `soia-env-codex-setup-support`：安装和验证 ChatGPT 桌面应用中的 Codex 能力、CLI，并排查磁盘、网络、登录和工作区问题。
 - `soia-env-workbuddy-install`：通过官方桌面安装包安装并验证 WorkBuddy。
 - `soia-env-node-install`：安装并验证 Node.js、npm 和 PATH。
 - `soia-env-python-install`：安装并验证 Python、pip 和虚拟环境。

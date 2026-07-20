@@ -23,7 +23,7 @@ codex --help
 - ChatGPT 桌面应用迁移说明：<https://help.openai.com/en/articles/20001276-moving-to-the-new-chatgpt-desktop-app>
 - Codex 产品页：<https://openai.com/codex/for-work/>
 
-桌面版的下载、迁移和系统支持以打开页面时显示的官方信息为准；技能不写死第三方镜像或临时安装包地址。
+Codex 桌面能力与 ChatGPT 桌面应用是同一官方应用体系，不能要求用户寻找独立的 `Codex.app`。macOS 识别时优先核对 `ChatGPT.app` 的 bundle id `com.openai.codex`、版本和代码签名。桌面版的下载、迁移和系统支持以打开页面时显示的官方信息为准；技能不写死第三方镜像或临时安装包地址。
 
 ## 前置运行时与网络
 
