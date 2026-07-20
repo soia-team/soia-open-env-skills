@@ -4,7 +4,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = (
-    "soia-env-codex-install",
     "soia-env-environment-setup",
     "soia-env-network-diagnose",
     "soia-env-node-install",
@@ -12,6 +11,10 @@ SKILLS = (
     "soia-env-workbuddy-install",
 )
 HEADER = "| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |"
+CODEX_HEADER = (
+    "| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | "
+    "安装目录 | 配置文件目录 | 处理结果 |"
+)
 
 
 class CustomerStatusTableTests(unittest.TestCase):
@@ -26,6 +29,18 @@ class CustomerStatusTableTests(unittest.TestCase):
             ROOT / "skills" / "soia-env-codex-setup-support" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("| 类别 | 检查项 | 结果 | 证据 | 风险 | 下一步 |", text)
+
+    def test_codex_install_defines_the_expanded_status_table(self):
+        text = (
+            ROOT / "skills" / "soia-env-codex-install" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn(CODEX_HEADER, text)
+        self.assertIn("soia-dev-ai-cli-upgrade", text)
+        self.assertIn(
+            "ChatGPT.app/Contents/Resources/codex",
+            text,
+        )
+        self.assertIn("不把它当作独立 Codex CLI", text)
 
     def test_install_skills_hide_unrequested_dependency_rows(self):
         expectations = {
