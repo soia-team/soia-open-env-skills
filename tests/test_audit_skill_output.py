@@ -48,6 +48,13 @@ class ReadinessSummaryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("tools.python.status", result.stdout)
 
+    def test_update_available_status_passes(self):
+        summary = valid_summary()
+        summary["tools"]["codex"]["status"] = "update_available"
+        result = run_summary(summary)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(json.loads(result.stdout)["valid"], True)
+
 
 if __name__ == "__main__":
     unittest.main()

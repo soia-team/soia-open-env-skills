@@ -1,4 +1,4 @@
 interface:
   display_name: "Codex Setup Support"
-  short_description: "Check the ChatGPT desktop app's Codex capability and CLI."
-  default_prompt: "Check ChatGPT/Codex desktop and CLI, then diagnose failures."
+  short_description: "Check Codex desktop and CLI, including logs, SSD, and common failures."
+  default_prompt: "Check or diagnose Codex desktop and CLI, including logs_2.sqlite write amplification and SSD health."
