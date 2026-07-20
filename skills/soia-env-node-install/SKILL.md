@@ -1,11 +1,11 @@
 ---
 name: soia-env-node-install
-description: 面向小白安装、验证和更新 Node.js 与 npm：识别系统和架构，默认选择官方 Active LTS，诊断 PATH/npm 全局目录，并为 Codex 或 Node 项目准备可复现环境。触发：「安装 Node」「更新 Node」「安装 npm」「node 命令不存在」「npm 超时」。
+description: 面向小白安装、验证和更新 Node.js 与 npm：识别系统和架构，默认选择官方 Active LTS，诊断 PATH/npm 全局目录，并用固定六列列表汇报目标工具状态。触发：「安装 Node」「更新 Node」「安装 npm」「node 命令不存在」「npm 超时」。
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-20 22:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -70,7 +70,18 @@ command -v nvm 2>/dev/null || true
 3. 安装前确认下载源和权限；禁止未知镜像、修改 TLS 校验或 `curl | bash`。
 4. 安装后重新解析 PATH；若需改 shell profile，先显示目标文件和追加内容并确认。
 5. 验证 `node --version`、`npm --version`、`npm config get prefix`，并用 `npm --version` 作为最小 npm 健康检查。
-6. 输出 `ready|missing|blocked` 和版本，交给上层环境编排或 Codex 技能。
+6. 输出 `ready|missing|update_available|blocked` 和版本，交给上层环境编排或 Codex 技能。
+7. 使用下方固定列表向客户汇报；只显示客户要求的目标工具。
+
+## 客户状态列表（强制）
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Node.js | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <无需重复安装/可更新/等待确认后安装/被阻塞：原因> |
+
+- 用户只问 Node.js 时只输出 `Node.js` 行，不额外输出 npm；用户明确问 npm 时才增加 `npm` 行。
+- 最新版本按项目约束与官方 Active LTS 判断；无法取得时写“未取得”，不猜测。
+- 表格后只保留必要的权限确认、PATH 影响或阻塞说明，不展示内部探测流水账。
 
 ## 权限与回滚
 
@@ -81,19 +92,9 @@ command -v nvm 2>/dev/null || true
 ## 日志与完成回执
 
 ```markdown
-完成：Node.js/npm <已安装/已验证/被阻塞>。
-
-日志摘要：
-- started: <OS/架构/目标版本>
-- processed: <探测、安装、PATH、验证>
-- updated: <Node/npm 版本>
-- failed: <原因>
-
-验证：
-- <node、npm、prefix、项目版本匹配>
-
-问题与下一步：
-- <需要重新打开应用、确认 PATH、切换版本或无>
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Node.js | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
 ```
 
 ## 前向测试

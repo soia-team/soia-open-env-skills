@@ -1,19 +1,19 @@
 ---
 name: soia-env-codex-install
-description: 面向小白安装、验证和更新 OpenAI Codex CLI：检查 Node.js/npm、识别安装来源、从官方文档安装或更新、完成浏览器登录并验证版本与帮助命令。触发：「安装 Codex」「更新 Codex」「配置 Codex」「Codex 登录」「Codex 命令不存在」。
+description: 面向小白安装、验证和更新 OpenAI Codex CLI：检查依赖与安装来源，完成浏览器登录，并以固定六列列表展示当前状态、当前/最新版本、运行状态和处理结果。触发：「安装 Codex」「更新 Codex」「配置 Codex」「Codex 登录」「Codex 命令不存在」。
 dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-20 22:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
 
 # soia-env-codex-install
 
-通过官方 npm 包安装 Codex CLI，并把“Node/npm 缺失”“命令不在 PATH”“登录未完成”分开处理。安装和登录可以由 Agent 辅助，但客户只在官方浏览器页面完成授权。
+通过官方支持的安装入口安装 Codex CLI，并把“依赖缺失”“命令不在 PATH”“登录未完成”分开处理。安装和登录可以由 Agent 辅助，但客户只在官方浏览器页面完成授权。
 
 ## 客户可读说明
 
@@ -21,8 +21,8 @@ updated_by: gpt-5
 
 | 客户想要 | 技能会做 | 客户能看到 |
 |---|---|---|
-| 安装 Codex | 检查 Node/npm、安装官方包、验证命令 | 版本、路径类别和结果 |
-| 更新 Codex | 识别现有版本和安装来源，沿用原来源更新 | 更新前后版本、验证结果和回滚边界 |
+| 安装 Codex | 检查依赖、安装官方包、验证命令 | Codex CLI 固定六列状态列表 |
+| 更新 Codex | 识别现有版本和安装来源，沿用原来源更新 | 当前版本、最新版本和处理结果 |
 | 登录 Codex | 启动官方登录流程 | 可点击的官方授权步骤，不显示密钥 |
 | Codex 找不到 | 诊断 PATH、npm 全局目录和 shell | 修复建议或需要确认的变更 |
 
@@ -49,8 +49,30 @@ updated_by: gpt-5
 2. 若 Node/npm 不存在或版本不满足项目要求，停止本技能并交给 Node 安装技能。
 3. 缺少 Codex 时，优先按官方 CLI 文档选择官方独立安装器；若当前环境已使用 npm，则安装官方包 `@openai/codex`。不使用未知镜像、未审查的全局 shell 脚本或 `curl | bash`。
 4. 重新解析 PATH，验证 `codex --version` 与 `codex --help`，记录版本而非完整本地路径。
-5. 执行 `codex --login`，把浏览器授权交给客户；不要求客户在终端粘贴 API key。
-6. 登录后只做无副作用状态验证；如果登录失败，区分网络、账号权限、组织限制和 PATH 问题。
+5. 按当前安装来源只读查询最新 Codex CLI 版本；查询失败时写“未取得”，不猜测版本。
+6. 执行 `codex --login`，把浏览器授权交给客户；不要求客户在终端粘贴 API key。
+7. 登录后只做无副作用状态验证；如果登录失败，区分网络、账号权限、组织限制和 PATH 问题。
+8. 使用下方固定列表输出结果；依赖检查只在内部使用，正常时不向客户增加 Node.js、npm 或其他技能行。
+
+## 客户状态列表（强制）
+
+客户可见回复必须以以下 Markdown 表格开头，列名和顺序固定，只输出一行 `Codex CLI`：
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Codex CLI | <已安装/未安装/被阻塞> | <版本或未取得> | <版本或未取得> | <正常/异常/未验证> | <无需重复安装/可更新/等待确认后安装/被阻塞：原因> |
+
+输出规则：
+
+- 用户只问 Codex CLI 时，不增加 Node.js、npm、ChatGPT 桌面版或其他技能行。
+- Node.js/npm 检查正常时不展示；仅当它们阻塞 Codex CLI 安装时，把原因压缩写入 `处理结果`。
+- 当前版本与最新版本相同且验证通过：`处理结果` 写“无需重复安装”。
+- 最新版本更高：`处理结果` 写“可更新”，但没有客户确认时不执行更新。
+- 未安装：`运行状态` 写“未验证”，`处理结果` 写“等待确认后安装”或具体阻塞原因。
+- 无法取得最新版本时写“未取得”，不要用旧缓存、记忆或猜测填充。
+- 表格后仅在需要浏览器授权、管理员确认或错误说明时追加简短下一步；不要回显内部依赖检查流水账。
+
+为保证格式稳定，优先使用 `scripts/render_status.py` 生成表格。
 
 ## 已安装状态与更新
 
@@ -81,21 +103,11 @@ npm list -g --depth=0 @openai/codex 2>/dev/null || true
 ## 日志与完成回执
 
 ```markdown
-完成：Codex CLI <已安装/已验证/被阻塞>。
-
-日志摘要：
-- started: <Node/npm 检查>
-- processed: <安装、PATH、登录检查数量>
-- updated: <工具和版本>
-- failed: <原因>
-
-验证：
-- `node --version`、`npm --version`、`codex --version`、`codex --help`
-
-问题与下一步：
-- <浏览器授权、账号权限或无>
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 处理结果 |
+|---|---|---|---|---|---|
+| Codex CLI | <状态> | <当前版本> | <最新版本> | <运行状态> | <处理结果> |
 ```
 
 ## 前向测试
 
-用 fake command runner 覆盖 Node 缺失、npm 安装成功、Codex 命令缺失和登录等待四种状态；真实验收必须另行运行版本/帮助检查，不能把 npm 返回 0 当成登录完成。
+用 fake command runner 覆盖依赖缺失、安装成功、Codex 命令缺失、登录等待和存在新版本五种状态；验证 `scripts/render_status.py` 始终输出固定六列且只含 `Codex CLI` 一行。真实验收必须另行运行版本/帮助检查，不能把安装命令返回 0 当成登录完成。
