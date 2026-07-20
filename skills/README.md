@@ -2,7 +2,7 @@
 
 > Generated from `skills/*/SKILL.md` and optional `agents/openai.yaml`.
 > Do not edit by hand. Run `python3 scripts/generate_skill_catalog.py`.
-> Discoverable by `npx skills add soia-team/soia-open-env-tools-skills -l`: 7 skills.
+> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 7 skills.
 
 ## Source Fields
 

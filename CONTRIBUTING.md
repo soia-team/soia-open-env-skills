@@ -1,4 +1,4 @@
-# Contributing to soia-open-env-tools-skills
+# Contributing to soia-open-env-skills
 
 1. Fork the repository or create a short-lived branch from `main`.
 2. Read [SKILL_SPEC.md](./SKILL_SPEC.md) and [AGENTS.md](./AGENTS.md).
