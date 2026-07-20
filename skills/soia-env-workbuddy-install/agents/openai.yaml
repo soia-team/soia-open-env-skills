@@ -1,0 +1,4 @@
+interface:
+  display_name: "WorkBuddy Install"
+  short_description: "Install and verify the WorkBuddy desktop app."
+  default_prompt: "Install WorkBuddy without making me use a terminal."

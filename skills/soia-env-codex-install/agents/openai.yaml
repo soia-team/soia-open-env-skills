@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Install"
+  short_description: "Install and verify OpenAI Codex CLI."
+  default_prompt: "Install Codex for me and verify login."

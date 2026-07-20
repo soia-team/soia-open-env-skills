@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Install"
+  short_description: "Install and verify Python and pip."
+  default_prompt: "Install Python and make pip work."

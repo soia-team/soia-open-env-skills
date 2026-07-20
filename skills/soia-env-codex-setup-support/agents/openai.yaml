@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Setup Support"
+  short_description: "Install Codex desktop and CLI and diagnose common failures."
+  default_prompt: "Install Codex desktop and CLI, then check why it fails."

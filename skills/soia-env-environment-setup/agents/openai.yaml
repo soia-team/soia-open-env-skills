@@ -1,0 +1,4 @@
+interface:
+  display_name: "Environment Setup"
+  short_description: "Plan and coordinate beginner-friendly environment setup."
+  default_prompt: "Help me set up this computer for development."
