@@ -16,7 +16,7 @@
 | Skill | Description | Default Prompt |
 |---|---|---|
 | [`soia-env-codex-install`](./soia-env-codex-install/) | Install and verify OpenAI Codex CLI. | Install Codex for me and verify login. |
-| [`soia-env-codex-setup-support`](./soia-env-codex-setup-support/) | Check the ChatGPT desktop app's Codex capability and CLI. | Check ChatGPT/Codex desktop and CLI, then diagnose failures. |
+| [`soia-env-codex-setup-support`](./soia-env-codex-setup-support/) | Check Codex desktop and CLI, including logs, SSD, and common failures. | Check or diagnose Codex desktop and CLI, including logs_2.sqlite write amplification and SSD health. |
 | [`soia-env-environment-setup`](./soia-env-environment-setup/) | Plan and coordinate beginner-friendly environment setup. | Help me set up this computer for development. |
 | [`soia-env-network-diagnose`](./soia-env-network-diagnose/) | Diagnose network access before installing tools. | Check why downloads or package installs fail. |
 | [`soia-env-node-install`](./soia-env-node-install/) | Install and verify Node.js and npm. | Install Node.js and npm for my project. |

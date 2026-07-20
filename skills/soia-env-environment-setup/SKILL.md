@@ -4,9 +4,9 @@ description: 从零规划并验证小白开发环境：诊断网络，按依赖�
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install]
-version: 1.0.0
+version: 1.1.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-20 18:00:00
+updated_at: 2026-07-20 21:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -32,6 +32,13 @@ updated_by: gpt-5
 3. Agent 生成安装计划；安装、PATH/profile 修改、管理员权限或网络设置变更前展示影响并确认。
 4. 客户只在官方图形界面完成登录、验证码、系统安全提示和产品授权；不要求客户操作终端。
 5. 每一步独立验证后再进入下一步；失败时停止在当前步骤，不把未完成说成完成。
+
+### 已安装工具的生命周期
+
+- 先盘点版本、安装来源和项目约束，再决定是 `missing`、`ready`、`update_available` 还是 `blocked`。
+- `ready` 表示当前可用，不重复安装；`update_available` 只表示发现新版本，是否更新仍要沿用对应专门技能的来源和确认流程。
+- 更新前记录旧版本和来源，更新后重新验证版本、帮助命令、登录/签名和项目可用性；失败时保留旧安装，不自动卸载或换源。
+- 桌面应用与 CLI、Node/Python 运行时与 pip/npm 包分别管理，不能用一个组件的版本推断另一个组件已更新。
 
 ### 依赖与安装
 
@@ -66,10 +73,10 @@ os: <macos|windows|linux|unknown>
 arch: <architecture>
 shell: <shell-or-unknown>
 tools:
-  node: {status: <ready|missing|blocked>, version: <version-or-null>}
-  python: {status: <ready|missing|blocked>, version: <version-or-null>}
-  codex: {status: <ready|missing|blocked>, version: <version-or-null>}
-  workbuddy: {status: <ready|missing|blocked>, version: <version-or-null>}
+  node: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  python: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  codex: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  workbuddy: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
 network: {status: <ready|degraded|blocked>, checked_sources: <count>}
 blockers: []
 next_handoff: <none|soia-open-skills|soia-private-skills>

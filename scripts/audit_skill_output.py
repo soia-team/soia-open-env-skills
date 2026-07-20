@@ -10,7 +10,7 @@ from typing import Any
 
 REQUIRED = {"schema_version", "os", "arch", "shell", "tools", "network", "blockers", "next_handoff"}
 TOOL_NAMES = {"node", "python", "codex", "workbuddy"}
-STATUSES = {"ready", "missing", "blocked"}
+STATUSES = {"ready", "missing", "update_available", "blocked"}
 
 
 def validate(value: Any) -> list[str]:

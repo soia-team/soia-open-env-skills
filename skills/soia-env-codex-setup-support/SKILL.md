@@ -1,149 +1,150 @@
 ---
 name: soia-env-codex-setup-support
-description: 面向小白安装和验证 Codex 桌面版与 CLI，并按磁盘、网络、Node/npm、登录、权限和工作区顺序排查问题。触发：「安装 Codex 桌面版」「安装 Codex CLI」「Codex 打不开」「Codex 卡住」「Codex 磁盘问题」。
+description: 渐进式安装、验证和排查 Codex 桌面版与 CLI，按版本、网络登录、权限工作区、资源、SQLite 日志写放大和 SSD 健康分类；检查结果必须先以表格呈现。触发：「安装 Codex」「Codex 打不开」「Codex 变慢」「检查 logs_2.sqlite」「检查磁盘健康」「Codex 一直写 SSD」。
 dependencies:
   optional: [soia-env-network-diagnose, soia-env-node-install, soia-env-codex-install]
-version: 1.0.0
+version: 1.2.0
 created_at: 2026-07-20 18:30:00
-updated_at: 2026-07-20 20:30:00
+updated_at: 2026-07-20 21:30:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
 
 # soia-env-codex-setup-support
 
-这是 Codex 环境问题的用户入口：先判断客户要用 ChatGPT 桌面应用中的 Codex 能力、CLI，还是两者都要，再用可复现的只读检查定位问题。安装、登录和管理员权限操作分开确认；客户只需要在官方图形界面完成登录、验证码和系统授权。
+用本技能做 Codex 环境检查和安装支持。默认只读、分层推进、按需加载引用文件；除非客户明确确认，不安装、删除、移动、清理或修改系统和应用数据。
 
 ## 客户可读说明
 
 ### 这个技能可以做什么
 
-| 客户想要 | 技能会做 | 客户能看到 |
+| 客户想要 | 技能会做 | 交付形式 |
 |---|---|---|
-| 安装 Codex 桌面版 | 引导打开 OpenAI 官方 ChatGPT 桌面应用入口，确认系统和架构 | 官方来源、安装状态和启动验证 |
-| 安装 Codex CLI | 检查 Node/npm，调用 CLI 安装技能或使用官方 npm 包 | `codex` 版本、帮助命令和登录状态 |
-| Codex 打不开或卡住 | 按磁盘、网络、运行时、登录、权限、工作区顺序排查 | 当前阻塞、证据和下一步 |
-| 检查 Mac 磁盘是否影响 Codex | 先确认设备，再读取 SMART 健康、寿命、写入量和温度 | 安全摘要；不自动修复、抹盘或长测 |
+| 安装或验证 Codex | 检查版本、来源、桌面宿主和 CLI | 结果表 + 下一步 |
+| 更新 Codex 桌面版或 CLI | 分别识别 ChatGPT 桌面应用与 CLI 的版本、来源和更新入口 | 更新前后版本、登录/签名复核和失败回滚边界 |
+| Codex 变慢或卡住 | 按资源、日志、网络和工作区分类 | 分类表 + 证据 |
+| 检查 SSD 健康 | 只读读取 SMART 和空间信息 | 健康度表 + 风险说明 |
+| 检查 `logs_2.sqlite` | 只读比较文件、WAL、ID 速率和热点 | 写入风险表 + 处置边界 |
 
 ### 客户如何使用
 
-1. 直接说“安装 Codex 桌面版”“安装 Codex CLI”或“排查 Codex 为什么打不开”，并说明操作系统。
-2. Agent 先做只读检查，展示将使用的官方来源、命令和可能的权限请求。
-3. 客户只在官方网页或桌面应用中点击登录、授权和系统安全提示；不要求客户在终端输入确认字母、密码、验证码或 API key。
-4. 每个故障分支单独给出“已确认 / 未确认 / 下一步”，没有证据时不把“磁盘有问题”当成结论。
+直接描述目标，例如“检查磁盘健康”“Codex 变慢”“检查 logs_2.sqlite”。Agent 默认只读；登录、系统授权、安装和数据隔离会单独说明并请求确认。
 
 ### 依赖与安装
 
-| 依赖 | 类型 | 处理方式 |
+| 依赖 | 用途 | 规则 |
 |---|---|---|
-| macOS/Windows/Linux | 系统前置 | 先读取版本和架构，再选择官方桌面入口或 CLI 流程 |
-| Node.js/npm | CLI 强依赖 | 缺失时调用 `soia-env-node-install`，不默认使用 sudo |
-| 网络诊断 | 排障依赖 | 下载、登录或 npm 失败时调用 `soia-env-network-diagnose` |
-| `smartmontools` | macOS 磁盘分支可选依赖 | 已有 Homebrew 时安装；只在客户确认后执行 |
-| OpenAI 账号 | 用户授权 | 客户在官方页面完成授权；技能不读取或索要密钥 |
+| macOS/Windows/Linux | 系统和架构识别 | 先识别，再选择平台分支 |
+| `smartmontools` | macOS SMART 读取 | 不自动安装；需客户确认 |
+| SQLite CLI | 日志数据库只读查询 | 缺失时报告未检查，不创建数据库 |
+| Node/npm、网络技能 | CLI 安装和登录 | 只在进入对应分支时加载 |
 
 ## 桌面版与 CLI 的边界
 
-- Codex 桌面能力现在由 OpenAI 官方 ChatGPT 桌面应用承载；不能再用“是否存在独立 `Codex.app`”作为判断依据。macOS 上优先检查 `ChatGPT.app` 的 bundle id `com.openai.codex`、版本和代码签名。
-- 技能只提供官方 ChatGPT 桌面应用入口，不猜测或传播第三方 DMG、破解包和未知下载地址。
-- CLI 使用官方 npm 包 `@openai/codex`。安装后验证 `codex --version`、`codex --help`，需要登录时启动 `codex --login`，授权在浏览器中完成。
-- `soia-env-codex-install` 保留为 CLI 的专门安装技能；本技能是桌面版 + CLI + 故障排查的编排入口，必要时调用它，不重复发明另一套登录流程。
-- 桌面版和 CLI 的登录状态、工作区权限与网络可用性可能不同，不能因为其中一个能用就推断另一个正常。
+- Codex 桌面能力由 OpenAI 官方 ChatGPT 桌面应用承载；不能再用是否存在独立 `Codex.app` 作为判断依据。macOS 优先核对 `ChatGPT.app` 的 bundle id `com.openai.codex`、版本和代码签名。
+- CLI 使用官方 `@openai/codex` 或官方独立安装入口；桌面版和 CLI 的登录、版本、更新和工作区权限必须分别验证。
+- `soia-env-codex-install` 保留为 CLI 专门安装技能；本技能负责桌面版、CLI 与故障排查的编排，不重复发明登录流程。
 
-官方链接和当前命令见 [official-sources.md](references/official-sources.md)。
+## 交付规则
 
-## 标准排查流程
+每次检查先给一张结果表，再给结论和下一步。不要把命令回显当成报告，也不要把未检查写成正常：
 
-按下面顺序推进，前一步没有证据时不跳到后一步：
+| 类别 | 检查项 | 结果 | 证据 | 风险 | 下一步 |
+|---|---|---|---|---|---|
+| <A-F> | <具体指标> | <正常/预警/异常/未检查> | <简短数值或状态> | <低/中/高> | <动作或 none> |
 
-1. **系统与资源**：读取 macOS/Windows/Linux 版本、架构、可用磁盘空间和当前用户权限；不打印完整用户名、路径或环境变量。
-2. **网络**：检查官方 OpenAI、npm、Node.js 和 Python 站点的 DNS/HTTPS 可达性；网络技能只读诊断，不自动改代理、DNS、证书或防火墙。
-3. **Mac 磁盘（本技能的第一故障分支）**：如果安装失败、应用异常退出、机器明显变慢或磁盘空间异常，优先做 SMART 读取和空间检查。
-4. **Node/npm/CLI**：检查 `node --version`、`npm --version`、全局 npm 前缀和 `codex --version`；缺 Node 时交给 `soia-env-node-install`，缺 CLI 时交给 `soia-env-codex-install`。
-5. **桌面应用**：macOS 先用 `scripts/check_codex_desktop.py` 检查 `ChatGPT.app` 的 bundle id、版本和签名，再由客户在官方 UI 启动验证；Windows 按官方 ChatGPT 桌面入口核对安装和架构。不把独立 `Codex.app` 缺失当成 Codex 桌面版缺失。
-6. **登录与权限**：区分浏览器授权未完成、账号/组织权限、网络阻断和本地权限；不索要或回显 token、cookie、API key。
-7. **工作区**：最后检查项目目录、写权限、Git 状态和项目依赖；不要把工作区报错误判为 Codex 安装失败。
+表格后只保留三段：
 
-## Mac 磁盘健康与寿命检查
+1. **结论**：一句话回答是否发现问题、问题属于哪一类。
+2. **解决方案**：按优先级给出可执行动作；标明“只读”“需确认”或“未执行”。
+3. **残余风险**：列出未取得的证据、不能归因的部分和复查条件。
 
-此分支只读取磁盘信息。它不能证明所有 SSD 都支持 SMART，也不能替代 Apple 磁盘工具或硬件诊断。
+检查结果需要详细解释时，先读对应的 `references/` 文件；不要把所有底层命令复制回本文件。
 
-### 客户可复制的命令
+## 渐进式流程
 
-先安装 `smartmontools`（已有 Homebrew 时）：
+### 第 0 层：识别请求
 
-```bash
-brew install smartmontools
-```
+从用户目标中选择一个或多个类别，不同时展开所有分支：
 
-用户要求的一键查看健康与寿命命令如下，保留原样供 Agent 或有经验的维护人员使用：
+| 类别 | 触发症状 | 第一层证据 | 详细流程 |
+|---|---|---|---|
+| A 版本与安装 | 未安装、打不开、旧版本 | OS、架构、桌面/CLI 版本、官方来源 | 官方来源与桌面识别脚本 |
+| B 网络与登录 | 下载失败、登录循环、API 不通 | DNS/HTTPS、浏览器授权、组织权限 | `soia-env-network-diagnose` |
+| C 权限与工作区 | 目录不能读写、任务不能启动 | 目录权限、Git、项目依赖 | 最后检查工作区，不误判安装故障 |
+| D 资源与渲染 | CPU/RSS 高、长线程卡顿、界面无响应 | 进程资源、复现时间、线程规模 | 应用/资源分支，必要时与 E 并查 |
+| E SQLite 日志写放大 | `logs_2.sqlite`/WAL 变大、TRACE 高频、SSD 写入异常 | 文件快照、`MAX(id)` 速率、热点 target、持有进程 | [sqlite-log-diagnostics.md](references/sqlite-log-diagnostics.md) |
+| F SSD 健康 | SMART 预警、寿命高、温度或错误异常 | 物理设备、SMART、空间 | [macos-disk-health.md](references/macos-disk-health.md) |
 
-```bash
-sudo smartctl -a /dev/disk0 | grep -E "SMART|Percentage Used|Available Spare|Data Units Written|Temperature"
-```
+“变慢”默认先查 D；只有出现磁盘、TRACE、WAL 或写入症状才进入 E。“SSD 写入量高”必须同时查 E 和 F，不能用日志库字节数直接代替 SSD 主机写入量。
 
-但 `/dev/disk0` 不一定是实际物理设备。运行前先只读确认设备，例如 `diskutil list` 或 `smartctl --scan-open`，再将正确设备传给 `smartctl -a`。`sudo` 只用于读取受保护的 SMART 信息，密码必须只在 macOS 系统提示中输入，不能发送到对话中。
+### 第 1 层：共同基线
 
-### 结果判读
+只读采集以下最小信息：操作系统和架构、可用空间、桌面应用版本、CLI 版本、目标类别。不要打印完整用户名、token、cookie、API key、密码或完整本地路径。
 
-- `SMART overall-health ... PASSED` 是一个健康信号，但不是“整块磁盘绝对正常”的证明。
-- `Percentage Used` 越高表示标称寿命消耗越多；接近或超过 100% 应优先备份并安排更换评估。
-- `Available Spare` 过低是预警；数值异常或持续下降时，应先备份重要数据。
-- `Data Units Written` 是累计写入量，不等于剩余寿命；它用于判断是否存在长期高写入压力。
-- 温度异常升高可能导致降速或不稳定，应结合环境、散热和系统日志判断。
-- 如果输出提示不支持 SMART、没有这些字段、需要不同设备参数或权限不足，只能报告“未取得有效 SMART 证据”，不能直接判定磁盘损坏。
+桌面版和 CLI 可能共享 Codex home；不能因为 CLI 能运行就推断桌面版或日志数据库正常。macOS 桌面识别使用 `scripts/check_codex_desktop.py`，输出只作为版本/签名证据。
 
-禁止自动执行 `smartctl -t long`、擦除、修复、分区、格式化或任何可能增加风险的命令。需要进一步处理时，优先使用 macOS“磁盘工具”、`diskutil info`、备份和 Apple Diagnostics。
+## 已安装状态与更新
 
-技能附带的 `scripts/check_macos_disk.py` 只解析已经取得的筛选结果，不执行 `sudo`，也不读取序列号等无关信息：
+桌面版和 CLI 必须分别判断；发现已安装且可用时提示“已安装，无需重复安装”，不把重复安装当作更新。
 
-```bash
-sudo smartctl -a /dev/disk0 | grep -E "SMART|Percentage Used|Available Spare|Data Units Written|Temperature" | python3 scripts/check_macos_disk.py --stdin --json
-```
+- CLI 先执行 `codex --version`、`codex update --help`、`codex login status`，并记录 `command -v codex` 与安装来源。
+- CLI 支持 `codex update` 时，客户确认后优先使用该内置更新入口；npm 管理且不支持内置更新时使用 `npm install -g @openai/codex@latest`；独立安装器管理时沿用官方 CLI 文档的更新入口。
+- ChatGPT 桌面应用（Codex 宿主）通过应用内或官方桌面应用更新入口更新；不能用 CLI 的 `codex update` 代替桌面应用更新。
+- macOS 更新后重新执行桌面识别脚本，确认 `com.openai.codex`、版本和代码签名；CLI 更新后重新验证版本、帮助和登录状态。更新版本不等于重新登录，不强制客户重复授权。
+- 更新前记录旧版本、来源和关键验证结果；更新失败时保留现有安装，不自动卸载、清理日志或删除应用数据。
 
-## ChatGPT 桌面应用只读识别
+### 第 2 层：单一问题分支
 
-不要把 `codex app` 当作安装状态检查命令：当 CLI 没识别到桌面应用时，它可能直接下载约数百 MB 的安装器。先执行不启动、不下载的识别脚本：
+只加载当前分支需要的引用：
 
-```bash
-python3 scripts/check_codex_desktop.py --json
-```
+- A：读取 [official-sources.md](references/official-sources.md)，缺 Node/npm 或 CLI 时再调用对应依赖技能。
+- B/C/D：先执行只读诊断；没有证据时不修改代理、DNS、PATH、权限或工作区。
+- E：完整读取 [sqlite-log-diagnostics.md](references/sqlite-log-diagnostics.md)，使用只读 SQLite 连接并做两次采样。
+- F：完整读取 [macos-disk-health.md](references/macos-disk-health.md)，先确认物理设备，再读取 SMART；不自动安装 `smartmontools`。
 
-脚本优先检查 `/Applications/ChatGPT.app` 和用户应用目录中的 `ChatGPT.app`，确认 bundle id 为 `com.openai.codex`、读取版本，并验证代码签名。结果含义：
+### 第 3 层：高级处置
 
-- `ready`：ChatGPT 桌面应用被识别为 Codex 宿主，签名验证通过；仍需由客户确认能否打开和登录。
-- `missing`：没有找到 ChatGPT 桌面应用；只展示官方入口，不自动下载。
-- `invalid_signature`：应用存在但签名验证失败；不要提示“安装正常”，也不要绕过系统安全策略。
-- `unexpected_bundle`：应用存在但不是 Codex 使用的官方 ChatGPT bundle；停止并让客户确认来源。
+只有第 2 层证据达到高风险，才讨论退出应用、备份、隔离或重建日志库。状态变更前必须展示目标、影响、备份位置和回滚方式，并获得客户确认。诊断请求到此结束，不顺手执行修复。
 
-## 权限、隐私与回滚
+## 解决方案优先级
 
-- 默认只读；安装 Homebrew 包、桌面应用或 npm 全局包前说明来源、写入范围和回滚方式。
-- 不默认使用 `sudo`。只有读取受保护 SMART 信息确有必要时才单独请求管理员确认。
-- 不自动修改 PATH、shell profile、代理、DNS、证书、系统安全设置或工作区文件。
-- 安装失败时保留错误证据，不自动卸载、降级、删除缓存或清理应用数据。
-- 日志只保留工具名、版本、错误类别、退出码和下一步，不保留 token、cookie、API key、密码、完整本地路径或浏览器授权内容。
+| 优先级 | 动作 | 默认权限 | 适用条件 |
+|---|---|---|---|
+| 1 | 更新桌面版/CLI，完全退出后重启并复测 | 需客户确认 | 版本旧或 E 分支出现写放大 |
+| 2 | 关闭重复进程、减少复现范围、重新采样 | 需客户确认 | 没有活动任务且确认进程持有关系 |
+| 3 | 备份后隔离日志数据库，让应用重建 | 需客户确认 | E 分支达到高风险，且无进程持有 |
+| 4 | `VACUUM`、触发器、改 WAL、RAM 盘 | 高风险，不默认提供执行命令 | 仅高级维护人员明确选择；这些不是首选修复 |
+| 5 | SMART/硬件处置 | 需客户确认 | F 分支出现错误、寿命或温度预警；先备份 |
+
+`VACUUM` 会重写数据库，不能阻止持续写入；macOS 的 `/tmp` 通常仍在 SSD 上，也不能当成 RAM 盘。切换到 CLI 也不是 E 分支的可靠修复。
+
+## 脚本与引用的使用边界
+
+- `scripts/check_codex_desktop.py`：只读识别 macOS ChatGPT 宿主、bundle id、版本和代码签名。
+- `scripts/check_macos_disk.py`：只解析已经取得的 SMART 摘要，不执行 `sudo`、长测或任何磁盘操作。
+- `references/`：存放命令、字段解释、平台差异、阈值和高级处置；只在进入对应分支时加载。
+- 不在 `SKILL.md` 中新增大段 shell、SQL、PowerShell 或原始供应商说明；重复使用的确定性逻辑优先进入脚本，解释性内容进入引用文件。
 
 ## 日志与完成回执
 
+使用结果表后，按以下最小格式收尾：
+
 ```markdown
-完成：Codex <桌面版/CLI/排查> <已完成/部分完成/被阻塞>。
+结论：<类别>，<正常/预警/异常/未完成>。
 
-日志摘要：
-- started: <系统、架构、目标>
-- processed: <磁盘、网络、Node/npm、应用、登录、工作区检查数量>
-- updated: <工具或应用类别；没有则写 none>
-- failed: <错误类别；没有则写 none>
+解决方案：<已执行的只读检查；需确认的动作；没有执行的状态变更写 none>。
 
-验证：
-- desktop: <已启动/未安装/未验证>
-- cli: <版本、帮助命令或未安装>
-- disk: <SMART 摘要/unsupported/未检查>
-
-问题与下一步：
-- <需要客户打开的官方页面、确认的权限或下一项技能>
+残余风险：<未检查项、不能归因的部分、复查条件>。
 ```
 
 ## 前向测试
 
-用 fixture 覆盖 SMART 健康通过、寿命预警、温度预警和不支持/字段缺失四种状态；用 fake command runner 覆盖桌面应用未安装、CLI 缺 Node、登录等待和工作区权限错误。真实验收必须从官方来源安装并分别验证桌面版和 CLI，不能把 npm 返回 0 当成登录完成。
+至少用四类样例验证结果表：SMART 正常、SMART 预警、SQLite 文件稳定、SQLite `MAX(id)` 推进但保留行数稳定。验证不得修改真实数据库或磁盘。
+
+## 安全边界
+
+- 默认只读；不自动 `sudo`、安装包、修改 PATH/profile、代理/DNS、权限、数据库或工作区。
+- 客户只在官方 UI 完成登录、验证码和系统授权；不要求客户在终端输入秘密。
+- 不执行删除、覆盖、格式化、分区、固件升级、`VACUUM`、数据库 checkpoint、触发器或日志清理，除非客户在看到明确计划后单独确认。
+- 真实验收不能把 npm 返回 0 当成登录完成，也不能把 SMART `PASSED` 当成整机绝对正常。
