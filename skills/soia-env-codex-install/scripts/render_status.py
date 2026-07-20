@@ -6,7 +6,17 @@ from __future__ import annotations
 import argparse
 
 
-HEADERS = ("技能", "当前状态", "当前版本", "最新版本", "运行状态", "处理结果")
+HEADERS = (
+    "技能",
+    "当前状态",
+    "当前版本",
+    "最新版本",
+    "运行状态",
+    "安装方式",
+    "安装目录",
+    "配置文件目录",
+    "处理结果",
+)
 
 
 def clean(value: str) -> str:
@@ -15,7 +25,12 @@ def clean(value: str) -> str:
 
 def version(value: str) -> str:
     value = clean(value)
-    return value if value in {"未取得", "-"} else f"`{value}`"
+    return value if value in {"未取得", "-", "不适用", "随 ChatGPT.app 更新"} else f"`{value}`"
+
+
+def path(value: str) -> str:
+    value = clean(value)
+    return value if value in {"未取得", "-", "不适用"} else f"`{value}`"
 
 
 def render(
@@ -23,6 +38,9 @@ def render(
     current_version: str,
     latest_version: str,
     runtime_status: str,
+    install_method: str,
+    install_dir: str,
+    config_dir: str,
     result: str,
 ) -> str:
     row = (
@@ -31,6 +49,9 @@ def render(
         version(current_version),
         version(latest_version),
         clean(runtime_status),
+        clean(install_method),
+        path(install_dir),
+        path(config_dir),
         clean(result),
     )
     header = "| " + " | ".join(HEADERS) + " |"
@@ -45,6 +66,9 @@ def main() -> int:
     parser.add_argument("--current-version", default="未取得")
     parser.add_argument("--latest-version", default="未取得")
     parser.add_argument("--runtime-status", required=True)
+    parser.add_argument("--install-method", default="未取得")
+    parser.add_argument("--install-dir", default="未取得")
+    parser.add_argument("--config-dir", default="未取得")
     parser.add_argument("--result", required=True)
     args = parser.parse_args()
     print(
@@ -53,6 +77,9 @@ def main() -> int:
             args.current_version,
             args.latest_version,
             args.runtime_status,
+            args.install_method,
+            args.install_dir,
+            args.config_dir,
             args.result,
         )
     )
