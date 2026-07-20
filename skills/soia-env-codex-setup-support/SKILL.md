@@ -3,9 +3,9 @@ name: soia-env-codex-setup-support
 description: 渐进式安装、验证和排查 Codex 桌面版与 CLI，按版本、网络登录、权限工作区、资源、SQLite 日志写放大和 SSD 健康分类；检查结果必须先以表格呈现。触发：「安装 Codex」「Codex 打不开」「Codex 变慢」「检查 logs_2.sqlite」「检查磁盘健康」「Codex 一直写 SSD」。
 dependencies:
   optional: [soia-env-network-diagnose, soia-env-node-install, soia-env-codex-install]
-version: 1.2.0
+version: 1.3.0
 created_at: 2026-07-20 18:30:00
-updated_at: 2026-07-20 21:30:00
+updated_at: 2026-07-21 00:00:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -49,9 +49,11 @@ updated_by: gpt-5
 
 每次检查先给一张结果表，再给结论和下一步。不要把命令回显当成报告，也不要把未检查写成正常：
 
-| 类别 | 检查项 | 结果 | 证据 | 风险 | 下一步 |
-|---|---|---|---|---|---|
-| <A-F> | <具体指标> | <正常/预警/异常/未检查> | <简短数值或状态> | <低/中/高> | <动作或 none> |
+| 类别 | 检查项 | 结果 | 证据 | 风险 | 更新时间 | 下一步 |
+|---|---|---|---|---|---|---|
+| <A-F> | <具体指标> | <正常/预警/异常/未检查> | <简短数值或状态> | <低/中/高> | <RFC3339-with-timezone> | <动作或 none> |
+
+`更新时间` 是该检查项最后取得证据的时间；不同检查项可以不同，不能使用技能文件修改时间代替。
 
 表格后只保留三段：
 
@@ -125,6 +127,13 @@ updated_by: gpt-5
 - `scripts/check_macos_disk.py`：只解析已经取得的 SMART 摘要，不执行 `sudo`、长测或任何磁盘操作。
 - `references/`：存放命令、字段解释、平台差异、阈值和高级处置；只在进入对应分支时加载。
 - 不在 `SKILL.md` 中新增大段 shell、SQL、PowerShell 或原始供应商说明；重复使用的确定性逻辑优先进入脚本，解释性内容进入引用文件。
+
+## 私密信息与中间数据
+
+- Codex/ChatGPT 登录凭据由官方客户端、CLI 登录流程和系统凭据库管理；SOIA 配置只保存非秘密偏好与路径。
+- 诊断默认只输出脱敏摘要，不复制 ChatGPT/Codex 数据库、日志正文、对话内容或 token。
+- 客户明确要求保存诊断回执时才写用户 state 目录；可重建元数据放 cache，数据库快照等短期副本只能放系统临时目录并在成功或失败后清理。
+- 回执只保留类别、数值、版本、结果和 `checked_at`，不记录账号、查询内容或客户私有绝对路径。
 
 ## 日志与完成回执
 

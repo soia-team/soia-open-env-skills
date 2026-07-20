@@ -26,7 +26,7 @@ soia-private-skills          →  私有 SOIA 治理、审计和内部执行
 ```
 
 环境技能不复制其他仓库的技能，也不自动安装私有技能；它只输出可移植的
-`os / arch / shell / tool / version / status / blockers` 摘要，供后续技能判断前置条件。
+`checked_at / os / arch / shell / tool / version / status / blockers` 摘要，供后续技能判断前置条件。
 
 ## 安装
 
@@ -48,6 +48,8 @@ npx skills add soia-team/soia-open-env-skills -g -a '*' -y
 - GitHub Actions 只读仓库内容并运行审计，不保存用户机器凭据。
 - 技能默认只读探测；安装、PATH/profile 修改、管理员权限和网络设置变更必须先展示计划并确认。
 - 客户不需要操作终端；浏览器登录、验证码、系统安全提示和第三方服务授权由客户在官方界面完成。
+- 凭据、中间数据、缓存、状态和临时文件按
+  [DATA_STORAGE_SPEC.md](./DATA_STORAGE_SPEC.md) 分层；普通配置文件不保存 secret。
 
 ## 开源来源
 
@@ -60,8 +62,8 @@ npx skills add soia-team/soia-open-env-skills -g -a '*' -y
 
 ## 贡献与验证
 
-参见 [CONTRIBUTING.md](./CONTRIBUTING.md)、[SKILL_SPEC.md](./SKILL_SPEC.md) 和
-[AGENTS.md](./AGENTS.md)。提交前运行：
+参见 [CONTRIBUTING.md](./CONTRIBUTING.md)、[SKILL_SPEC.md](./SKILL_SPEC.md)、
+[DATA_STORAGE_SPEC.md](./DATA_STORAGE_SPEC.md) 和 [AGENTS.md](./AGENTS.md)。提交前运行：
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'

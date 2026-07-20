@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 
 
 HEADERS = (
@@ -15,6 +16,7 @@ HEADERS = (
     "安装方式",
     "安装目录",
     "配置文件目录",
+    "更新时间",
     "处理结果",
 )
 
@@ -33,6 +35,10 @@ def path(value: str) -> str:
     return value if value in {"未取得", "-", "不适用"} else f"`{value}`"
 
 
+def now_rfc3339() -> str:
+    return datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+
 def render(
     current_status: str,
     current_version: str,
@@ -42,6 +48,7 @@ def render(
     install_dir: str,
     config_dir: str,
     result: str,
+    updated_at: str | None = None,
 ) -> str:
     row = (
         "Codex CLI",
@@ -52,6 +59,7 @@ def render(
         clean(install_method),
         path(install_dir),
         path(config_dir),
+        clean(updated_at or now_rfc3339()),
         clean(result),
     )
     header = "| " + " | ".join(HEADERS) + " |"
@@ -69,6 +77,7 @@ def main() -> int:
     parser.add_argument("--install-method", default="未取得")
     parser.add_argument("--install-dir", default="未取得")
     parser.add_argument("--config-dir", default="未取得")
+    parser.add_argument("--updated-at")
     parser.add_argument("--result", required=True)
     args = parser.parse_args()
     print(
@@ -81,6 +90,7 @@ def main() -> int:
             args.install_dir,
             args.config_dir,
             args.result,
+            args.updated_at,
         )
     )
     return 0

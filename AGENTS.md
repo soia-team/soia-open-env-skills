@@ -15,6 +15,8 @@ private configuration.
 - Every skill has `SKILL.md` with `name`, `description`, `version`, timestamps,
   and author fields in frontmatter, plus customer-readable setup and receipt
   sections.
+- Read `DATA_STORAGE_SPEC.md` before adding configuration, credentials, logs,
+  cache, temporary files, or machine-readable receipts.
 - Keep required workflow in `SKILL.md`; put provider/version facts in that
   skill's own `references/` directory.
 - Never commit API keys, access tokens, cookies, passwords, private config,
@@ -22,6 +24,14 @@ private configuration.
 - Examples use placeholders such as `<path>`, `<YOUR_KEY>`, and `<repo>`.
 - New scripts must use portable path APIs and must not hardcode Unix-only
   temporary or config paths.
+- Customer-facing status tables must include a runtime `更新时间`; structured
+  receipts use timezone-aware RFC 3339 `checked_at`. These are not the
+  frontmatter source-code timestamps.
+- Store provider credentials in provider-owned login flows or the OS keychain.
+  Ordinary SOIA config files contain non-secret settings and paths only.
+- Separate persistent audit state, disposable cache, and per-run temporary
+  files according to `DATA_STORAGE_SPEC.md`; read-only skills write nothing by
+  default.
 
 ## Beginner safety boundary
 

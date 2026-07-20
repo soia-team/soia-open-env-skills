@@ -8,10 +8,15 @@ import json
 import os
 import shutil
 import subprocess
+from datetime import datetime
 from pathlib import Path
 
 
 APP_RESOURCE_MARKER = ".app/Contents/Resources/"
+
+
+def now_rfc3339() -> str:
+    return datetime.now().astimezone().replace(microsecond=0).isoformat()
 
 
 def home_relative(path: Path, home: Path) -> str:
@@ -179,6 +184,7 @@ def inspect() -> dict[str, str]:
             "app_path": (
                 home_relative(app_path, home) if app_path is not None else "未取得"
             ),
+            "checked_at": now_rfc3339(),
         }
 
     resolved_path = command_path.resolve()
@@ -213,6 +219,7 @@ def inspect() -> dict[str, str]:
         "login_status": "已登录" if login_ok else "未登录",
         "app_detected": "是" if app_path is not None else "否",
         "app_path": home_relative(app_path, home) if app_path is not None else "未取得",
+        "checked_at": now_rfc3339(),
     }
 
 

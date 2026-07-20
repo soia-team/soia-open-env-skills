@@ -8,11 +8,21 @@ import json
 import os
 import platform
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 
 EXPECTED_BUNDLE_ID = "com.openai.codex"
+
+
+def now_rfc3339() -> str:
+    return datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+
+def finalized(result: dict[str, Any]) -> dict[str, Any]:
+    result["checked_at"] = now_rfc3339()
+    return result
 
 
 def summarize(
@@ -35,23 +45,23 @@ def summarize(
         "warnings": [],
     }
     if not exists:
-        return result
+        return finalized(result)
     if bundle_id != EXPECTED_BUNDLE_ID:
         result["status"] = "unexpected_bundle"
         result["warnings"] = ["bundle_id_is_not_com_openai_codex"]
-        return result
+        return finalized(result)
     if signature_ok is False:
         result["status"] = "invalid_signature"
         result["warnings"] = ["codesign_verification_failed"]
-        return result
+        return finalized(result)
     if signature_ok is None:
         result["status"] = "signature_unverified"
         result["warnings"] = ["codesign_not_checked"]
-        return result
+        return finalized(result)
     result["status"] = "ready"
     if not version:
         result["warnings"] = ["version_unavailable"]
-    return result
+    return finalized(result)
 
 
 def _run(command: list[str]) -> tuple[str | None, bool | None]:
@@ -93,6 +103,7 @@ def inspect(paths: list[Path] | None = None) -> dict[str, Any]:
             "signature": "not_checked",
             "status": "unsupported_platform",
             "warnings": ["macos_bundle_probe_not_applicable"],
+            "checked_at": now_rfc3339(),
         }
     candidates = paths or [Path("/Applications/ChatGPT.app"), Path.home() / "Applications" / "ChatGPT.app"]
     results = []

@@ -1,6 +1,7 @@
 import importlib.util
 import pathlib
 import unittest
+from datetime import datetime
 
 
 SCRIPT = pathlib.Path(__file__).parents[1] / "skills/soia-env-codex-setup-support/scripts/check_macos_disk.py"
@@ -26,6 +27,7 @@ Temperature:                        38 Celsius
         self.assertEqual(result["available_spare"], 98)
         self.assertEqual(result["temperature_c"], 38)
         self.assertEqual(result["warnings"], [])
+        self.assertIsNotNone(datetime.fromisoformat(result["checked_at"]).tzinfo)
 
     def test_warnings_are_explicit(self):
         result = MODULE.analyze(

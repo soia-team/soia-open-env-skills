@@ -1,9 +1,9 @@
 # Contributing to soia-open-env-skills
 
 1. Fork the repository or create a short-lived branch from `main`.
-2. Read [SKILL_SPEC.md](./SKILL_SPEC.md) and [AGENTS.md](./AGENTS.md).
+2. Read [SKILL_SPEC.md](./SKILL_SPEC.md), [DATA_STORAGE_SPEC.md](./DATA_STORAGE_SPEC.md), and [AGENTS.md](./AGENTS.md).
 3. Start a skill from `templates/skill-template/` or use the skill creator initializer.
-4. Keep provider/version facts in the skill's `references/` and keep public examples free of secrets and personal paths.
+4. Keep provider/version facts in the skill's `references/`; use provider login or the OS keychain for credentials, and keep public examples free of secrets and personal paths.
 5. Add a fixture or forward test for deterministic scripts and document a safe manual check.
 6. Regenerate `skills/README.md` instead of editing it by hand.
 7. Run the repository validation commands.

@@ -43,9 +43,15 @@ Every skill must explain near the top:
 - `客户如何使用`;
 - `依赖与安装` or equivalent;
 - `日志与完成回执`.
+- `私密信息与中间数据`.
 
 The first screen must tell a beginner what they need to provide and what the
 agent will do. State which actions are read-only and which change the machine.
+
+Customer-facing status tables must include `更新时间`, recorded after the final
+verification for that row. Use RFC 3339 with an explicit timezone, for example
+`2026-07-21T00:00:00+08:00`. Structured receipts use the field `checked_at`.
+Do not use frontmatter `updated_at` as runtime evidence.
 
 ## Safety and portability
 
@@ -58,6 +64,9 @@ agent will do. State which actions are read-only and which change the machine.
 - Never ask a customer to paste a secret into chat or terminal.
 - Use `tempfile`, `Path.home()`, `os.tmpdir()`, and `pathlib`/`path.join` for
   script paths; do not add Unix-only hardcoded paths.
+- Follow `DATA_STORAGE_SPEC.md`: provider credentials go to the provider login
+  store or OS keychain; config contains non-secret settings; state, cache, temp,
+  and customer deliverables have separate lifecycles.
 
 ## Validation
 

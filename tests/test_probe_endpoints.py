@@ -1,5 +1,6 @@
 import importlib.util
 import unittest
+from datetime import datetime
 from unittest.mock import patch
 import urllib.error
 
@@ -27,6 +28,7 @@ class ProbeEndpointTests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["category"], "reachable")
         self.assertNotIn("body", result)
+        self.assertIsNotNone(datetime.fromisoformat(result["checked_at"]).tzinfo)
 
     def test_http_error_is_classified(self):
         error = urllib.error.HTTPError("https://example.test", 503, "busy", {}, None)
@@ -38,7 +40,19 @@ class ProbeEndpointTests(unittest.TestCase):
 
     def test_credentials_and_non_http_urls_are_rejected(self):
         self.assertEqual(probe_endpoints.probe("ftp://example.test", 1)["category"], "invalid_url")
-        self.assertEqual(probe_endpoints.probe("https://user:pass@example.test", 1)["category"], "invalid_url")
+        result = probe_endpoints.probe("https://user:pass@example.test/private", 1)
+        self.assertEqual(result["category"], "invalid_url")
+        self.assertEqual(result["url"], "https://example.test/private")
+        self.assertNotIn("user", result["url"])
+        self.assertNotIn("pass", result["url"])
+
+    def test_query_and_fragment_are_not_returned(self):
+        self.assertEqual(
+            probe_endpoints.sanitized_url(
+                "https://example.test/download?access_token=private#section"
+            ),
+            "https://example.test/download",
+        )
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import datetime
 from typing import Any
 
 
@@ -21,6 +22,10 @@ TEMPERATURE_RE = re.compile(
     r"Temperature(?:\s+Sensor\s+\d+)?\s*:\s*(-?\d+)\s*(?:Celsius|C)\b",
     re.IGNORECASE,
 )
+
+
+def now_rfc3339() -> str:
+    return datetime.now().astimezone().replace(microsecond=0).isoformat()
 
 
 def analyze(text: str, device: str | None = None) -> dict[str, Any]:
@@ -86,6 +91,7 @@ def analyze(text: str, device: str | None = None) -> dict[str, Any]:
     if recognized:
         result["status"] = "warning" if warnings else "observed"
     result["warnings"] = warnings
+    result["checked_at"] = now_rfc3339()
     return result
 
 
