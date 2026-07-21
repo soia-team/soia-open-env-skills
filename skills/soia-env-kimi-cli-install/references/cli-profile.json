@@ -4,6 +4,7 @@
   "command": "kimi",
   "version_args": ["--version"],
   "default_config_paths": ["~/.kimi-code"],
+  "config_file_paths": ["~/.kimi-code/config.toml"],
   "config_env_vars": ["KIMI_CODE_HOME"],
   "known_user_paths": [
     "~/.local/bin/kimi",

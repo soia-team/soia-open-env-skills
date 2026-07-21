@@ -4,6 +4,7 @@
   "command": "deepcode",
   "version_args": ["--version"],
   "default_config_paths": ["~/.deepcode"],
+  "config_file_paths": ["~/.deepcode/settings.json"],
   "config_env_vars": [],
   "known_user_paths": [
     "~/.local/bin/deepcode",

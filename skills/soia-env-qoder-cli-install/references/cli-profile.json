@@ -4,6 +4,7 @@
   "command": "qodercli",
   "version_args": ["--version"],
   "default_config_paths": ["~/.qoder"],
+  "config_file_paths": ["~/.qoder/settings.json"],
   "config_env_vars": [],
   "known_user_paths": [
     "~/.local/bin/qodercli",

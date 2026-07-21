@@ -155,6 +155,7 @@ def select_independent_cli(candidates: list[Path]) -> tuple[Path | None, Path | 
 def inspect() -> dict[str, str]:
     home = Path.home()
     config_dir = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser()
+    config_status = "已创建" if config_dir.exists() else "未创建"
     npm_global_root = npm_root()
     candidates = candidate_paths(home, npm_global_root)
     command_path, app_path = select_independent_cli(candidates)
@@ -178,6 +179,7 @@ def inspect() -> dict[str, str]:
                 else "未取得"
             ),
             "config_dir": home_relative(config_dir, home),
+            "config_status": config_status,
             "cli_path": "未取得",
             "login_status": "未验证",
             "app_detected": "是" if app_path is not None else "否",
@@ -215,6 +217,7 @@ def inspect() -> dict[str, str]:
         "install_method": method,
         "install_dir": home_relative(install_dir, home),
         "config_dir": home_relative(config_dir, home),
+        "config_status": config_status,
         "cli_path": home_relative(command_path, home),
         "login_status": "已登录" if login_ok else "未登录",
         "app_detected": "是" if app_path is not None else "否",

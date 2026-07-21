@@ -3,9 +3,9 @@ name: soia-env-claude-cli-install
 description: 面向小白检查、安装、登录和按明确授权更新 Anthropic Claude Code CLI；识别官方独立安装、Homebrew 与 npm 来源，默认只报告版本，不把 Claude 桌面产品混作 CLI。触发：「安装 Claude CLI」「安装 Claude Code」「Claude 命令不存在」「Claude 登录」「检查或更新 Claude Code」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,13 @@ updated_by: gpt-5
 4. 需要登录时 Agent 启动流程，客户只在 Anthropic 官方页面点击授权；不得让客户把授权码、API key 或密码发到聊天中。
 5. 安装、更新和登录后分别验证独立 CLI 的版本、帮助命令、诊断结果和登录状态。
 
+### 首次登录与真实配置验证
+
+- `配置文件目录`只显示候选目录；技能必须同时读取 `config_status` 和 `config_file_status`，不能把默认路径当成“已配置”。
+- 如果 `~/.claude` 或 `settings.json` 尚未创建，Agent 在客户选定的项目中启动 `claude`，由 Claude Code 展示官方登录选项；客户只在 Anthropic 官方页面或 Claude 官方应用完成授权。
+- 如果客户选择 Anthropic API 方式，客户自行在 Anthropic Console 创建并保管 API key；Agent 只检查“存在/可认证”的结果，不接收、不回显密钥。
+- 登录完成后重新运行 `claude doctor` 和技能检查脚本；没有完成浏览器授权时，处理结果必须写“等待首次登录”，不能写“运行正常”。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -46,7 +53,7 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，只读取得独立命令、当前版本、实际路径、安装方式和配置目录。
+1. 执行 `python3 scripts/inspect_cli.py --json`，只读取得独立命令、当前版本、实际路径、安装方式、配置目录以及配置目录/文件是否真实存在。
 2. 执行 `python3 scripts/check_latest.py --json`，从 npm 官方发布元数据取得最新版；失败时写“未取得”，不猜测。
 3. 已安装且可运行：`当前状态` 始终写“已安装”。没有最新版授权就停止，不重复安装、不更新。
 4. 未安装：优先官方独立安装；客户选择 npm 时才使用 `npm install -g @anthropic-ai/claude-code`。安装网络脚本时先下载到系统临时目录、检查来源和内容，再执行本地副本；不直接执行网络响应。
@@ -73,6 +80,7 @@ updated_by: gpt-5
 - 已更新后 `当前状态` 仍写“已安装”，更新结果只放在 `处理结果`。
 - 发现多个 `claude` 时汇报当前登录 shell 实际生效的副本，并提示冲突；不删除其他副本。
 - 无法取得最新版时写“未取得”；不得用缓存、记忆或其他产品版本代替。
+- `config_status=未创建` 或 `config_file_status=未创建` 时，处理结果写“等待首次登录/配置”，并给出启动命令和官方授权方式；不得只打印一个不存在的路径。
 
 ## 安装与更新的中间状态
 

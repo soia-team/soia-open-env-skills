@@ -4,6 +4,7 @@
   "command": "claude",
   "version_args": ["--version"],
   "default_config_paths": ["~/.claude"],
+  "config_file_paths": ["~/.claude/settings.json"],
   "config_env_vars": ["CLAUDE_CONFIG_DIR"],
   "known_user_paths": [
     "~/.local/bin/claude",

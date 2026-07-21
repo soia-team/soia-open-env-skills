@@ -100,6 +100,7 @@ class CodexInstallationInspectionTests(unittest.TestCase):
             self.assertEqual(result["current_status"], "未安装")
             self.assertEqual(result["cli_path"], "未取得")
             self.assertEqual(result["app_detected"], "是")
+            self.assertEqual(result["config_status"], "未创建")
             self.assertIsNotNone(datetime.fromisoformat(result["checked_at"]).tzinfo)
 
     def test_collapses_home_directory(self):

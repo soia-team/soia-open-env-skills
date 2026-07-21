@@ -3,9 +3,9 @@ name: soia-env-antigravity-cli-install
 description: 面向小白检查、安装、登录、迁移和按明确授权更新 Google Antigravity CLI（agy）；区分 agy 与旧 Gemini CLI，默认只报告版本和产品自更新状态。触发：「安装 agy」「安装 Antigravity CLI」「Gemini CLI 迁移」「agy 登录」「更新 agy 到最新」。
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,13 @@ updated_by: gpt-5
 4. 模糊的“更新 agy”只显示版本；只有“更新到最新”才执行 `agy update`。
 5. 登录时客户只在 Google 官方页面确认账号和权限，不把验证码、token 或 cookie 发给 Agent。
 
+### 首次登录与真实配置验证
+
+- `~/.gemini/antigravity-cli` 是候选状态/配置目录；技能必须先检查它是否真实存在，不能因为输出了默认路径就判定 agy 已登录。
+- 如果目录尚未创建，Agent 启动官方 `agy` 流程；客户在 Google 官方浏览器页面完成登录、账号选择和权限同意。
+- 登录后重新检查 agy 的配置/状态目录、`--version`、`--help` 和无副作用启动；只存在 `gemini` 或只有版本命令可运行时，处理结果仍写“等待首次登录/配置”。
+- 迁移请求必须把 `gemini` 和 `agy` 的配置分开核对；不得把 Gemini 的目录存在当成 agy 已配置。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -46,7 +53,7 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `agy`、版本、命令路径、安装目录与配置目录。
+1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `agy`、版本、命令路径、安装目录与配置目录的实际存在状态。
 2. 执行 `python3 scripts/check_latest.py --json`，从 Google 官方平台清单读取当前 OS/架构的最新版；不支持的平台返回被阻塞。
 3. 已安装且正常：写“已安装”，默认不执行更新。只发现 `gemini` 时，`agy` 仍写“未安装”。
 4. 未安装：把 `https://antigravity.google/cli/install.sh`（Windows 使用官方对应入口）下载到每次运行独立的系统临时目录，核对 HTTPS 主机、平台选择、写入目录和脚本内容，再执行本地副本；不直接执行网络响应。
@@ -77,6 +84,7 @@ updated_by: gpt-5
 - `更新时间` 在最终验证后生成；目录用 `~` 或平台泛化路径，避免用户名。
 - 更新后 `当前状态` 仍写“已安装”，`处理结果` 才写“已更新”。
 - 最新版清单不可达时写“未取得”，不从旧缓存猜测。
+- `config_status=未创建` 时，处理结果写“等待首次登录/配置”，并明确由 Agent 启动 `agy`、客户在 Google 官方页面完成授权；不得只显示一个不存在的目录。
 
 ## 安装与更新的中间状态
 

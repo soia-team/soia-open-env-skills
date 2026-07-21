@@ -1,4 +1,4 @@
 interface:
   display_name: "Deep Code CLI Install"
   short_description: "Install and verify the DeepSeek-focused Deep Code CLI"
-  default_prompt: "Use $soia-env-deepcode-cli-install to check or install Deep Code CLI without updating an existing installation unless I request the latest version."
+  default_prompt: "Use $soia-env-deepcode-cli-install to check or install Deep Code CLI, verify ~/.deepcode/settings.json, guide DeepSeek API key setup, and run a real no-side-effect validation without updating an existing installation unless I request the latest version."
