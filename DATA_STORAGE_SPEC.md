@@ -156,12 +156,3 @@ Customer-facing status tables include `更新时间`. Structured receipts use
   `2026-07-21T00:00:00+08:00`.
 - Do not substitute the skill package's frontmatter `updated_at`; that field is
   the source-code modification time, not the runtime verification time.
-
-## Implementation references
-
-- [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir/)
-- [platformdirs API](https://platformdirs.readthedocs.io/en/stable/api.html)
-- [GitHub CLI authentication storage](https://cli.github.com/manual/gh_auth_login)
-- [Docker CLI login and credential stores](https://docs.docker.com/reference/cli/docker/login/)
-- [Python temporary files and directories](https://docs.python.org/3/library/tempfile.html)
-- [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
