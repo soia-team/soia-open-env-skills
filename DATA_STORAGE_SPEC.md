@@ -38,6 +38,7 @@ The following environment variables may override the SOIA roots:
 SOIA_SKILLS_CONFIG_HOME
 SOIA_SKILLS_STATE_HOME
 SOIA_SKILLS_CACHE_HOME
+SOIA_SKILLS_TEMP_HOME
 ```
 
 These variables name directories, not secret values.
@@ -74,6 +75,77 @@ These variables name directories, not secret values.
 - Never use the repository checkout as a runtime state, cache, temp, or
   credential directory.
 
+## Retention and cleanup policy
+
+These are safe defaults. A skill may retain data longer, but shortening a
+retention period must be visible in the cleanup plan and explicitly approved by
+the customer.
+
+| Class | Default retention | Capacity/count limit | Cleanup condition |
+|---|---:|---:|---|
+| Provider credentials | provider-controlled | provider-controlled | official logout, revocation, or provider expiry only |
+| Non-secret config | indefinite | no automatic limit | customer explicitly requests reset or uninstall-with-config-removal |
+| Audit state | 30 days | 100 receipts or 10 MiB per skill | expired or over count/capacity, and covered by a valid managed-storage marker |
+| Cache | 7 days since last modification | 512 MiB per skill/root | expired, invalid, source version changed, or over capacity |
+| Temporary data | current run | one isolated directory per run | immediately on success/failure/cancel; stale-run fallback after 24 hours |
+| Debug temporary data | at most 24 hours | at most 3 retained runs | customer explicitly requests short debug retention, then expiry |
+| Rollback backup | verification plus 7 days | at most 3 versions | expiry or version limit, with the declared rollback policy |
+| Deliverables | customer-controlled | customer-controlled | explicit customer deletion request only |
+
+Low disk space may trigger a new scan, but never broadens deletion authority.
+Only eligible cache and temporary data may be proposed automatically. Config,
+credentials, rollback backups, audit state without a cleanup marker, and
+deliverables must not be silently deleted.
+
+## Cleanup execution contract
+
+Deletion is irreversible and always requires a fresh customer authorization.
+An initial request such as “clean the cache” authorizes scanning and planning,
+not deletion of a candidate list the customer has not yet seen.
+
+The required sequence is:
+
+1. Read-only scan of the canonical SOIA roots.
+2. Generate an immutable plan with per-class size, candidate size, conditions,
+   risks, `plan_id`, 30-minute expiry, and SHA-256 digest.
+3. Show the redacted plan and deletion warning to the customer.
+4. Wait for a new, explicit confirmation tied to that `plan_id`, and pass the
+   exact customer-confirmed id to the executor.
+5. Revalidate the digest, expiry, roots, file type, size, modification time,
+   active-run markers, symlink boundary, and class policy before every unlink.
+6. Delete only unchanged ordinary files in the approved plan; never expand the
+   scope, follow symlinks, or use recursive force deletion on unknown paths.
+7. Rescan and record deleted/skipped counts, bytes, free-space delta, and a
+   timezone-aware `checked_at` in a private receipt.
+
+State cleanup additionally requires `.soia-managed-storage.json` in the owning
+skill's state directory:
+
+```json
+{
+  "schema_version": 1,
+  "owner_skill": "soia-env-example",
+  "data_class": "audit_state",
+  "retention_days": 30,
+  "cleanup_allowed": true
+}
+```
+
+The cleanup plan binds the marker's SHA-256. Missing, malformed, disabled, or
+changed markers fail closed. Marker files and fresh `.soia-active` run markers
+are never deletion candidates.
+
+Any root supplied through a `SOIA_SKILLS_*_HOME` override must contain
+`.soia-storage-root.json` with `managed_by: soia-skills` and the matching
+`root_kind`. Creating that marker is a customer-confirmed configuration change.
+Without it, the cleanup skill must refuse to claim or scan an arbitrary custom
+directory. Root markers are never deletion candidates.
+
+`soia-env-storage-cleanup` is the reference skill for scanning, planning,
+authorized deletion, and verification of these managed roots. Whole-disk
+cleaning, arbitrary user directories, application data, downloads, projects,
+and customer deliverables are outside its authority.
+
 ## Time fields
 
 Customer-facing status tables include `更新时间`. Structured receipts use
@@ -84,12 +156,3 @@ Customer-facing status tables include `更新时间`. Structured receipts use
   `2026-07-21T00:00:00+08:00`.
 - Do not substitute the skill package's frontmatter `updated_at`; that field is
   the source-code modification time, not the runtime verification time.
-
-## Implementation references
-
-- [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir/)
-- [platformdirs API](https://platformdirs.readthedocs.io/en/stable/api.html)
-- [GitHub CLI authentication storage](https://cli.github.com/manual/gh_auth_login)
-- [Docker CLI login and credential stores](https://docs.docker.com/reference/cli/docker/login/)
-- [Python temporary files and directories](https://docs.python.org/3/library/tempfile.html)
-- [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)

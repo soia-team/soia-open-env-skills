@@ -2,7 +2,7 @@
 
 > Generated from `skills/*/SKILL.md` and optional `agents/openai.yaml`.
 > Do not edit by hand. Run `python3 scripts/generate_skill_catalog.py`.
-> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 7 skills.
+> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 8 skills.
 
 ## Source Fields
 
@@ -21,6 +21,7 @@
 | [`soia-env-network-diagnose`](./soia-env-network-diagnose/) | Diagnose network access before installing tools. | Check why downloads or package installs fail. |
 | [`soia-env-node-install`](./soia-env-node-install/) | Install and verify Node.js and npm. | Install Node.js and npm for my project. |
 | [`soia-env-python-install`](./soia-env-python-install/) | Install and verify Python and pip. | Install Python and make pip work. |
+| [`soia-env-storage-cleanup`](./soia-env-storage-cleanup/) | 统计 SOIA 受管目录空间，并在客户明确授权后安全清理过期数据 | Use $soia-env-storage-cleanup to scan managed storage, show cleanup risks, and delete only after my explicit approval. |
 | [`soia-env-workbuddy-install`](./soia-env-workbuddy-install/) | Install and verify the WorkBuddy desktop app. | Install WorkBuddy without making me use a terminal. |
 
 ## Registry Export

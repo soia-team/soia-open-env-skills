@@ -14,6 +14,7 @@
 - `soia-env-workbuddy-install`：通过官方桌面安装包安装并验证 WorkBuddy。
 - `soia-env-node-install`：安装并验证 Node.js、npm 和 PATH。
 - `soia-env-python-install`：安装并验证 Python、pip 和虚拟环境。
+- `soia-env-storage-cleanup`：统计 SOIA 受管目录空间，展示风险清单，并只在客户明确授权后清理过期缓存、临时文件和受管状态。
 
 ## 三个技能库如何配合
 
@@ -46,7 +47,8 @@ npx skills add soia-team/soia-open-env-skills -g -a '*' -y
 
 - 仓库公开，`main` 受保护，改动通过 PR 合并。
 - GitHub Actions 只读仓库内容并运行审计，不保存用户机器凭据。
-- 技能默认只读探测；安装、PATH/profile 修改、管理员权限和网络设置变更必须先展示计划并确认。
+- 技能默认只读探测；安装、PATH/profile 修改、管理员权限、网络设置变更和删除文件必须先展示计划并确认。
+- 存储清理的初始请求只授权扫描和生成计划；客户必须在看到最新候选及不可逆风险后再次明确授权，才能执行删除。
 - 客户不需要操作终端；浏览器登录、验证码、系统安全提示和第三方服务授权由客户在官方界面完成。
 - 凭据、中间数据、缓存、状态和临时文件按
   [DATA_STORAGE_SPEC.md](./DATA_STORAGE_SPEC.md) 分层；普通配置文件不保存 secret。

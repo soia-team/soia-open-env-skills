@@ -80,6 +80,7 @@ class StoragePathTests(unittest.TestCase):
                 "SOIA_SKILLS_CONFIG_HOME": "/custom/config",
                 "SOIA_SKILLS_STATE_HOME": "/custom/state",
                 "SOIA_SKILLS_CACHE_HOME": "/custom/cache",
+                "SOIA_SKILLS_TEMP_HOME": "/custom/temp",
             },
             home=Path("/portable/home"),
             platform_name="linux",
@@ -96,6 +97,10 @@ class StoragePathTests(unittest.TestCase):
         self.assertEqual(
             paths["cache"],
             Path("/custom/cache/soia-open-env-skills/soia-env/soia-env-example-install"),
+        )
+        self.assertEqual(
+            paths["temp"],
+            Path("/custom/temp/soia-open-env-skills/soia-env/soia-env-example-install"),
         )
 
 

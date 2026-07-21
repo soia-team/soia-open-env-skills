@@ -1,8 +1,10 @@
 # soia-open-env-skills
 
-Beginner-friendly SOIA skills for network diagnosis and safe installation and verification of Codex, WorkBuddy, Node.js, Python, and related development prerequisites.
+Beginner-friendly SOIA skills for network diagnosis, managed-storage cleanup, and safe installation and verification of Codex, WorkBuddy, Node.js, Python, and related development prerequisites.
 
 The repository keeps environment readiness separate from PKM and private SOIA governance. It produces portable readiness summaries so the three skill libraries can cooperate without copying private state.
+
+Storage cleanup is plan-gated: an initial request authorizes read-only scanning and planning only. Deletion requires a fresh explicit customer approval after the candidate summary and irreversible-risk warning are shown.
 
 Install one skill from the pushed repository:
 

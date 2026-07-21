@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOIA Storage Cleanup"
+  short_description: "统计 SOIA 受管目录空间，并在客户明确授权后安全清理过期数据"
+  default_prompt: "Use $soia-env-storage-cleanup to scan managed storage, show cleanup risks, and delete only after my explicit approval."

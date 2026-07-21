@@ -61,12 +61,18 @@ def storage_paths(
             cache_base = Path(values.get("XDG_CACHE_HOME", user_home / ".cache")) / "soia-skills"
 
     suffix = Path(REPO_NAME) / skill_type / skill_name
-    temporary_base = Path(tempfile.gettempdir()) if temp_root is None else temp_root
+    temporary_base = _configured_path(values, "SOIA_SKILLS_TEMP_HOME")
+    if temporary_base is None:
+        temporary_base = (
+            Path(tempfile.gettempdir()) / "soia-skills"
+            if temp_root is None
+            else temp_root / "soia-skills"
+        )
     return {
         "config": config_base / suffix,
         "state": state_base / suffix,
         "cache": cache_base / suffix,
-        "temp": temporary_base / "soia-skills" / suffix,
+        "temp": temporary_base / suffix,
     }
 
 
