@@ -1,4 +1,4 @@
 interface:
   display_name: "Codex Install"
   short_description: "Install and verify the standalone Codex CLI, separately from ChatGPT.app."
-  default_prompt: "Install or update my standalone Codex CLI, use the AI CLI upgrade skill for updates, and show its version, install method, install directory, and config directory."
+  default_prompt: "Check or install my standalone Codex CLI and show its version, install method, install directory, and config directory. Do not update it unless I explicitly ask for the latest version."

@@ -8,6 +8,8 @@
 brew install smartmontools
 ```
 
+只有客户明确要求安装缺失的 `smartmontools` 并确认计划后才执行。安装过程中使用本技能的 `scripts/record_install_progress.py` 持续记录检查、计划、安装、验证和完成/失败状态；单纯检查磁盘健康不创建安装记录。
+
 如果 `brew` 不存在，先提示客户从 Homebrew 官方页面确认安装方式；不要在对话中执行未知的远程安装脚本。
 
 ## 设备确认

@@ -43,6 +43,15 @@ private configuration.
   certificates, firewall rules, shell profiles, or system-wide settings.
 - Before installing, uninstalling, changing PATH, or using administrator
   privileges, show the exact plan and obtain confirmation for that state change.
+- Version discovery never authorizes an update. By default, report the current
+  and available versions without changing the machine. Run an updater only when
+  the customer explicitly asks to update or upgrade to the latest version;
+  ambiguous requests such as "update X" stop after the version report and ask
+  whether the customer wants the latest version.
+- During an authorized installation or update, show each phase to the customer
+  as it happens and append a redacted progress event to the skill's private state
+  directory. At minimum record checking, planning/confirmation, execution,
+  verification, and completed/failed/blocked. Read-only checks remain stateless.
 - The customer should not need to operate a terminal. The agent may run safe
   checks; the customer performs browser login, CAPTCHA, OS security prompts, and
   product consent in the official UI.

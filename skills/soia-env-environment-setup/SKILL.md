@@ -4,9 +4,9 @@ description: 从零规划并验证小白开发环境：诊断网络，按依赖�
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
-version: 1.4.0
+version: 1.5.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 07:45:43
+updated_at: 2026-07-21 10:36:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -37,8 +37,16 @@ updated_by: gpt-5
 
 - 先盘点版本、安装来源和项目约束，再决定是 `missing`、`ready`、`update_available` 还是 `blocked`。
 - `ready` 表示当前可用，不重复安装；`update_available` 只表示发现新版本，是否更新仍要沿用对应专门技能的来源和确认流程。
+- 默认只检查并汇报当前版本和可用版本，不自动更新。客户只说“更新”时，先展示两个版本并询问是否“更新到最新版本”；没有这句明确选择，不调用更新器。
+- 只有“更新到最新版本”“升级到最新版”等同等明确指令才授权更新已有工具。客户要求安装一个尚未安装的工具时，可安装推荐稳定版本，但不能借此更新机器上已经存在的其他工具。
 - 更新前记录旧版本和来源，更新后重新验证版本、帮助命令、登录/签名和项目可用性；失败时保留旧安装，不自动卸载或换源。
 - 桌面应用与 CLI、Node/Python 运行时与 pip/npm 包分别管理，不能用一个组件的版本推断另一个组件已更新。
+
+### 安装与更新的中间状态
+
+- 真正开始安装或更新后，必须在对话中持续追加阶段状态：检查、计划/等待确认、安装或更新、验证、完成/失败/被阻塞；不能只给最终表。
+- 各专门安装技能使用自己的 `scripts/record_install_progress.py` 写入私有 state。编排技能只汇总子技能的阶段和 `run_id`，不重复保存第二份完整日志。
+- 只读环境盘点不创建中间状态文件。发现新版本但客户未明确要求最新版时，处理结果写“可更新，未执行”或“等待确认是否更新到最新”。
 
 ### 依赖与安装
 
@@ -62,8 +70,9 @@ updated_by: gpt-5
 2. 把目标拆成 `network → runtime → package manager → AI tool → downstream handoff`。
 3. 使用 `soia-env-network-diagnose` 的只读流程检查官方站点。出现代理、证书、DNS 或超时问题时，先输出诊断，不自动改网络配置。
 4. 按依赖顺序执行：Codex 先准备 Node/npm；同时涉及桌面版、CLI 或 Codex 故障时调用 `soia-env-codex-setup-support`；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
-5. 每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。
-6. 客户提出空间清理时调用 `soia-env-storage-cleanup`：本编排只能推进扫描和计划，必须等客户看过风险清单并明确授权后才能删除。
+5. 对已安装工具默认只比较版本；没有明确“更新到最新”时不得进入专门技能的更新执行阶段。
+6. 安装或明确授权的更新由专门技能边执行边显示阶段状态并记录私有进度；每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。
+7. 客户提出空间清理时调用 `soia-env-storage-cleanup`：本编排只能推进扫描和计划，必须等客户看过风险清单并明确授权后才能删除。
 
 ## 客户状态列表（强制）
 
