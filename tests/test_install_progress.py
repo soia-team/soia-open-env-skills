@@ -19,10 +19,16 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(MODULE)
 
 INSTALL_SKILLS = (
+    "soia-env-antigravity-cli-install",
+    "soia-env-claude-cli-install",
     "soia-env-codex-install",
     "soia-env-codex-setup-support",
+    "soia-env-deepcode-cli-install",
+    "soia-env-kimi-cli-install",
     "soia-env-node-install",
+    "soia-env-opencode-cli-install",
     "soia-env-python-install",
+    "soia-env-qoder-cli-install",
     "soia-env-workbuddy-install",
 )
 PROGRESS_HEADER = "| 阶段 | 当前状态 | 更新时间 | 处理结果 |"

@@ -16,6 +16,14 @@ CODEX_HEADER = (
     "| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | "
     "安装目录 | 配置文件目录 | 更新时间 | 处理结果 |"
 )
+AI_CLI_SKILLS = (
+    "soia-env-antigravity-cli-install",
+    "soia-env-claude-cli-install",
+    "soia-env-deepcode-cli-install",
+    "soia-env-kimi-cli-install",
+    "soia-env-opencode-cli-install",
+    "soia-env-qoder-cli-install",
+)
 
 
 class CustomerStatusTableTests(unittest.TestCase):
@@ -43,12 +51,27 @@ class CustomerStatusTableTests(unittest.TestCase):
         )
         self.assertIn("不把它当作独立 Codex CLI", text)
 
+    def test_ai_cli_install_skills_define_the_expanded_status_table(self):
+        for skill in AI_CLI_SKILLS:
+            with self.subTest(skill=skill):
+                text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+                self.assertIn(CODEX_HEADER, text)
+                self.assertIn("当前状态", text)
+                self.assertIn("仍", text)
+                self.assertIn("已安装", text)
+
     def test_install_skills_hide_unrequested_dependency_rows(self):
         expectations = {
             "soia-env-codex-install": "不增加 Node.js、npm",
             "soia-env-node-install": "不额外输出 npm",
             "soia-env-python-install": "不额外输出 pip",
             "soia-env-workbuddy-install": "不增加 Node.js、Python、npm",
+            "soia-env-antigravity-cli-install": "不增加 Gemini CLI、Node.js、npm",
+            "soia-env-claude-cli-install": "不增加 Node.js、npm",
+            "soia-env-deepcode-cli-install": "不增加 Node.js、npm",
+            "soia-env-kimi-cli-install": "不增加 Node.js、npm",
+            "soia-env-opencode-cli-install": "不增加 Node.js、npm",
+            "soia-env-qoder-cli-install": "不增加 Node.js、npm",
         }
         for skill, sentence in expectations.items():
             with self.subTest(skill=skill):

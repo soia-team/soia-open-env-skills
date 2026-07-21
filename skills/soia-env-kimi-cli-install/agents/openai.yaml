@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kimi Code CLI Install"
+  short_description: "Install and verify the standalone Kimi Code CLI"
+  default_prompt: "Use $soia-env-kimi-cli-install to check or install Kimi Code CLI without updating an existing installation unless I request the latest version."
