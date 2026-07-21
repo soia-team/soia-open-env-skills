@@ -6,6 +6,8 @@ The repository keeps environment readiness separate from PKM and private SOIA go
 
 Storage cleanup is plan-gated: an initial request authorizes read-only scanning and planning only. Deletion requires a fresh explicit customer approval after the candidate summary and irreversible-risk warning are shown.
 
+Version discovery is read-only by default. Skills update an installed tool only after the customer explicitly asks for the latest version; ambiguous update requests stop after reporting versions. Authorized installs and updates publish live phase status and append redacted progress events to private user state.
+
 Install one skill from the pushed repository:
 
 ```bash

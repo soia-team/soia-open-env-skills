@@ -15,7 +15,7 @@
 
 | Skill | Description | Default Prompt |
 |---|---|---|
-| [`soia-env-codex-install`](./soia-env-codex-install/) | Install and verify the standalone Codex CLI, separately from ChatGPT.app. | Install or update my standalone Codex CLI, use the AI CLI upgrade skill for updates, and show its version, install method, install directory, and config directory. |
+| [`soia-env-codex-install`](./soia-env-codex-install/) | Install and verify the standalone Codex CLI, separately from ChatGPT.app. | Check or install my standalone Codex CLI and show its version, install method, install directory, and config directory. Do not update it unless I explicitly ask for the latest version. |
 | [`soia-env-codex-setup-support`](./soia-env-codex-setup-support/) | Check Codex desktop and CLI, including logs, SSD, and common failures. | Check or diagnose Codex desktop and CLI, including logs_2.sqlite write amplification and SSD health. |
 | [`soia-env-environment-setup`](./soia-env-environment-setup/) | Plan and coordinate beginner-friendly environment setup. | Help me set up this computer for development. |
 | [`soia-env-network-diagnose`](./soia-env-network-diagnose/) | Diagnose network access before installing tools. | Check why downloads or package installs fail. |

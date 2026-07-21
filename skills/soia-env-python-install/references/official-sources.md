@@ -3,7 +3,7 @@
 - 官网与下载：[Python Downloads](https://www.python.org/downloads/)
 - macOS 使用官方安装器和对应架构说明；Windows 使用官方安装器/安装管理器；Linux 结合发行版官方包管理器或 Python 官方源码/发行版说明。
 - 当前维护版本、支持周期和平台文件以 Python 官方下载页为准，不在技能正文中固定版本号。
-- 已安装更新前先识别官方安装器、Homebrew、pyenv、系统包管理器或 Windows `py`；更新沿用现有来源，不静默换源。
+- 已安装更新前先识别官方安装器、Homebrew、pyenv、系统包管理器或 Windows `py`；版本检查默认只读，只有客户明确要求“更新到最新版本”时才沿用现有来源，不静默换源。
 - Python 运行时更新与 pip 更新分开；项目虚拟环境必须使用目标解释器重新验证。
 
 ## 选择规则

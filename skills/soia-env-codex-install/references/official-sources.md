@@ -14,7 +14,7 @@
 ## 处理边界
 
 - 当前版本、Node 版本要求、安装方式和登录行为以官方页面与实际 `codex --help` 为准，不把本文件的日期当作永久版本承诺。
-- 更新前先识别独立 CLI 的来源（官方独立安装器、Homebrew cask 或 npm），沿用原来源，不把“更新”变成未经确认的换源安装。
+- 更新前先识别独立 CLI 的来源（官方独立安装器、Homebrew cask 或 npm）。版本检查默认只读；只有客户明确要求“更新到最新版本”时才沿用原来源执行，不把模糊的“更新”变成升级或换源安装。
 - `ChatGPT.app/Contents/Resources/codex` 是桌面应用内部组件，OpenAI 源码把 app-bundled binary 归类为 `Other`，不是独立 CLI 安装渠道。ChatGPT.app 与独立 CLI 的版本、安装目录和更新结果必须分开。
 - 同机存在多个 `codex` 时，桌面 Agent 进程的 PATH 可能优先出现 ChatGPT.app 内部路径；CLI 检查必须继续查找登录 shell和已知独立安装目录。
 - 不把 `OPENAI_API_KEY` 写入仓库、聊天或回执；如客户选择 API key，使用客户自己的安全环境变量并只验证“是否配置”，不打印值。

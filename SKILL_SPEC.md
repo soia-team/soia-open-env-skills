@@ -61,6 +61,15 @@ Do not use frontmatter `updated_at` as runtime evidence.
   `references/` and label them with the date checked.
 - Detect before changing. Use dry-run or a plan for PATH/profile changes,
   admin elevation, uninstall, and network settings.
+- Treat version checks as read-only. Do not update an installed package merely
+  because a newer version exists. Only an explicit customer request to update
+  or upgrade to the latest version authorizes the updater; a generic "update"
+  request must show the versions and ask for that explicit choice.
+- Installation/update skills must expose intermediate progress in the
+  conversation and append privacy-safe phase events to user state for
+  machine-changing runs. Call the recorder as each phase occurs, not after the
+  run; its timestamp is generated internally. Read-only inspection must not
+  create progress state.
 - Never ask a customer to paste a secret into chat or terminal.
 - Use `tempfile`, `Path.home()`, `os.tmpdir()`, and `pathlib`/`path.join` for
   script paths; do not add Unix-only hardcoded paths.

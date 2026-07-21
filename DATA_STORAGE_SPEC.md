@@ -64,6 +64,24 @@ These variables name directories, not secret values.
 - Audit state is allowed only when a machine-changing action needs traceability.
   Keep the action, result, tool/version, and timestamp; omit command output that
   may contain private data. Rotate or bound retained receipts.
+- Authorized installations and updates append one JSONL event per phase under
+  the owning skill's state directory. Events contain only `schema_version`,
+  opaque `run_id`, skill, action, stage, status, recorder-generated,
+  timezone-aware `checked_at`,
+  whether the customer explicitly requested the latest version, and a fixed
+  privacy-safe `result_code`. The progress store does not accept free-form
+  result text. Do not store raw commands, environment dumps, usernames, private
+  absolute paths, download URLs with query strings, or provider responses.
+- A machine-changing run records at least checking, planning or waiting for
+  confirmation, installing/updating, verifying, and completed/failed/blocked.
+  The Agent must call the recorder and show each transition before or immediately
+  after that real phase happens; writing all events at the end is not sufficient.
+  The recorder owns event timestamps, rejects caller-supplied timestamps, and
+  does not expose the private record path in customer-facing JSON.
+- Read-only version discovery, diagnostics, and "is an update available?"
+  requests do not create progress state. A generic update request remains a
+  read-only version report and does not create progress state; it must not enter
+  the updating stage without an explicit latest request.
 - Cache must be reproducible and safe to remove. Never require a cached token to
   recover access.
 - Temporary directories must be unique per run, use user-only permissions where
