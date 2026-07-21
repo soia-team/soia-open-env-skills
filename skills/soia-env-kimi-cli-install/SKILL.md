@@ -3,9 +3,9 @@ name: soia-env-kimi-cli-install
 description: 面向小白检查、安装、登录和按明确授权更新 Moonshot AI Kimi Code CLI；识别官方独立安装与 npm 来源，默认只报告版本和产品自动更新状态。触发：「安装 Kimi CLI」「安装 Kimi Code」「kimi 不存在」「Kimi 登录」「更新 Kimi 到最新」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,13 @@ updated_by: gpt-5
 4. 登录由 Agent 启动，客户只在 Moonshot/Kimi 官方页面点击授权；不发送 token、密码或授权码。
 5. 完成后验证版本、帮助命令和登录状态，再输出固定十列列表。
 
+### 首次登录与真实配置验证
+
+- `~/.kimi-code` 是候选数据目录；用户配置文件是 `~/.kimi-code/config.toml`，技能必须分别检查目录和文件是否真实存在。
+- Kimi Code 首次运行可以自动创建 `config.toml`；如果目录或文件不存在，Agent 启动 `kimi login`（设备码流程）或 TUI 的 `/login`，客户在 Kimi 官方页面完成授权。
+- 使用 Kimi Code 托管服务不需要客户手动填写 API key；如果客户选择 Kimi Platform 或其他供应商，才按官方配置文件写入对应 provider，申请入口以官方页面为准。密钥不得发到聊天中。
+- 登录或配置后运行 `kimi doctor`、`kimi --version` 和无副作用启动；没有完成授权时处理结果写“等待首次登录/配置”，不能只显示默认目录。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -46,7 +53,7 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `kimi`、版本、来源、安装目录及 `KIMI_CODE_HOME`/默认配置目录。
+1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `kimi`、版本、来源、安装目录及 `KIMI_CODE_HOME`/默认配置目录和 `config.toml` 的实际存在状态。
 2. 执行 `python3 scripts/check_latest.py --json`，从 npm 官方元数据读取 `@moonshot-ai/kimi-code` 最新版。
 3. 已安装且正常时写“已安装”；没有明确最新版授权就停止，不调用产品更新命令。
 4. 未安装时优先官方独立安装；客户选择 npm 时使用 `npm install -g @moonshot-ai/kimi-code`，并先验证 Node.js 满足官方要求。网络脚本必须先下载到独立临时目录并检查，再执行本地副本；不直接执行网络响应。
@@ -72,6 +79,7 @@ updated_by: gpt-5
 - `更新时间` 是最终验证时间；目录用 `~` 相对路径，避免用户名。
 - 更新后 `当前状态` 仍是“已安装”；多个副本只汇报登录 shell 生效的一份并提示冲突。
 - 最新版取得失败写“未取得”，不得猜测。
+- `config_status=未创建` 或 `config_file_status=未创建` 时，处理结果写“等待首次登录/配置”，并给出 `kimi login`、`/login` 和官方页面；不得把候选路径当成已配置。
 
 ## 安装与更新的中间状态
 

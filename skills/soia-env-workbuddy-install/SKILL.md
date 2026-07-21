@@ -3,9 +3,9 @@ name: soia-env-workbuddy-install
 description: 面向小白通过 WorkBuddy 官方站点安装、验证和按明确授权更新桌面客户端：已安装时默认只报告版本，只有客户明确要求最新版才更新，并持续记录中间状态。触发：「安装 WorkBuddy」「更新 WorkBuddy」「更新 WorkBuddy 到最新」「安装腾讯龙虾」「WorkBuddy 下载」「WorkBuddy 打不开」。
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.4.0
+version: 1.4.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 10:36:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,12 @@ WorkBuddy 是桌面应用，安装路径与 Node/Python 不同。先打开官方
 3. 已安装时发现新版本只汇报；只说“更新 WorkBuddy”时先询问是否更新到最新，明确选择最新版后才执行。
 4. 客户在系统安装器中完成打开、拖拽、权限和登录；Agent 不要求客户使用终端。
 5. 安装或明确授权的更新过程中持续显示并记录检查、计划、执行、验证和终态。
+
+### 首次启动与真实可用性验证
+
+- 应用文件存在只代表“已安装”，不代表登录、服务授权和工作区已经可用。
+- 安装完成后由 Agent 启动 WorkBuddy，客户在官方图形界面完成登录、验证码、系统安全提示和服务授权；Agent 不代填密码。
+- Agent 重新检查应用启动、账号状态和一次无副作用工作区操作；其中任一步未完成，运行状态写“未验证”，处理结果写“等待首次登录/授权”，不伪报“正常”。
 
 ### 依赖与安装
 

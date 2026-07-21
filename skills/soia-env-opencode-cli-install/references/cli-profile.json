@@ -4,6 +4,8 @@
   "command": "opencode",
   "version_args": ["--version"],
   "default_config_paths": ["~/.config/opencode"],
+  "config_file_paths": ["~/.config/opencode/opencode.json"],
+  "credential_paths": ["~/.local/share/opencode/auth.json"],
   "config_env_vars": ["OPENCODE_CONFIG_DIR", "OPENCODE_CONFIG"],
   "known_user_paths": [
     "~/.opencode/bin/opencode",

@@ -1,4 +1,4 @@
 interface:
   display_name: "Antigravity CLI Install"
   short_description: "Install and verify Google Antigravity CLI (agy)"
-  default_prompt: "Use $soia-env-antigravity-cli-install to check or install Google Antigravity CLI without updating an existing installation unless I request the latest version."
+  default_prompt: "Use $soia-env-antigravity-cli-install to check or install Google Antigravity CLI, verify the actual ~/.gemini/antigravity-cli state, and guide first Google login without updating an existing installation unless I request the latest version."

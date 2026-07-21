@@ -8,6 +8,7 @@
 - npm 安装入口：`npm install -g @openai/codex`
 - Homebrew cask 安装入口：`brew install --cask codex`
 - 官方文档给出的登录入口：`codex --login`
+- API key 管理入口（仅客户选择 API key 方式时）：[OpenAI API Keys](https://platform.openai.com/api-keys)
 - OpenAI 源码中的 `codex update` 会根据独立 CLI 的安装上下文选择更新动作：npm 使用 `npm install -g @openai/codex`，Homebrew 使用 `brew upgrade --cask codex`，官方独立安装使用官方安装器。
 - SOIA 的已安装 CLI 审计和升级统一委托 `soia-dev-ai-cli-upgrade`，不在安装技能里复制更新器。
 

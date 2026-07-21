@@ -1,4 +1,4 @@
 interface:
   display_name: "OpenCode CLI Install"
   short_description: "Install and verify the standalone OpenCode CLI"
-  default_prompt: "Use $soia-env-opencode-cli-install to check or install OpenCode CLI without updating an existing installation unless I request the latest version."
+  default_prompt: "Use $soia-env-opencode-cli-install to check or install OpenCode CLI, distinguish opencode.json from auth.json, and guide opencode auth login without updating an existing installation unless I request the latest version."

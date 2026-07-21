@@ -194,17 +194,63 @@ def parse_version(output: str) -> str:
     return match.group(1) if match else (normalized or "未取得")
 
 
-def config_path(profile: dict[str, Any], *, env: dict[str, str], home: Path) -> str:
+def config_candidate(
+    profile: dict[str, Any], *, env: dict[str, str], home: Path
+) -> Path | None:
     for name in profile["config_env_vars"]:
         value = env.get(str(name))
         if value:
-            return home_relative(Path(value).expanduser(), home)
+            return Path(value).expanduser()
     defaults = profile["default_config_paths"]
     if not defaults:
-        return "未取得"
+        return None
     raw = str(defaults[0])
-    candidate = expand_profile_path(raw, home=home, env=env)
-    return home_relative(candidate, home) if candidate is not None else raw
+    return expand_profile_path(raw, home=home, env=env)
+
+
+def config_path(profile: dict[str, Any], *, env: dict[str, str], home: Path) -> str:
+    candidate = config_candidate(profile, env=env, home=home)
+    if candidate is None:
+        return "未取得"
+    return home_relative(candidate, home)
+
+
+def config_observation(
+    profile: dict[str, Any], *, env: dict[str, str], home: Path
+) -> dict[str, Any]:
+    candidate = config_candidate(profile, env=env, home=home)
+    if candidate is None:
+        return {
+            "config_exists": False,
+            "config_status": "未取得",
+            "config_file_status": "未取得",
+            "config_file_paths": [],
+        }
+
+    file_paths: list[Path] = []
+    for raw in profile.get("config_file_paths", []):
+        path = expand_profile_path(str(raw), home=home, env=env)
+        if path is not None:
+            file_paths.append(path)
+    existing_files = [path for path in file_paths if path.is_file()]
+    credential_paths: list[Path] = []
+    for raw in profile.get("credential_paths", []):
+        path = expand_profile_path(str(raw), home=home, env=env)
+        if path is not None:
+            credential_paths.append(path)
+    existing_credentials = [path for path in credential_paths if path.is_file()]
+    return {
+        "config_exists": candidate.exists(),
+        "config_status": "已创建" if candidate.exists() else "未创建",
+        "config_file_status": (
+            "已存在" if existing_files else ("未创建" if file_paths else "未配置")
+        ),
+        "config_file_paths": [home_relative(path, home) for path in file_paths],
+        "credential_status": (
+            "已发现" if existing_credentials else ("未发现" if credential_paths else "未取得")
+        ),
+        "credential_paths": [home_relative(path, home) for path in credential_paths],
+    }
 
 
 def inspect(
@@ -222,6 +268,7 @@ def inspect(
         "tool": details["display_name"],
         "command": details["command"],
         "config_path": config_path(details, env=values, home=user_home),
+        **config_observation(details, env=values, home=user_home),
         "checked_at": now_rfc3339(),
         "blockers": [],
     }

@@ -3,9 +3,9 @@ name: soia-env-opencode-cli-install
 description: 面向小白检查、安装、登录、配置和按明确授权更新开源 OpenCode CLI；识别官方独立安装、Homebrew 与 npm 来源，默认只报告版本和产品自动更新设置。触发：「安装 OpenCode」「opencode 不存在」「配置 OpenCode」「OpenCode 登录」「更新 OpenCode 到最新」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,13 @@ updated_by: gpt-5
 4. 配置或登录时不索要 API key；有官方 OAuth/浏览器流程就由客户在官方页面完成。
 5. 完成后验证版本、帮助命令和无副作用启动，再输出一行固定状态。
 
+### 首次配置与真实认证验证
+
+- `~/.config/opencode` 是配置候选目录；供应商凭据通常由 `opencode auth login` 写入 `~/.local/share/opencode/auth.json`，两者必须分开检查，不能把一个不存在的目录当成已配置。
+- 首次配置由 Agent 启动 `opencode auth login`，客户在供应商官方页面完成 OAuth 或在官方交互界面输入凭据；Agent 不接收、不回显 API key。
+- 完成后运行 `opencode auth list`，再启动 OpenCode 并执行无副作用的模型/帮助检查；没有供应商凭据时处理结果写“等待供应商登录/配置”。
+- 只有需要自定义模型或项目设置时才创建 `~/.config/opencode/opencode.json` 或项目 `opencode.json`；默认配置文件不存在不等于 CLI 安装失败。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -46,7 +53,7 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `opencode`、版本、来源、安装目录和配置覆盖路径。
+1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `opencode`、版本、来源、安装目录、配置覆盖路径及配置文件的实际存在状态。
 2. 执行 `python3 scripts/check_latest.py --json`，从 `anomalyco/opencode` 官方 GitHub latest release 获取最新版。
 3. 已安装且正常时写“已安装”；没有明确最新版授权就停止，不执行启动时更新或安装器。
 4. 未安装时优先官方独立渠道；客户选择 npm 时使用 `npm install -g opencode-ai`，选择 Homebrew 时使用官方 tap。网络脚本先下载到独立临时目录并检查，再执行本地副本；不直接执行网络响应。
@@ -72,6 +79,7 @@ updated_by: gpt-5
 - `更新时间` 是最终验证时间；目录用 `~` 相对路径，避免用户名。
 - 已更新仍写“已安装”；多个副本只汇报登录 shell 生效的一份并提示冲突，不自动删除。
 - 最新版取得失败写“未取得”，不猜测。
+- `config_status=未创建` 且凭据状态未发现时，处理结果写“等待供应商登录/配置”；如果只有凭据文件而没有 `opencode.json`，必须说明这是正常的认证存储位置，不要求客户重复创建配置文件。
 
 ## 安装与更新的中间状态
 

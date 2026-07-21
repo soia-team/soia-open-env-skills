@@ -3,9 +3,9 @@ name: soia-env-qoder-cli-install
 description: 面向小白检查、安装、登录和按明确授权更新 Qoder CLI；识别官方独立安装、Homebrew 与 npm 来源，默认只报告版本和自动更新设置。触发：「安装 Qoder CLI」「qodercli 不存在」「Qoder 登录」「检查 Qoder 更新」「更新 Qoder 到最新」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -33,6 +33,13 @@ updated_by: gpt-5
 4. 登录时 Agent 启动官方流程，客户只在官方浏览器点击授权；不在聊天或终端粘贴密钥。
 5. 完成后验证版本、帮助命令和一次无副作用启动，再输出固定十列列表。
 
+### 首次登录与真实配置验证
+
+- `配置文件目录`只显示候选目录；技能必须同时检查 `config_status` 和 `config_file_status`，目录或 `~/.qoder/settings.json` 不存在时明确报告“未初始化”。
+- 首次使用时由 Agent 启动 `qodercli`，在交互界面执行 `/login`；客户选择浏览器登录并在 Qoder 官方页面完成授权，不需要客户操作终端。
+- 如果客户明确选择 Personal Access Token，申请入口是 [Qoder Integrations](https://qoder.com/account/integrations)；客户只在官方登录流程中输入，Agent 不接收或打印 token。
+- 登录后重新检查 `~/.qoder/settings.json`、运行 `qodercli --version` 和无副作用启动；没有完成登录时处理结果写“等待首次登录”，不能只写“已安装”。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -46,7 +53,7 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，检测 `qodercli`、版本、来源、安装目录和 `~/.qoder` 配置目录。
+1. 执行 `python3 scripts/inspect_cli.py --json`，检测 `qodercli`、版本、来源、安装目录和 `~/.qoder` 配置目录/文件的实际存在状态。
 2. 执行 `python3 scripts/check_latest.py --json`，从 npm 官方元数据读取 `@qoder-ai/qodercli` 最新版。
 3. 已安装且正常时写“已安装”；未取得最新版授权时只汇报，不重复安装或调用更新器。
 4. 未安装时优先官方独立安装；客户选择 npm 时使用 `npm install -g @qoder-ai/qodercli`。官方网络脚本先下载到独立临时目录、核对来源和内容，再执行本地副本；不直接执行网络响应。
@@ -73,6 +80,7 @@ updated_by: gpt-5
 - 更新完成后 `当前状态` 仍是“已安装”，`处理结果` 写“已更新”。
 - 多个命令副本只汇报登录 shell 当前生效的一份并提示冲突，不自动删除。
 - 最新版取得失败时写“未取得”，不得猜测。
+- `config_status=未创建` 或 `config_file_status=未创建` 时，处理结果写“等待首次登录/配置”，同时给出 `qodercli`、`/login` 和官方入口；不得把候选路径当成现成配置。
 
 ## 安装与更新的中间状态
 

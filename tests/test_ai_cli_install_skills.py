@@ -97,6 +97,62 @@ class AiCliInstallSkillTests(unittest.TestCase):
         self.assertEqual(result["current_version"], "1.2.3")
         self.assertEqual(result["runtime_status"], "正常")
         self.assertEqual(result["package_identity"], "not_applicable")
+        self.assertEqual(result["config_status"], "未创建")
+
+    def test_config_directory_and_file_are_reported_separately(self):
+        profile = json.loads(
+            (
+                ROOT
+                / "skills"
+                / "soia-env-deepcode-cli-install"
+                / "references"
+                / "cli-profile.json"
+            ).read_text(encoding="utf-8")
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            (home / ".deepcode").mkdir(parents=True)
+            executable = root / "deepcode"
+            executable.write_text("#!/bin/sh\nprintf '0.1.34\\n'\n", encoding="utf-8")
+            executable.chmod(0o755)
+
+            result = INSPECT.inspect(profile, env={"PATH": str(root)}, home=home)
+            self.assertEqual(result["config_status"], "已创建")
+            self.assertEqual(result["config_file_status"], "未创建")
+
+            (home / ".deepcode" / "settings.json").write_text("{}\n", encoding="utf-8")
+            result = INSPECT.inspect(profile, env={"PATH": str(root)}, home=home)
+
+        self.assertEqual(result["config_status"], "已创建")
+        self.assertEqual(result["config_file_status"], "已存在")
+
+    def test_all_cli_profiles_expose_real_config_observation_fields(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            home.mkdir()
+            for skill, (command, _package, _latest_type) in SKILLS.items():
+                with self.subTest(skill=skill):
+                    profile = json.loads(
+                        (
+                            ROOT
+                            / "skills"
+                            / skill
+                            / "references"
+                            / "cli-profile.json"
+                        ).read_text(encoding="utf-8")
+                    )
+                    executable = root / command
+                    executable.write_text(
+                        f"#!/bin/sh\nprintf '{command} 1.2.3\\n'\n",
+                        encoding="utf-8",
+                    )
+                    executable.chmod(0o755)
+                    result = INSPECT.inspect(profile, env={"PATH": str(root)}, home=home)
+                    self.assertIn("config_status", result)
+                    self.assertIn("config_file_status", result)
+                    self.assertIn("credential_status", result)
 
     def test_npm_package_identity_mismatch_is_blocking(self):
         profile = json.loads(

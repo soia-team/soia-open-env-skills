@@ -4,9 +4,9 @@ description: 面向小白安装、验证和按明确授权更新 OpenAI Codex CL
 dependencies:
   hard: [soia-dev-ai-cli-upgrade]
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.5.0
+version: 1.5.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 10:36:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -35,6 +35,13 @@ updated_by: gpt-5
 4. 只有客户明确说“更新 Codex 到最新”“升级到最新版”或同等指令，才调用升级执行；管理员权限、切换来源或修改 PATH 仍需单独确认。
 5. 安装/更新过程中 Agent 持续展示阶段状态并写入私有进度记录；客户只在官方登录页面点击授权。
 
+### 首次登录与真实配置验证
+
+- `配置文件目录`只显示 `CODEX_HOME` 或默认候选路径；技能必须同时检查 `config_status`，不能把 `~/.codex` 直接当成已登录。
+- 如果独立 CLI 未登录，Agent 使用同一绝对路径执行 `codex --login`；客户点击官方页面的 “Sign in with ChatGPT” 完成授权，不需要客户申请或粘贴 API key。该流程会在本地保存凭据。
+- 如果客户明确选择传统 API key 方式，客户在 [OpenAI API Keys](https://platform.openai.com/api-keys) 创建并通过客户自己的安全环境注入；Agent 不读取、不接收、不回显密钥。
+- 登录后再次运行 `login status`、`--version`、`--help`，并复查 `config_status`；没有完成授权时处理结果写“等待首次登录”，不能只写“已安装”。ChatGPT.app 的登录状态仍与 CLI 分开。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 处理 |
@@ -54,7 +61,7 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 
 ## 标准流程
 
-1. 先执行 `python3 scripts/inspect_installation.py --json`，查找独立 Codex CLI，并记录版本、安装方式、安装目录、命令路径和配置目录。
+1. 先执行 `python3 scripts/inspect_installation.py --json`，查找独立 Codex CLI，并记录版本、安装方式、安装目录、命令路径和配置目录是否真实存在。
 2. 将 `ChatGPT.app/Contents/Resources/codex` 视为桌面应用内部组件，不把它当作独立 Codex CLI；即使当前 Agent 进程的 PATH 优先命中它，也要继续查找登录 shell、npm、Homebrew 和官方独立安装路径。
 3. 缺少独立 CLI 时，macOS/Linux 优先使用 OpenAI 官方独立安装入口；只有客户明确选择 npm，或机器原来就采用 npm 渠道时，才要求 Node.js/npm 并安装 `@openai/codex`。
 4. 已安装 CLI 默认只执行 dry-run 版本审计，只选择 Codex：
@@ -90,6 +97,7 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 - 无法取得最新版本时写“未取得”，不要用旧缓存、记忆或猜测填充。
 - 安装目录和配置目录优先显示 `~` 相对路径，避免暴露用户名；配置文件目录使用 `CODEX_HOME`，未设置时为 `~/.codex`。
 - 多个独立 Codex CLI 同时存在时，优先汇报登录 shell 实际解析到的独立副本；桌面 Agent 进程额外注入的 ChatGPT.app 内部路径不能覆盖该判断。
+- `config_status=未创建` 或 `login_status=未登录` 时，处理结果写“等待首次登录”，并给出 `codex --login`；不得只显示 `~/.codex` 这个默认路径。
 - 表格后仅在需要浏览器授权、管理员确认或错误说明时追加简短下一步；不要回显内部依赖检查流水账。
 
 为保证格式稳定，优先使用 `scripts/render_status.py` 生成表格。

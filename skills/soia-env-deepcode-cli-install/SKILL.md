@@ -4,9 +4,9 @@ description: 面向小白检查、安装、配置和按明确授权更新面向 
 dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 00:00:00
+updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -34,6 +34,25 @@ updated_by: gpt-5
 4. 运行需要模型凭据时，客户在 DeepSeek 官方平台自行创建或管理 key；不得把 key 发到聊天中。Agent 只指导本机受保护输入或使用客户已有的安全凭据注入。
 5. 完成后验证版本、帮助命令和一次无副作用启动；未配置凭据时如实写“已安装，等待本地配置”，不伪报运行正常。
 
+### 首次配置与真实验证
+
+- `~/.deepcode` 只是默认数据目录；必须同时检查目录和 `~/.deepcode/settings.json`。目录存在不代表 API key 已配置。
+- 首次启动 `deepcode` 会初始化部分本地运行状态，但不会替客户生成包含 API key 的 `settings.json`；真实验收已经验证，没有 key 时 CLI 会明确提示 `API key not found`。
+- 客户在 [DeepSeek API Keys](https://platform.deepseek.com/api_keys) 登录并创建 API key。客户只在本机填写，不把 key 发给 Agent。
+- 客户在本机创建 `~/.deepcode/settings.json`，最小非秘密结构如下；`API_KEY` 只在客户本机替换：
+
+  ```json
+  {
+    "env": {
+      "MODEL": "deepseek-v4-pro",
+      "BASE_URL": "https://api.deepseek.com",
+      "API_KEY": "<仅在本机填写>"
+    }
+  }
+  ```
+
+- Agent 重新检查 `config_status`、`config_file_status`，再启动 `deepcode` 做一次无副作用验证；只有实际请求成功，运行状态才写“正常”。
+
 ### 依赖与安装
 
 | 依赖 | 类型 | 缺失时怎么处理 |
@@ -47,13 +66,13 @@ updated_by: gpt-5
 
 ## 标准流程
 
-1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `deepcode`、版本、路径、npm 来源与 `~/.deepcode`。
+1. 执行 `python3 scripts/inspect_cli.py --json`，只读检测 `deepcode`、版本、路径、npm 来源、`~/.deepcode` 目录和 `settings.json` 的实际存在状态。
 2. 读取实际 `node --version` 和 npm 全局包来源；Node.js 低于 22 时先报告阻塞，不运行安装包。
 3. 执行 `python3 scripts/check_latest.py --json`，从 npm 官方元数据读取 `@vegamo/deepcode-cli` 最新版。
 4. 若命令由其他包提供，写“被阻塞：同名命令来源不匹配”，不覆盖。已安装上游包且正常时写“已安装”，默认不更新。
 5. 未安装时由 Agent 执行 `npm install -g @vegamo/deepcode-cli`；如 npm 全局目录需管理员权限，先提供用户级替代方案并确认，不默认 `sudo`。
 6. 明确更新到最新时才执行 `npm install -g @vegamo/deepcode-cli@latest`。记录旧版和 npm prefix，不切换为 Git 仓库开发安装。
-7. 验证同一绝对路径的 `--version`、`--help` 和 npm 包身份。凭据已安全配置时再做无副作用启动；否则运行状态写“未验证”并说明等待本地配置。
+7. 验证同一绝对路径的 `--version`、`--help` 和 npm 包身份。客户请求安装/配置或真实测试且配置缺失时，Agent 启动一次 `deepcode` 初始化运行状态；如果 CLI 返回 `API key not found`，停止在配置引导，不伪报成功。凭据已安全配置时再做无副作用启动；否则运行状态写“未验证”。
 8. 复查版本和目录，使用 `scripts/render_status.py` 输出一行客户状态。
 
 ## 凭据配置边界
@@ -75,6 +94,7 @@ updated_by: gpt-5
 - `更新时间` 在最终验证后生成；目录用 `~` 相对路径，避免用户名。
 - 已更新时 `当前状态` 仍写“已安装”。来源不匹配时不得仅凭命令名写“已安装”。
 - 最新版取得失败写“未取得”，不猜测。
+- `config_status=未创建` 或 `config_file_status=未创建` 时，处理结果必须写“等待首次配置”，并给出 DeepSeek API Keys 入口和本机配置文件位置；不得只报一个默认目录。
 
 ## 安装与更新的中间状态
 
@@ -98,6 +118,7 @@ updated_by: gpt-5
 - 非秘密设置可留在 `~/.deepcode/settings.json`；项目配置只保存可提交的非秘密设置。
 - 机器变更阶段记录写用户私有 state；版本检查默认无状态。
 - 不记录 token、key、账号、提示词、代码内容、响应正文或客户私有绝对路径。
+- `deepcode` 没有替代 OAuth 的独立登录命令；首次配置的关键动作是客户申请 DeepSeek API key、在本机填写 `settings.json`，然后由 Agent 重新验证。
 
 ## 日志与完成回执
 
