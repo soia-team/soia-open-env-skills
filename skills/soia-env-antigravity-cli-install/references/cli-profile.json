@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "display_name": "Antigravity CLI (agy)",
+  "command": "agy",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.gemini/antigravity-cli"],
+  "config_env_vars": [],
+  "known_user_paths": [
+    "~/.local/bin/agy",
+    "%LOCALAPPDATA%/agy/bin/agy.exe"
+  ],
+  "package_ecosystem": "native",
+  "package_name": "",
+  "native_installer": true,
+  "latest": {
+    "type": "antigravity-manifest",
+    "base_url": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app"
+  }
+}

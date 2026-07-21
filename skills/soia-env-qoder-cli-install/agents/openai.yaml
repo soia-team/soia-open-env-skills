@@ -1,0 +1,4 @@
+interface:
+  display_name: "Qoder CLI Install"
+  short_description: "Install and verify the standalone Qoder CLI"
+  default_prompt: "Use $soia-env-qoder-cli-install to check or install Qoder CLI without updating an existing installation unless I request the latest version."

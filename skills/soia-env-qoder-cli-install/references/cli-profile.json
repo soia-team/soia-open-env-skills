@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "display_name": "Qoder CLI",
+  "command": "qodercli",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.qoder"],
+  "config_env_vars": [],
+  "known_user_paths": [
+    "~/.local/bin/qodercli",
+    "%APPDATA%/npm/qodercli.cmd"
+  ],
+  "package_ecosystem": "npm",
+  "package_name": "@qoder-ai/qodercli",
+  "native_installer": true,
+  "latest": {
+    "type": "npm",
+    "package": "@qoder-ai/qodercli"
+  }
+}

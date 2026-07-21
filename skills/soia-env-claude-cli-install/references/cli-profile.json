@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "display_name": "Claude Code CLI",
+  "command": "claude",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.claude"],
+  "config_env_vars": ["CLAUDE_CONFIG_DIR"],
+  "known_user_paths": [
+    "~/.local/bin/claude",
+    "~/.claude/local/claude",
+    "%APPDATA%/npm/claude.cmd"
+  ],
+  "package_ecosystem": "npm",
+  "package_name": "@anthropic-ai/claude-code",
+  "native_installer": true,
+  "latest": {
+    "type": "npm",
+    "package": "@anthropic-ai/claude-code"
+  }
+}

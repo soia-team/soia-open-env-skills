@@ -1,15 +1,21 @@
 # soia-open-env-skills
 
-> **定位**：给任何 AI 帮小白建立一套可用的基础开发环境——网络诊断、Node/Python/Codex/WorkBuddy 的安装、验证与更新，一步一步可跟做。进阶技能见 [soia-open-skills](https://github.com/soia-team/soia-open-skills)。
+> **定位**：给任何 AI 帮小白建立一套可用的基础开发环境——网络诊断、Node/Python、桌面工具和主流 Agent CLI 的安装、验证与更新，一步一步可跟做。进阶技能见 [soia-open-skills](https://github.com/soia-team/soia-open-skills)。
 
 
-面向小白的 SOIA 环境工具技能库：先判断系统和网络状态，再用官方来源安装、配置和验证 Codex、WorkBuddy、Node.js、Python 等基础工具。
+面向小白的 SOIA 环境工具技能库：先判断系统和网络状态，再用官方或明确标注的上游来源安装、配置和验证 Codex、Claude Code、Qoder、Antigravity、OpenCode、Kimi Code、Deep Code、WorkBuddy、Node.js、Python 等基础工具。
 
 ## 首版技能
 
 - `soia-env-environment-setup`：从零规划环境，按依赖顺序编排网络、运行时和 AI 工具检查。
 - `soia-env-network-diagnose`：只读检查 DNS、HTTPS、代理、证书和下载源可达性。
 - `soia-env-codex-install`：安装并验证 OpenAI Codex CLI。
+- `soia-env-claude-cli-install`：安装并验证 Anthropic Claude Code CLI。
+- `soia-env-qoder-cli-install`：安装并验证 Qoder CLI。
+- `soia-env-antigravity-cli-install`：安装并验证 Google Antigravity CLI（`agy`），并处理 Gemini CLI 迁移边界。
+- `soia-env-opencode-cli-install`：安装并验证开源 OpenCode CLI。
+- `soia-env-kimi-cli-install`：安装并验证 Moonshot AI Kimi Code CLI。
+- `soia-env-deepcode-cli-install`：安装并验证面向 DeepSeek 优化的社区开源 Deep Code CLI（`lessweb/deepcode-cli`）。
 - `soia-env-codex-setup-support`：安装和验证 ChatGPT 桌面应用中的 Codex 能力、CLI，并排查磁盘、网络、登录和工作区问题。
 - `soia-env-workbuddy-install`：通过官方桌面安装包安装并验证 WorkBuddy。
 - `soia-env-node-install`：安装并验证 Node.js、npm 和 PATH。
@@ -60,6 +66,12 @@ npx skills add soia-team/soia-open-env-skills -g -a '*' -y
 安装说明优先引用官方来源：
 
 - Codex CLI：<https://help.openai.com/en/articles/11096431>
+- Claude Code CLI：<https://docs.anthropic.com/en/docs/claude-code/getting-started>
+- Qoder CLI：<https://docs.qoder.com/en/cli/quick-start>
+- Google Antigravity CLI：<https://codelabs.developers.google.com/antigravity-cli-hands-on>
+- OpenCode CLI：<https://opencode.ai/docs>
+- Kimi Code CLI：<https://www.kimi.com/code/docs/kimi-code-cli/guides/getting-started>
+- Deep Code CLI 上游：<https://github.com/lessweb/deepcode-cli>
 - WorkBuddy：<https://www.workbuddy.cn/>
 - Node.js：<https://nodejs.org/en>
 - Python：<https://www.python.org/downloads/>

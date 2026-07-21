@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Code CLI Install"
+  short_description: "Install and verify the standalone Claude Code CLI"
+  default_prompt: "Use $soia-env-claude-cli-install to check or install Claude Code CLI without updating an existing installation unless I request the latest version."

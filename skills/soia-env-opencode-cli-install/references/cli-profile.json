@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "display_name": "OpenCode CLI",
+  "command": "opencode",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.config/opencode"],
+  "config_env_vars": ["OPENCODE_CONFIG_DIR", "OPENCODE_CONFIG"],
+  "known_user_paths": [
+    "~/.opencode/bin/opencode",
+    "~/.local/bin/opencode",
+    "%APPDATA%/npm/opencode.cmd"
+  ],
+  "package_ecosystem": "npm",
+  "package_name": "opencode-ai",
+  "native_installer": true,
+  "latest": {
+    "type": "github",
+    "repo": "anomalyco/opencode"
+  }
+}

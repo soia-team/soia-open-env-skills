@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "display_name": "Kimi Code CLI",
+  "command": "kimi",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.kimi-code"],
+  "config_env_vars": ["KIMI_CODE_HOME"],
+  "known_user_paths": [
+    "~/.local/bin/kimi",
+    "%APPDATA%/npm/kimi.cmd"
+  ],
+  "package_ecosystem": "npm",
+  "package_name": "@moonshot-ai/kimi-code",
+  "native_installer": true,
+  "latest": {
+    "type": "npm",
+    "package": "@moonshot-ai/kimi-code"
+  }
+}

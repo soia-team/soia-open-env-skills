@@ -1,12 +1,12 @@
 ---
 name: soia-env-environment-setup
-description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装 Node.js、Python、Codex、WorkBuddy，用固定七列列表汇报各目标状态，并输出可供下游消费的环境就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 Codex/Python/Node/WorkBuddy」。
+description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装运行时、桌面工具及 Codex、Claude Code、Qoder、Antigravity、OpenCode、Kimi Code、Deep Code 等 Agent CLI，用固定列表汇报目标状态并输出下游就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 AI CLI」。
 dependencies:
   hard: [soia-env-network-diagnose]
-  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
-version: 1.5.0
+  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
+version: 1.6.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 10:36:00
+updated_at: 2026-07-21 18:00:00
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -56,6 +56,12 @@ updated_by: gpt-5
 | `soia-env-node-install` | 按目标启用 | Codex 或 Node 项目需要时调用 |
 | `soia-env-python-install` | 按目标启用 | Python 项目或脚本需要时调用 |
 | `soia-env-codex-install` | 按目标启用 | 客户明确要使用 Codex 时调用 |
+| `soia-env-claude-cli-install` | 按目标启用 | 客户明确要使用 Claude Code CLI 时调用 |
+| `soia-env-qoder-cli-install` | 按目标启用 | 客户明确要使用 Qoder CLI 时调用 |
+| `soia-env-antigravity-cli-install` | 按目标启用 | 客户要安装 `agy` 或从 Gemini CLI 迁移时调用 |
+| `soia-env-opencode-cli-install` | 按目标启用 | 客户明确要使用 OpenCode CLI 时调用 |
+| `soia-env-kimi-cli-install` | 按目标启用 | 客户明确要使用 Kimi Code CLI 时调用 |
+| `soia-env-deepcode-cli-install` | 按目标启用 | 客户确认目标是 `lessweb/deepcode-cli` 时调用；先准备 Node.js 22+ |
 | `soia-env-codex-setup-support` | 按目标启用 | 同时涉及桌面版、CLI 或 Codex 故障排查时调用 |
 | `soia-env-workbuddy-install` | 按目标启用 | 客户明确要使用 WorkBuddy 时调用 |
 | `soia-env-storage-cleanup` | 按目标启用 | 客户要求统计或清理 SOIA 受管空间时调用；删除必须先展示计划并重新取得明确授权 |
@@ -69,7 +75,7 @@ updated_by: gpt-5
 1. 识别 OS、版本、架构、shell、当前用户权限和项目目录；缺失信息由 Agent 只读探测。
 2. 把目标拆成 `network → runtime → package manager → AI tool → downstream handoff`。
 3. 使用 `soia-env-network-diagnose` 的只读流程检查官方站点。出现代理、证书、DNS 或超时问题时，先输出诊断，不自动改网络配置。
-4. 按依赖顺序执行：Codex 先准备 Node/npm；同时涉及桌面版、CLI 或 Codex 故障时调用 `soia-env-codex-setup-support`；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
+4. 按依赖顺序执行：选择 npm 渠道的 Agent CLI 先满足对应 Node.js 要求；Deep Code 固定要求 Node.js 22+；Claude Code、Qoder、OpenCode、Kimi Code 有独立安装时不因 Node.js 缺失而阻塞；Antigravity 使用 Google 独立安装；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
 5. 对已安装工具默认只比较版本；没有明确“更新到最新”时不得进入专门技能的更新执行阶段。
 6. 安装或明确授权的更新由专门技能边执行边显示阶段状态并记录私有进度；每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。
 7. 客户提出空间清理时调用 `soia-env-storage-cleanup`：本编排只能推进扫描和计划，必须等客户看过风险清单并明确授权后才能删除。
@@ -80,7 +86,7 @@ updated_by: gpt-5
 
 | 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
 |---|---|---|---|---|---|---|
-| <Node.js/Python/Codex CLI/WorkBuddy/网络诊断/存储清理> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <RFC3339-with-timezone> | <处理结果> |
+| <Node.js/Python/Codex CLI/Claude Code CLI/Qoder CLI/Antigravity CLI/OpenCode CLI/Kimi Code CLI/Deep Code CLI/WorkBuddy/网络诊断/存储清理> | <状态> | <版本/不适用/未取得> | <版本/不适用/未取得> | <正常/降级/异常/未验证> | <RFC3339-with-timezone> | <处理结果> |
 
 - 只列客户要求的目标及其必要前置项，不把所有已安装工具全部展开。
 - `更新时间` 是该行完成最终验证的时间，不是技能文件的修改时间。
@@ -103,12 +109,18 @@ tools:
   python: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
   codex: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
   workbuddy: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  claude: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  qoder: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  antigravity: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  opencode: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  kimi: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
+  deepcode: {status: <ready|missing|update_available|blocked>, version: <version-or-null>}
 network: {status: <ready|degraded|blocked>, checked_sources: <count>}
 blockers: []
 next_handoff: <none|soia-open-skills|soia-private-skills>
 ```
 
-只传递状态、版本和阻塞类别，不传递用户名、路径、token、cookie、命令历史或配置内容。
+`node`、`python`、`codex` 和 `workbuddy` 保持兼容性字段；新增 Agent CLI 只在本次被请求或实际检查时加入。只传递状态、版本和阻塞类别，不传递用户名、路径、token、cookie、命令历史或配置内容。
 
 ## 权限与回滚
 

@@ -1,6 +1,8 @@
 # soia-open-env-skills
 
-Beginner-friendly SOIA skills for network diagnosis, managed-storage cleanup, and safe installation and verification of Codex, WorkBuddy, Node.js, Python, and related development prerequisites.
+Beginner-friendly SOIA skills for network diagnosis, managed-storage cleanup, and safe installation and verification of Codex, Claude Code, Qoder, Google Antigravity, OpenCode, Kimi Code, Deep Code, WorkBuddy, Node.js, Python, and related development prerequisites.
+
+The Deep Code skill targets the community-maintained `lessweb/deepcode-cli`, an open-source agent CLI optimized for DeepSeek models; it does not present that project as an official DeepSeek CLI or confuse it with other products named DeepCode.
 
 The repository keeps environment readiness separate from PKM and private SOIA governance. It produces portable readiness summaries so the three skill libraries can cooperate without copying private state.
 

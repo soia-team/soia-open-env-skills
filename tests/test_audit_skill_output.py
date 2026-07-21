@@ -56,6 +56,22 @@ class ReadinessSummaryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(json.loads(result.stdout)["valid"], True)
 
+    def test_requested_optional_ai_cli_status_passes(self):
+        summary = valid_summary()
+        summary["tools"]["claude"] = {"status": "ready", "version": "2.1.216"}
+        summary["tools"]["deepcode"] = {"status": "missing", "version": None}
+        result = run_summary(summary)
+        self.assertEqual(result.returncode, 0, result.stdout)
+
+    def test_unknown_or_invalid_ai_cli_status_fails(self):
+        summary = valid_summary()
+        summary["tools"]["claude"] = {"status": "running", "version": "1.0"}
+        summary["tools"]["unknown-cli"] = {"status": "ready", "version": "1.0"}
+        result = run_summary(summary)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("tools.claude.status", result.stdout)
+        self.assertIn("tools.unknown-cli is unsupported", result.stdout)
+
     def test_timestamp_requires_an_explicit_timezone(self):
         summary = valid_summary()
         summary["checked_at"] = "2026-07-21T00:00:00"

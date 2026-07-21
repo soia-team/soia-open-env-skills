@@ -11,6 +11,7 @@ from typing import Any
 
 REQUIRED = {"schema_version", "checked_at", "os", "arch", "shell", "tools", "network", "blockers", "next_handoff"}
 TOOL_NAMES = {"node", "python", "codex", "workbuddy"}
+OPTIONAL_TOOL_NAMES = {"claude", "qoder", "antigravity", "opencode", "kimi", "deepcode"}
 STATUSES = {"ready", "missing", "update_available", "blocked"}
 
 
@@ -41,6 +42,15 @@ def validate(value: Any) -> list[str]:
     else:
         for name in sorted(TOOL_NAMES):
             item = tools.get(name)
+            if not isinstance(item, dict):
+                errors.append(f"tools.{name} must be an object")
+            elif item.get("status") not in STATUSES:
+                errors.append(f"tools.{name}.status must be one of {sorted(STATUSES)}")
+        unknown = set(tools) - TOOL_NAMES - OPTIONAL_TOOL_NAMES
+        for name in sorted(unknown):
+            errors.append(f"tools.{name} is unsupported")
+        for name in sorted(OPTIONAL_TOOL_NAMES & set(tools)):
+            item = tools[name]
             if not isinstance(item, dict):
                 errors.append(f"tools.{name} must be an object")
             elif item.get("status") not in STATUSES:
