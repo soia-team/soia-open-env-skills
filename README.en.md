@@ -1,5 +1,7 @@
 # soia-open-env-skills
 
+[中文](README.md) | English
+
 Beginner-friendly SOIA skills for network diagnosis, managed-storage cleanup, and safe installation and verification of Codex, Claude Code, Qoder, Google Antigravity, OpenCode, Kimi Code, Deep Code, WorkBuddy, Node.js, Python, and related development prerequisites.
 
 The Deep Code skill targets the community-maintained `lessweb/deepcode-cli`, an open-source agent CLI optimized for DeepSeek models; it does not present that project as an official DeepSeek CLI or confuse it with other products named DeepCode.
