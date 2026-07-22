@@ -1,9 +1,9 @@
 ---
 name: soia-env-ai-cli-upgrade
-description: Audit and upgrade AI CLIs with dry-run logs, Homebrew detection, and an explicit Claude @latest gate; keep agy consumer-safe and Gemini opt-in. Triggers：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」
-version: 2.0.0
+description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
+version: 2.0.1
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-07-22 21:12:58
+updated_at: 2026-07-23 07:16:11
 created_by: claude opus 4.6
 updated_by: gpt-5
 ---

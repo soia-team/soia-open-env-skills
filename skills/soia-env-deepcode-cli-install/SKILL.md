@@ -1,12 +1,12 @@
 ---
 name: soia-env-deepcode-cli-install
-description: 面向小白检查、安装、配置和按明确授权更新面向 DeepSeek 优化的开源 Deep Code Agent CLI（lessweb/deepcode-cli）；验证 Node.js 22、npm 来源和命令，不混装同名项目。触发：「安装 DeepCode」「安装 Deep Code CLI」「deepcode 不存在」「配置 DeepSeek Agent」「更新 DeepCode 到最新」。
+description: 为小白安装、配置与授权更新开源 Deep Code Agent CLI（lessweb/deepcode-cli）。触发：「安装 DeepCode」「deepcode 不存在」「配置 DeepSeek Agent」。
 dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
-version: 1.0.1
+version: 1.0.2
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-23 07:16:11
 created_by: gpt-5
 updated_by: gpt-5
 ---
