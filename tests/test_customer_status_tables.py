@@ -44,7 +44,7 @@ class CustomerStatusTableTests(unittest.TestCase):
             ROOT / "skills" / "soia-env-codex-install" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn(CODEX_HEADER, text)
-        self.assertIn("soia-dev-ai-cli-upgrade", text)
+        self.assertIn("soia-env-ai-cli-upgrade", text)
         self.assertIn(
             "ChatGPT.app/Contents/Resources/codex",
             text,

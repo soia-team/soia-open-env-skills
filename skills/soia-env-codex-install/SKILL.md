@@ -2,11 +2,11 @@
 name: soia-env-codex-install
 description: 面向小白安装、验证和按明确授权更新 OpenAI Codex CLI：识别实际生效的安装来源，默认只报告版本，只有客户明确要求最新版时才沿原来源更新，并展示安装方式、安装目录、配置目录和中间状态。触发：「安装 Codex」「更新 Codex」「更新 Codex 到最新」「配置 Codex」「Codex 登录」「Codex 命令不存在」。
 dependencies:
-  hard: [soia-dev-ai-cli-upgrade]
+  hard: [soia-env-ai-cli-upgrade]
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.5.1
+version: 1.6.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-22 21:12:58
 created_by: gpt-5
 updated_by: gpt-5
 ---
@@ -46,15 +46,15 @@ updated_by: gpt-5
 
 | 依赖 | 类型 | 处理 |
 |---|---|---|
-| `soia-dev-ai-cli-upgrade` | CLI 更新依赖 | 统一执行 Codex 版本审计与原渠道更新 |
+| `soia-env-ai-cli-upgrade` | CLI 更新依赖 | 统一执行 Codex 版本审计与原渠道更新 |
 | Node.js/npm | npm 渠道依赖 | 仅 npm 安装或更新需要；缺失时调用 `soia-env-node-install` |
 | 网络诊断 | 前置检查 | 失败时先调用 `soia-env-network-diagnose` |
 | OpenAI 账号或 API 配置 | 用户授权 | 不读取或索要密钥；由官方登录流程处理 |
 
-缺少 CLI 升级技能时，从配套公开技能库安装：
+缺少 CLI 升级技能时，从本环境技能库安装：
 
 ```bash
-npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -y
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
 ```
 
 官方来源和命令事实见 [official-sources.md](references/official-sources.md)。
@@ -67,11 +67,11 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 4. 已安装 CLI 默认只执行 dry-run 版本审计，只选择 Codex：
 
    ```bash
-   TOOLS=codex DRY_RUN=1 bash ~/.agents/skills/soia-dev-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+   TOOLS=codex DRY_RUN=1 bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
    ```
 
 5. dry-run 发现新版本时先汇报“可更新，未执行”。客户只说“更新”时停下来询问；只有客户明确要求更新到最新，才去掉 `DRY_RUN=1` 执行升级。
-6. 不自行复制另一套更新决策。得到最新版授权后，`soia-dev-ai-cli-upgrade` 负责调用 `codex update`，由 Codex 根据独立 CLI 的安装上下文选择 npm、Homebrew cask 或官方独立安装器。
+6. 不自行复制另一套更新决策。得到最新版授权后，`soia-env-ai-cli-upgrade` 负责调用 `codex update`，由 Codex 根据独立 CLI 的安装上下文选择 npm、Homebrew cask 或官方独立安装器。
 7. 更新后再次执行本技能的检查脚本，并使用返回的独立 CLI 绝对路径验证 `--version`、`--help` 和 `login status`。只有同一独立 CLI 更新并验证通过时，处理结果才写“已更新”。
 8. 未登录时执行独立 CLI 的 `login` 流程，把浏览器授权交给客户；不要求客户在终端粘贴 API key。
 9. 使用下方固定列表输出结果；依赖检查只在内部使用，正常时不向客户增加 Node.js、npm、ChatGPT 桌面版或其他技能行。
@@ -89,8 +89,8 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 - 用户只问 Codex CLI 时，不增加 Node.js、npm、ChatGPT 桌面版或其他技能行。
 - `更新时间` 记录独立 CLI 的来源、版本和无害运行验证完成后的时间。
 - Node.js/npm 检查正常时不展示；仅当它们阻塞 Codex CLI 安装时，把原因压缩写入 `处理结果`。
-- `soia-dev-ai-cli-upgrade` 返回 `ALREADY_LATEST` 且验证通过：`处理结果` 写“已是最新”。
-- `soia-dev-ai-cli-upgrade` 返回 `UPDATED` 且复核成功：`处理结果` 写“已更新”。
+- `soia-env-ai-cli-upgrade` 返回 `ALREADY_LATEST` 且验证通过：`处理结果` 写“已是最新”。
+- `soia-env-ai-cli-upgrade` 返回 `UPDATED` 且复核成功：`处理结果` 写“已更新”。
 - dry-run 发现新版本但没有最新版授权：`处理结果` 写“可更新，未执行”；模糊更新请求写“等待确认是否更新到最新”。
 - 安装请求只授权安装缺失的 CLI，不授权更新现有 CLI；管理员权限、切换来源、修改 PATH 或更新桌面应用需要客户操作时，明确显示下一步。
 - 未安装：`运行状态` 写“未验证”，`处理结果` 写“等待安装”或具体阻塞原因；仅发现 ChatGPT.app 内部二进制仍属于独立 CLI 未安装。
@@ -109,12 +109,12 @@ npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -
 ```bash
 python3 scripts/inspect_installation.py --json
 TOOLS=codex DRY_RUN=1 \
-  bash ~/.agents/skills/soia-dev-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+  bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
 ```
 
 - ChatGPT.app：是桌面应用，版本和更新渠道与独立 CLI 分开；其内部 `codex` 不进入本技能的 CLI 状态行。
-- npm 全局安装：安装目录显示全局 `node_modules/@openai/codex`；升级交给 `soia-dev-ai-cli-upgrade`。
-- Homebrew cask 或官方独立安装：显示独立 CLI 的真实目录；升级同样交给 `soia-dev-ai-cli-upgrade`。
+- npm 全局安装：安装目录显示全局 `node_modules/@openai/codex`；升级交给 `soia-env-ai-cli-upgrade`。
+- Homebrew cask 或官方独立安装：显示独立 CLI 的真实目录；升级同样交给 `soia-env-ai-cli-upgrade`。
 - 已安装且登录状态正常：`当前状态` 始终写“已安装”；更新动作只写入 `处理结果`。
 - 未取得客户“更新到最新”的明确指令时，到 dry-run 和版本汇报为止，不执行升级命令。
 - 更新后使用检查脚本返回的 `cli_path` 执行 `--version`、`--help` 和 `login status`；不要使用未限定路径的 `codex` 重新引入 App/CLI 混淆。
@@ -163,4 +163,4 @@ python3 scripts/record_install_progress.py --run-id <run-id> --action update --s
 
 ## 前向测试
 
-用 fake command runner 覆盖安装成功、独立 CLI 缺失、只存在 ChatGPT.app 内部二进制、npm 全局安装和存在新版本；验证来源识别与 `scripts/render_status.py` 的固定十列。升级行为由 `soia-dev-ai-cli-upgrade` 自己的测试覆盖；本技能只验证委托、独立 CLI 复核和客户状态映射。
+用 fake command runner 覆盖安装成功、独立 CLI 缺失、只存在 ChatGPT.app 内部二进制、npm 全局安装和存在新版本；验证来源识别与 `scripts/render_status.py` 的固定十列。升级行为由 `soia-env-ai-cli-upgrade` 自己的测试覆盖；本技能只验证委托、独立 CLI 复核和客户状态映射。

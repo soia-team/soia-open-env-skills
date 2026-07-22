@@ -85,10 +85,10 @@ soia-open-skills / soia-private-skills
 
 ## 技能清单
 
-完整的自动目录见 [skills/README.md](./skills/README.md)。当前发布 14 个技能，按下方四组归类。
+完整的自动目录见 [skills/README.md](./skills/README.md)。当前发布 15 个技能，按下方四组归类。
 
 > **状态图例**：✅ 装完不需要额外凭据或客户端登录即可直接用 · 🟡 还需客户申请 API key 或完成独立客户端登录才能用起来
-> **依赖列**：来自每个技能 `SKILL.md` frontmatter 里的 `dependencies`；标注“跨仓”的依赖不在本仓库内，见 [三仓协作](#三仓协作)。
+> **依赖列**：来自每个技能 `SKILL.md` frontmatter 里的 `dependencies`；技能间 hard 依赖均在本仓库内，见 [三仓协作](#三仓协作)。
 
 ### 环境编排与诊断
 
@@ -116,7 +116,8 @@ soia-open-skills / soia-private-skills
 
 | 技能 | 说明 | 状态 | 依赖 | 首次可用性验证 |
 |---|---|:---:|---|---|
-| [`soia-env-codex-install`](./skills/soia-env-codex-install/) | 安装、验证和按明确授权更新 OpenAI Codex CLI，识别实际生效的安装来源 | ✅ | 硬依赖 `soia-dev-ai-cli-upgrade`（**跨仓**，来自 `soia-open-skills`）；可选：`soia-env-node-install`、`soia-env-network-diagnose` | `codex --login`，与 ChatGPT.app 分开验证 |
+| [`soia-env-ai-cli-upgrade`](./skills/soia-env-ai-cli-upgrade/) | 批量审计和升级已安装的多套 AI CLI；面向进阶维护场景 | ✅ | 无 | dry-run 版本审计与逐工具升级结果 |
+| [`soia-env-codex-install`](./skills/soia-env-codex-install/) | 安装、验证和按明确授权更新 OpenAI Codex CLI，识别实际生效的安装来源 | ✅ | 硬依赖 `soia-env-ai-cli-upgrade`（本仓）；可选：`soia-env-node-install`、`soia-env-network-diagnose` | `codex --login`，与 ChatGPT.app 分开验证 |
 | [`soia-env-claude-cli-install`](./skills/soia-env-claude-cli-install/) | 检查、安装、登录和按明确授权更新 Anthropic Claude Code CLI | ✅ | 可选：`soia-env-node-install`、`soia-env-network-diagnose` | 官方浏览器登录与 `claude doctor` |
 | [`soia-env-qoder-cli-install`](./skills/soia-env-qoder-cli-install/) | 检查、安装、登录和按明确授权更新 Qoder CLI | ✅ | 可选：`soia-env-node-install`、`soia-env-network-diagnose` | `/login` 浏览器授权或官方 PAT 流程 |
 | [`soia-env-antigravity-cli-install`](./skills/soia-env-antigravity-cli-install/) | 检查、安装、登录、迁移和按明确授权更新 Google Antigravity CLI（`agy`），区分 `agy` 与旧 Gemini CLI | ✅ | 可选：`soia-env-network-diagnose` | Google 官方登录；不把 `gemini` 当作 `agy` |
@@ -155,7 +156,7 @@ soia-open-skills / soia-private-skills
 
 ## 高频技能速览
 
-从 14 个技能里挑 5 个最能代表不同工作方式的技能，各给一个最小示例和典型输出，降低第一次使用的上手门槛。
+从 15 个技能里挑 5 个最能代表不同工作方式的技能，各给一个最小示例和典型输出，降低第一次使用的上手门槛。
 
 ### soia-env-environment-setup
 
@@ -184,7 +185,7 @@ python3 scripts/probe_endpoints.py --url https://nodejs.org/en --url https://www
 
 ```bash
 python3 scripts/inspect_installation.py --json
-TOOLS=codex DRY_RUN=1 bash ~/.agents/skills/soia-dev-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+TOOLS=codex DRY_RUN=1 bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
 ```
 
 **典型输出**：十列状态表（技能/当前状态/当前版本/最新版本/运行状态/安装方式/安装目录/配置文件目录/更新时间/处理结果），只输出 `Codex CLI` 一行；未登录时 `处理结果` 写“等待首次登录”并给出 `codex --login`，不会因为 `~/.codex` 目录存在就当作已登录。
@@ -304,20 +305,20 @@ soia-open-env-skills/
 | [`soia-open-skills`](https://github.com/soia-team/soia-open-skills) | 公开 | 云盘、知识库、PKM、公开协作工作流 |
 | [`soia-private-skills`](https://github.com/soia-team/soia-private-skills) | 私有 | SOIA 内部治理、审计、开发和执行 |
 
-### 跨仓硬依赖
+### 技能硬依赖
 
-本仓库的技能大多互相独立，但有一个真实的跨仓硬依赖，必须如实标注，不能含糊带过：
+本仓库的技能大多互相独立；AI CLI 批量升级技能收编后，现有 hard 依赖均位于本仓库内：
 
 | 本仓库技能 | 硬依赖 | 依赖位置 | 用途 |
 |---|---|---|---|
-| `soia-env-codex-install` | `soia-dev-ai-cli-upgrade` | **`soia-open-skills`（跨仓，公开）** | 统一执行 Codex 版本审计与原渠道更新；本仓库不重复实现一套升级逻辑 |
+| `soia-env-codex-install` | `soia-env-ai-cli-upgrade` | 本仓库内 | 统一执行 Codex 版本审计与原渠道更新；单工具安装技能不重复实现升级逻辑 |
 | `soia-env-environment-setup` | `soia-env-network-diagnose` | 本仓库内 | 编排开始前先确认网络可达性 |
 | `soia-env-deepcode-cli-install` | `soia-env-node-install` | 本仓库内 | Deep Code CLI 要求 Node.js 22+ |
 
-跨仓依赖不会被自动安装。`soia-env-codex-install` 发现本机缺少 `soia-dev-ai-cli-upgrade` 时，会提示从配套公开仓库单独安装：
+`soia-env-codex-install` 发现本机缺少 `soia-env-ai-cli-upgrade` 时，会提示从本仓库单独安装：
 
 ```bash
-npx skills add soia-team/soia-open-skills -g -a '*' -s soia-dev-ai-cli-upgrade -y
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
 ```
 
 三者共享安装源目录 `~/.agents/skills`，再由同步技能建立其他 Agent 的入口；环境仓库不会自动安装私有技能，也不会把凭据传给下游。典型安装顺序：
@@ -376,7 +377,7 @@ python3 ~/.agents/skills/soia-dev-sync-skills/scripts/sync_soia_skills.py \
 
 ## 致谢
 
-- 本仓库的跨仓依赖：`soia-env-codex-install` 等技能的实际版本审计/更新动作硬依赖 [`soia-open-skills`](https://github.com/soia-team/soia-open-skills) 仓库里的 `soia-dev-ai-cli-upgrade`（详见 [三仓协作](#三仓协作) 里的跨仓硬依赖表），不在本仓库单独重复实现。
+- `soia-env-ai-cli-upgrade` 统一承载多套 AI CLI 的版本审计与升级逻辑；各单工具安装技能只负责自身安装、登录与可用性验证，不重复实现批量更新器。
 - 各 Agent CLI/桌面工具的安装与登录流程均以官方文档为准，具体链接见上方 [官方来源](#官方来源)；本仓库不镜像、不改写供应商自己的安装逻辑。
 
 ## 验证与贡献
