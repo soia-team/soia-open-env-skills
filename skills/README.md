@@ -2,7 +2,7 @@
 
 > Generated from `skills/*/SKILL.md` and optional `agents/openai.yaml`.
 > Do not edit by hand. Run `python3 scripts/generate_skill_catalog.py`.
-> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 14 skills.
+> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 15 skills.
 
 ## Source Fields
 
@@ -15,6 +15,7 @@
 
 | Skill | Description | Default Prompt |
 |---|---|---|
+| [`soia-env-ai-cli-upgrade`](./soia-env-ai-cli-upgrade/) | Audit and upgrade AI CLIs, using agy for consumer Google login and Gemini only for supported non-consumer lanes. | Use soia-env-ai-cli-upgrade to audit or upgrade my AI CLIs; treat agy as the consumer Google-login successor and keep Gemini opt-in for supported enterprise, API Key, or Vertex lanes. |
 | [`soia-env-antigravity-cli-install`](./soia-env-antigravity-cli-install/) | Install and verify Google Antigravity CLI (agy) | Use $soia-env-antigravity-cli-install to check or install Google Antigravity CLI, verify the actual ~/.gemini/antigravity-cli state, and guide first Google login without updating an existing installation unless I request the latest version. |
 | [`soia-env-claude-cli-install`](./soia-env-claude-cli-install/) | Install and verify the standalone Claude Code CLI | Use $soia-env-claude-cli-install to check or install Claude Code CLI, distinguish an existing config from a missing first login, and guide official browser authentication without updating an existing installation unless I request the latest version. |
 | [`soia-env-codex-install`](./soia-env-codex-install/) | Install and verify the standalone Codex CLI, separately from ChatGPT.app. | Check or install my standalone Codex CLI separately from ChatGPT.app; show version, installation method and directory, actual config status, and guide first login with codex --login. Do not update unless I explicitly ask for the latest version. |
