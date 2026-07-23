@@ -1,0 +1,23 @@
+{
+  "name": "soia-env",
+  "version": "1.0.0",
+  "description": "环境技能：AI CLI 与运行时安装、网络诊断、系统维护",
+  "author": {
+    "name": "soia-team"
+  },
+  "interface": {
+    "displayName": "环境技能库",
+    "shortDescription": "AI CLI、运行时、网络与系统环境维护",
+    "longDescription": "面向初学者的 AI CLI 和运行时安装、网络诊断、环境验证与系统维护技能。",
+    "developerName": "soia-team",
+    "category": "Developer Tools",
+    "capabilities": [
+      "环境安装",
+      "网络诊断",
+      "系统维护"
+    ],
+    "defaultPrompt": [
+      "请检查我的开发环境并给出安全、可验证的处理方案。"
+    ]
+  }
+}
