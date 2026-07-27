@@ -19,5 +19,6 @@
     "defaultPrompt": [
       "请检查我的开发环境并给出安全、可验证的处理方案。"
     ]
-  }
+  },
+  "homepage": "https://github.com/soia-team/soia-open-env-skills"
 }
