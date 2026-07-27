@@ -1,13 +1,13 @@
 ---
 name: soia-env-antigravity-cli-install
-description: 面向小白检查、安装、登录、迁移和按明确授权更新 Google Antigravity CLI（agy）；区分 agy 与旧 Gemini CLI，默认只报告版本和产品自更新状态。触发：「安装 agy」「安装 Antigravity CLI」「Gemini CLI 迁移」「agy 登录」「更新 agy 到最新」。
+description: 为新手安装、登录、迁移或按授权更新 Google Antigravity CLI（agy）。触发：「安装 agy」「Gemini CLI 迁移」「agy 登录」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.0.1
+version: 1.0.2
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-antigravity-cli-install
@@ -26,6 +26,8 @@ updated_by: gpt-5
 | 登录或排错 | 启动官方登录并检查 PATH、凭据库和配置目录 | 浏览器步骤或阻塞原因 |
 
 ### 客户如何使用
+
+其他可识别说法包括「安装 Antigravity CLI」「更新 agy 到最新」。
 
 1. 客户说“安装 agy”或“把 Gemini CLI 迁移到 Antigravity”；不要求客户操作终端。
 2. Agent 先只读检测 OS、架构、`agy`、`gemini` 和已有配置，再展示计划。只检查不会迁移或更新。

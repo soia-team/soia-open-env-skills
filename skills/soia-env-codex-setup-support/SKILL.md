@@ -1,13 +1,13 @@
 ---
 name: soia-env-codex-setup-support
-description: 渐进式安装、验证和排查 Codex 桌面版与 CLI，按版本、网络登录、权限工作区、资源、SQLite 日志写放大和 SSD 健康分类；检查结果必须先以表格呈现。触发：「安装 Codex」「Codex 打不开」「Codex 变慢」「检查 logs_2.sqlite」「检查磁盘健康」「Codex 一直写 SSD」。
+description: 诊断并支持 Codex 桌面版与 CLI 的安装、登录、性能和存储问题。触发：「Codex 打不开」「Codex 变慢」「检查 logs_2.sqlite」
 dependencies:
   optional: [soia-env-network-diagnose, soia-env-node-install, soia-env-codex-install]
-version: 1.4.0
+version: 1.4.1
 created_at: 2026-07-20 18:30:00
-updated_at: 2026-07-21 10:36:00
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-codex-setup-support
@@ -28,6 +28,8 @@ updated_by: gpt-5
 | 检查 `logs_2.sqlite` | 只读比较文件、WAL、ID 速率和热点 | 写入风险表 + 处置边界 |
 
 ### 客户如何使用
+
+其他可识别说法包括「检查磁盘健康」「Codex 一直写 SSD」；仅安装或更新 Codex CLI 时交给 `soia-env-codex-install`。
 
 直接描述目标，例如“检查磁盘健康”“Codex 变慢”“检查 logs_2.sqlite”。Agent 默认只读；发现新版本只汇报。客户只说“更新 Codex”时先询问是否更新到最新，明确选择最新版后才执行。登录、系统授权、安装和数据隔离仍会单独说明并请求确认。
 

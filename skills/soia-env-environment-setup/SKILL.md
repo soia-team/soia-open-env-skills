@@ -1,14 +1,14 @@
 ---
 name: soia-env-environment-setup
-description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装运行时、桌面工具及 Codex、Claude Code、Qoder、Antigravity、OpenCode、Kimi Code、Deep Code 等 Agent CLI，用固定列表汇报目标状态并输出下游就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 AI CLI」。
+description: 从零规划并验证面向新手的开发环境，协调所需安装技能。触发：「从零配置开发环境」「准备 AI CLI 环境」「新电脑开发环境搭建」
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
-version: 1.6.1
+version: 1.6.2
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-environment-setup
@@ -26,6 +26,8 @@ updated_by: gpt-5
 | 不知道缺什么 | 只读盘点命令、版本和常见阻塞 | 缺什么、为什么缺、下一步怎么补 |
 
 ### 客户如何使用
+
+其他可识别说法包括「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 AI CLI」；只安装单个运行时或 CLI 时交给对应安装技能。
 
 1. 用自然语言说目标，例如“帮我把这台电脑准备好使用 Codex”和系统类型。
 2. Agent 先读取当前系统与工具状态，不让客户先猜命令。

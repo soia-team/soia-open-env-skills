@@ -1,14 +1,14 @@
 ---
 name: soia-env-codex-install
-description: 面向小白安装、验证和按明确授权更新 OpenAI Codex CLI：识别实际生效的安装来源，默认只报告版本，只有客户明确要求最新版时才沿原来源更新，并展示安装方式、安装目录、配置目录和中间状态。触发：「安装 Codex」「更新 Codex」「更新 Codex 到最新」「配置 Codex」「Codex 登录」「Codex 命令不存在」。
+description: 为新手安装、验证或按授权更新 OpenAI Codex CLI。触发：「安装 Codex CLI」「更新 Codex CLI」「Codex 命令不存在」
 dependencies:
   hard: [soia-env-ai-cli-upgrade]
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.6.0
+version: 1.6.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-22 21:12:58
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-codex-install
@@ -28,6 +28,8 @@ updated_by: gpt-5
 | Codex 找不到 | 诊断 PATH、npm 全局目录和 shell | 修复建议或需要确认的变更 |
 
 ### 客户如何使用
+
+其他可识别说法包括「更新 Codex 到最新」「配置 Codex」「Codex 登录」；桌面版打不开、性能或磁盘问题交给 `soia-env-codex-setup-support`。
 
 1. 说“安装 Codex”并说明操作系统；Agent 先检查系统、网络和已有 CLI 来源。
 2. 官方独立安装不要求 Node.js；只有选择或沿用 npm 渠道时，缺 Node.js/npm 才调用 `soia-env-node-install`。
