@@ -1,14 +1,14 @@
 ---
 name: soia-env-codex-install
-description: 面向小白安装、验证和按明确授权更新 OpenAI Codex CLI：识别实际生效的安装来源，默认只报告版本，只有客户明确要求最新版时才沿原来源更新，并展示安装方式、安装目录、配置目录和中间状态。触发：「安装 Codex」「更新 Codex」「更新 Codex 到最新」「配置 Codex」「Codex 登录」「Codex 命令不存在」。
+description: 为小白安装、验证与授权更新 OpenAI Codex CLI，识别实际安装来源。触发：「安装 Codex」「codex 命令不存在」
 dependencies:
   hard: [soia-env-ai-cli-upgrade]
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.6.0
+version: 1.6.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-22 21:12:58
+updated_at: 2026-07-27 10:51:45
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude opus 5
 ---
 
 # soia-env-codex-install

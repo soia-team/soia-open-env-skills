@@ -1,14 +1,14 @@
 ---
 name: soia-env-environment-setup
-description: 从零规划并验证小白开发环境：诊断网络，按依赖顺序安装运行时、桌面工具及 Codex、Claude Code、Qoder、Antigravity、OpenCode、Kimi Code、Deep Code 等 Agent CLI，用固定列表汇报目标状态并输出下游就绪摘要。触发：「配置开发环境」「从零安装工具」「环境搭建」「帮我准备 AI CLI」。
+description: 从零规划并验证开发环境：诊断网络、按依赖顺序安装运行时与 AI CLI、输出就绪摘要。触发：「配置开发环境」「环境搭建」
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
-version: 1.6.1
+version: 1.6.2
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-27 10:51:45
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude opus 5
 ---
 
 # soia-env-environment-setup

@@ -1,13 +1,13 @@
 ---
 name: soia-env-opencode-cli-install
-description: 面向小白检查、安装、登录、配置和按明确授权更新开源 OpenCode CLI；识别官方独立安装、Homebrew 与 npm 来源，默认只报告版本和产品自动更新设置。触发：「安装 OpenCode」「opencode 不存在」「配置 OpenCode」「OpenCode 登录」「更新 OpenCode 到最新」。
+description: 为小白安装、登录、配置与授权更新开源 OpenCode CLI。触发：「安装 OpenCode」「opencode 命令不存在」
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.1
+version: 1.0.2
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-27 10:51:45
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude opus 5
 ---
 
 # soia-env-opencode-cli-install

@@ -1,13 +1,13 @@
 ---
 name: soia-env-workbuddy-install
-description: 面向小白通过 WorkBuddy 官方站点安装、验证和按明确授权更新桌面客户端：已安装时默认只报告版本，只有客户明确要求最新版才更新，并持续记录中间状态。触发：「安装 WorkBuddy」「更新 WorkBuddy」「更新 WorkBuddy 到最新」「安装腾讯龙虾」「WorkBuddy 下载」「WorkBuddy 打不开」。
+description: 通过官方站点安装、验证与授权更新 WorkBuddy 桌面客户端。触发：「安装 WorkBuddy」「WorkBuddy 打不开」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.4.1
+version: 1.4.2
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 14:40:00
+updated_at: 2026-07-27 10:51:45
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude opus 5
 ---
 
 # soia-env-workbuddy-install

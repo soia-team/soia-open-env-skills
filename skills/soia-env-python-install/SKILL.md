@@ -1,13 +1,13 @@
 ---
 name: soia-env-python-install
-description: 面向小白安装、验证和按明确授权更新 Python 与 pip：识别系统和架构，已安装时默认只报告版本，只有客户明确要求最新版才沿原来源更新，并持续记录中间状态。触发：「安装 Python」「更新 Python」「更新 Python 到最新」「安装 pip」「python 命令不存在」「pip 不能用」。
+description: 为小白安装、验证与授权更新 Python 与 pip，识别系统与架构。触发：「安装 Python」「pip 不能用」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.4.0
+version: 1.4.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 10:36:00
+updated_at: 2026-07-27 10:51:45
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude opus 5
 ---
 
 # soia-env-python-install
