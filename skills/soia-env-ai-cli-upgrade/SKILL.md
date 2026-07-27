@@ -35,10 +35,7 @@ with dry-run reports and logs.
 ### 客户如何使用
 
 1. 用自然语言说明目标，并提供必要输入：文件、URL、repo、workspace、proposal、vault 或平台账号状态。
-2. Agent 先判断是否命中本技能，再检查依赖、配置、权限和风险动作。
-3. 能 dry-run 或预览的动作先给预览；涉及删除、覆盖、发送、发布、写远端状态时先征求客户确认。
-4. 执行后验证真实输出，不用“看起来成功”代替证据。
-5. 最终回复必须给客户可见总结：做了什么、日志摘要、文件变化、问题和下一步。
+2. 能 dry-run 或预览的动作先给预览；涉及删除、覆盖、发送、发布、写远端状态时先征求客户确认。
 
 ### 依赖与安装
 
@@ -69,7 +66,6 @@ SOIA_ENV_AI_CLI_UPGRADE_CONFIG_FILE=<custom-config-path>
 - 配置文件使用 `schema_version: 2`；脚本优先读取新路径，只有新路径不存在时才回退读取旧版配置位置。
 - 如果需要 API key、cookie、session、provider home 或本机路径，只能放进私有 `config.yml`、进程环境或 provider 自己的登录态里，不能写进仓库、vault 正文或日志。
 - **日志位置与保留**：升级日志定位为**用完即弃**——当次报告看完即无价值，默认落系统临时区 `${TMPDIR:-/tmp}/soia-env-ai-cli-upgrade/logs/`（macOS 的 $TMPDIR 约 3 天自动清、/tmp 重启清），同日多次运行由 `LOG_KEEP`（默认 10）轮转防堆积。若确需留审计追溯（例如排查"哪天升了什么版本导致行为变化"），设 `LOG_DIR` 改道到持久位置（如 `~/.local/state/...`）。
-- 强依赖、可选依赖和第三方 skill 关系必须以本 `SKILL.md` 后续的“依赖 / 前置 / 资源 / 边界”说明为准；没有写清楚时，先补说明或询问客户，不要猜。
 - 第三方 skill 只能声明依赖和安装方式，不直接修改第三方 skill 文件。
 
 ### 日志与完成回执
@@ -134,37 +130,6 @@ longer part of the default batch.
   has explicitly provided or approved that command.
 - If an updater requires interactive login or privileged access, stop and report
   the blocker instead of guessing.
-
-## Gemini consumer migration and Antigravity authentication
-
-These are two separate executables and authentication products. `agy` replaces
-Gemini CLI only for the consumer **Login with Google** path; it is not a 1:1
-command alias. Keep `gemini` coverage for supported non-consumer lanes, but do
-not reinstall or upgrade it in the default batch. Never alias `gemini` to
-`agy`, delete Gemini CLI without explicit authorization, or silently move an
-account or billing channel.
-
-- Since June 18, 2026, Gemini Code Assist consumer accounts can no longer use
-  **Sign in with Google** in Gemini CLI. Google directs consumer users to
-  Antigravity. Re-check the current [Google deprecation notice](https://developers.google.com/gemini-code-assist/docs/deprecations/code-assist-individuals)
-  and [migration guide](https://antigravity.google/docs/gcli-migration) before
-  acting.
-- Gemini Code Assist Standard and Enterprise remain supported in Gemini CLI.
-  Gemini API-key and Vertex AI authentication are also separate supported lanes;
-  preserve them and follow the current [Gemini CLI authentication guide](https://github.com/google-gemini/gemini-cli/blob/main/docs/get-started/authentication.mdx).
-- Antigravity CLI uses the system keyring when a session is available and falls
-  back to Google Sign-In. The batch upgrade script does not inspect the keyring,
-  open a browser, read auth files, or send a model prompt.
-
-After installation, launch `agy` in a PTY only when the user explicitly asked to
-log in. If a browser, account chooser, consent screen, paid-credit choice, or
-first-launch migration checklist appears, return `blocked_user_action` and wait
-for the user. Do not log OAuth URLs, state values, cookies, tokens, account ids,
-or credential-file contents. A successful `agy --version` proves only that the
-binary runs; it does not prove authentication.
-
-`agy plugin import gemini` writes migrated plugin configuration. Run it only
-after the user reviews and approves that separate migration action.
 
 ## Configuration
 
@@ -251,40 +216,6 @@ The script writes one timestamped log file and prints a table:
 binary directory is absent from PATH, or PATH resolves to a different binary.
 The script reports the absolute resolved path and never edits PATH itself.
 
-## Antigravity diagnosis
-
-Use non-sensitive checks first:
-
-```bash
-type -a agy || true
-agy --version
-agy models
-DRY_RUN=1 TOOLS="agy" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
-```
-
-`agy models` is a model-list discovery request, not a model prompt. Its output
-is scoped to the authenticated account, plan, and current service state; do not
-hardcode its count, order, display names, aliases, or a default model. If it
-requires browser interaction, return `blocked_user_action`. Do not use
-`agy -p` as an auth or model-list check because that is a real model call and
-may consume quota or credits.
-
-On macOS, source verification can also inspect the installed executable without
-reading authentication state:
-
-```bash
-agy_bin="$(command -v agy)"
-file "$agy_bin"
-codesign -dv --verbose=4 "$agy_bin" 2>&1
-spctl -a -vv -t execute "$agy_bin"
-```
-
-Compare the signing identity, executable architecture, and current release with
-Google's [official repository](https://github.com/google-antigravity/antigravity-cli)
-and [CLI documentation](https://antigravity.google/docs/cli-overview). Do not
-hardcode a release version or checksum in this public skill.
-
 ## Validation
 
 Before claiming the skill or script changed safely:
@@ -330,3 +261,10 @@ Before final response:
   and the display names returned by `agy models`; do not invent stable model ids,
   aliases, a default, or plan eligibility from that output.
 - If live upgrades were run, report old and new versions where available.
+
+## 分流程手册
+
+以下流程互斥，一次任务只会走其中一条；按需读取对应文件即可。
+
+- **Gemini consumer migration and Antigravity authentication** — [antigravity-migration.md](references/antigravity-migration.md)
+- **Antigravity diagnosis** — [antigravity-diagnosis.md](references/antigravity-diagnosis.md)
