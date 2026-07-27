@@ -1,6 +1,6 @@
 {
   "name": "soia-env",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "环境技能：AI CLI 与运行时安装、网络诊断、系统维护",
   "author": {
     "name": "soia-team"
@@ -20,7 +20,7 @@
       "请检查我的开发环境并给出安全、可验证的处理方案。"
     ],
     "websiteURL": "https://github.com/soia-team/soia-open-env-skills",
-    "composerIcon": "./assets/icon.png",
+    "composerIcon": "./assets/icon.svg",
     "logo": "./assets/icon.png",
     "brandColor": "#84CC16"
   },
