@@ -1,6 +1,6 @@
 {
   "name": "soia-env",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "环境技能：AI CLI 与运行时安装、网络诊断、系统维护",
   "author": {
     "name": "soia-team"
