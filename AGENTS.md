@@ -83,32 +83,14 @@ git diff --check
 
 For changed skills, run the available quick validator as an additional check.
 
-## Publish through the plugin marketplace
-
-Skills reach users through the SOIA plugin marketplace, not through a global
-`npx skills add -g`. Once the change is on main:
-
-1. **Bump `version`** in `.claude-plugin/plugin.json` and
-   `.codex-plugin/plugin.json`. This is mandatory. Claude Code compares the
-   plugin `version` field, not the marketplace sha pin — without a bump,
-   `claude plugin update` answers "already at the latest version" and users
-   never receive the change even though the pin moved.
-2. **Refresh the marketplace sha pin** in the meta repo `soia-open-skills`.
-   Its `main` is protected, so the refresh has to go through a PR; CI cannot
-   push it. The `soia-meta-skill-release` skill drives the whole sequence —
-   say 「发布技能」 or 「更新插件」 rather than running the steps by hand.
-3. **Users update** with `claude plugin update soia-env@soia` or
-   `codex plugin add soia-env@soia`.
-
-Do not install SOIA skills into your own `~/.agents/skills` with
-`npx skills add -g`. That directory is reserved for a small set of third-party
-skills; a SOIA skill placed there becomes a second copy that drifts from the
-plugin version and appears twice in every agent's index. (End users who prefer
-per-skill installs may still use the npx route — see `docs/install/` in the
-meta repo. That is a consumer choice, not the maintainer's delivery path.)
-
 ## GitHub workflow
 
 Develop on a short-lived branch, open a PR to `main`, wait for the `audit`
 status check, and merge through GitHub. Keep `main` protected and require the
 repository audit workflow for pull requests.
+
+## 维护本仓技能
+
+技能契约、调试安装、新增/改名/拆分/删除的完整流程，以及插件市场发布步骤，统一见
+元仓的 [CONTRIBUTING.md](https://github.com/soia-team/soia-open-skills/blob/main/CONTRIBUTING.md)。
+本文件只保留本仓特有的用途、边界与验证命令。
