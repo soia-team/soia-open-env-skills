@@ -56,6 +56,16 @@ updated_by: gpt-5.6-sol
 缺少 CLI 升级技能时，从本环境技能库安装：
 
 ```bash
+claude plugin marketplace add soia-team/soia-open-skills
+```
+
+```bash
+claude plugin install soia-env@soia
+```
+
+只要这一个技能时，可用 npx 路线。注意技能会落进共享真源 `~/.agents/skills`；若同时装了插件，同一技能会出现两份索引且各自漂移，建议二选一：
+
+```bash
 npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
 ```
 
