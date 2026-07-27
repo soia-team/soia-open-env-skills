@@ -85,7 +85,7 @@ For changed skills, run the available quick validator as an additional check.
 Final installation acceptance must use the pushed remote repository:
 
 ```bash
-npx skills add soia-team/soia-open-env-skills -g -a '*' -s <skill-name> -y
+claude plugin update soia-env@soia   # 交付走插件市场，勿装全局
 ```
 
 ## GitHub workflow
