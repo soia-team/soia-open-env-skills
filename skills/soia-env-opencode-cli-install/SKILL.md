@@ -1,13 +1,13 @@
 ---
 name: soia-env-opencode-cli-install
-description: 为小白安装、登录、配置与授权更新开源 OpenCode CLI。触发：「安装 OpenCode」「opencode 命令不存在」
+description: 为新手安装、登录、配置或按授权更新 OpenCode CLI。触发：「安装 OpenCode」「配置 OpenCode CLI」「OpenCode 登录」
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
 version: 1.0.2
 created_at: 2026-07-21 00:00:00
-updated_at: 2026-07-27 10:51:45
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: claude opus 5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-opencode-cli-install
@@ -26,6 +26,8 @@ updated_by: claude opus 5
 | 命令不可用 | 检查 PATH、重复副本和配置覆盖 | 阻塞原因与修复方案 |
 
 ### 客户如何使用
+
+其他可识别说法包括「opencode 不存在」「更新 OpenCode 到最新」。
 
 1. 客户说“安装 OpenCode”；不要求客户复制终端命令。
 2. Agent 先只读检查并展示计划；安装缺失 CLI 不授权更新已有 CLI。

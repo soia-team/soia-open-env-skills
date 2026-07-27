@@ -1,13 +1,13 @@
 ---
 name: soia-env-node-install
-description: 为小白安装、验证与授权更新 Node.js 与 npm，缺失时选官方 LTS。触发：「安装 Node」「node 命令不存在」
+description: 为新手安装、验证或按授权更新 Node.js 与 npm。触发：「安装 Node.js」「更新 Node.js」「node 命令不存在」
 dependencies:
   optional: [soia-env-network-diagnose]
 version: 1.4.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-27 10:51:45
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: claude opus 5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-node-install
@@ -27,6 +27,8 @@ updated_by: claude opus 5
 | 为 Codex 准备环境 | 先验证 Node/npm，再交给 Codex 技能 | 可继续执行的 readiness 状态 |
 
 ### 客户如何使用
+
+其他可识别说法包括「更新 Node 到最新」「安装 npm」「npm 超时」；纯网络故障优先交给 `soia-env-network-diagnose`。
 
 1. 说目标项目、操作系统和是否需要特定 Node 大版本；不确定时默认选择最新官方 Active LTS，不固定写死一个永久版本号。
 2. Agent 先检查现有 `node`、`npm` 和项目配置，不自动卸载旧版本。

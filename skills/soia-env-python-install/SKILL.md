@@ -1,13 +1,13 @@
 ---
 name: soia-env-python-install
-description: 为小白安装、验证与授权更新 Python 与 pip，识别系统与架构。触发：「安装 Python」「pip 不能用」
+description: 为新手安装、验证或按授权更新 Python 与 pip。触发：「安装 Python」「更新 Python」「python 命令不存在」
 dependencies:
   optional: [soia-env-network-diagnose]
 version: 1.4.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-27 10:51:45
+updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
-updated_by: claude opus 5
+updated_by: gpt-5.6-sol
 ---
 
 # soia-env-python-install
@@ -27,6 +27,8 @@ updated_by: claude opus 5
 | 准备脚本或知识库工具 | 创建项目级虚拟环境并验证依赖入口 | 可交给下游技能的 readiness 摘要 |
 
 ### 客户如何使用
+
+其他可识别说法包括「更新 Python 到最新」「安装 pip」「pip 不能用」；纯网络超时优先交给 `soia-env-network-diagnose`。
 
 1. 说目标项目、操作系统和是否有版本要求；不确定时选择 Python 官方当前维护的稳定版本。
 2. Agent 先检查 `python3`、`python`、Windows `py`、pip 和项目配置，不覆盖已有环境。
