@@ -40,7 +40,7 @@ updated_by: gpt-5
 | 依赖 | 类型 | 安装 / 配置 | 缺失时怎么处理 |
 |---|---|---|---|
 | Python 3.10+ | 强依赖 | 使用系统或 `soia-env-python-install` 提供的 Python | 停止清理，只说明如何补齐 |
-| `soia-env-storage-cleanup` | 本技能 | `npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-storage-cleanup -y` | 从官方远程仓库安装 |
+| `soia-env-storage-cleanup` | 本技能 | `claude plugin install soia-env@soia`（或 npx 路线 `npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-storage-cleanup -y`） | 优先装领域插件；npx 路线会落进共享真源 |
 
 本技能不保存账号或凭据。以下变量只能覆盖受管目录位置，值必须是目录而不是秘密：
 
