@@ -4,5 +4,6 @@
   "description": "环境技能：AI CLI 与运行时安装、网络诊断、系统维护",
   "author": {
     "name": "soia-team"
-  }
+  },
+  "homepage": "https://github.com/soia-team/soia-open-env-skills"
 }
