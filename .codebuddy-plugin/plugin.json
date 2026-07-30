@@ -32,8 +32,8 @@
     "zh": "Soia Env"
   },
   "profession": {
-    "en": "Environment Engineer",
-    "zh": "环境安装工程师"
+    "en": "Soia · Environment Engineer",
+    "zh": "Soia · 环境安装工程师"
   },
   "displayDescription": {
     "en": "Installs and verifies Node, Python and a dozen AI CLIs for beginners, diagnoses network failures read-only, and reclaims space only when authorized.",
