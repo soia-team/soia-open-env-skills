@@ -5,8 +5,8 @@ displayName:
   en: "Soia Env"
   zh: "Soia Env"
 profession:
-  en: "Environment Engineer"
-  zh: "环境安装工程师"
+  en: "Soia · Environment Engineer"
+  zh: "Soia · 环境安装工程师"
 maxTurns: 50
 ---
 
