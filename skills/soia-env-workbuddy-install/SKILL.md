@@ -3,7 +3,7 @@ name: soia-env-workbuddy-install
 description: 为新手安装、验证或按授权更新 WorkBuddy 桌面客户端。触发：「安装 WorkBuddy」「更新 WorkBuddy」「WorkBuddy 下载」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.5.0
+version: 1.5.1
 created_at: 2026-07-20 18:00:00
 updated_at: 2026-07-27 10:47:17
 created_by: gpt-5
@@ -42,15 +42,10 @@ WorkBuddy 是桌面应用，安装路径与 Node/Python 不同。先打开官方
 - 安装完成后由 Agent 启动 WorkBuddy，客户在官方图形界面完成登录、验证码、系统安全提示和服务授权；Agent 不代填密码。
 - Agent 重新检查应用启动、账号状态和一次无副作用工作区操作；其中任一步未完成，运行状态写“未验证”，处理结果写“等待首次登录/授权”，不伪报“正常”。
 
-### 装完之后：把 SOIA 专家装进去
+### 装完之后
 
-本技能只负责**客户端本身**。客户端能用之后，把 SOIA 技能装进 WorkBuddy 是另一件事，
-由 `soia-meta-skill-release` 的「WorkBuddy 专家」一步完成——说「装到 WorkBuddy」即可触发。
-
-它与 Claude/Codex 不同，客户问起时按事实回答：WorkBuddy 是 Electron 桌面端，
-**没有 CLI**，不存在 `workbuddy plugin install` 这种命令，也没有能指向 SOIA 仓库的
-市场通道（市场条目 `source` 只能是路径字符串，无 sha pin 层）。所以安装由脚本把域仓
-副本放进它硬编码的专家目录，再调官方 `register_expert.py` 注册；装完必须重启客户端。
+本技能只负责**客户端本身**。把 SOIA 技能装进 WorkBuddy 是另一件事，
+由 `soia-meta-skill-release` 负责——客户说「装到 WorkBuddy」即可触发。
 
 ### 依赖与安装
 
