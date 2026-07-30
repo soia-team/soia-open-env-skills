@@ -27,6 +27,8 @@ jobs:
         run: python3 scripts/generate_skill_catalog.py --check
       - name: Check top-level README skill coverage
         run: python3 scripts/check_readme_coverage.py
+      - name: Check WorkBuddy expert manifest freshness
+        run: python3 scripts/generate_expert_manifest.py --check
       - name: Validate Codex plugin manifest
         run: |
           curl --fail --location --silent --show-error \

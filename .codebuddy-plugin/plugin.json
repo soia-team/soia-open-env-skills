@@ -1,0 +1,76 @@
+{
+  "name": "soia-env",
+  "version": "1.0.0",
+  "description": "Environment readiness engineer: installs and verifies Node, Python and a dozen AI CLIs for beginners, diagnoses network and certificate failures read-only, and reclaims disk space only with explicit authorization.",
+  "author": {
+    "name": "soia-team"
+  },
+  "agents": [
+    "./agents/soia-env.md"
+  ],
+  "skills": [
+    "./skills/soia-env-ai-cli-upgrade",
+    "./skills/soia-env-antigravity-cli-install",
+    "./skills/soia-env-claude-cli-install",
+    "./skills/soia-env-codex-install",
+    "./skills/soia-env-codex-setup-support",
+    "./skills/soia-env-deepcode-cli-install",
+    "./skills/soia-env-environment-setup",
+    "./skills/soia-env-kimi-cli-install",
+    "./skills/soia-env-network-diagnose",
+    "./skills/soia-env-node-install",
+    "./skills/soia-env-opencode-cli-install",
+    "./skills/soia-env-python-install",
+    "./skills/soia-env-qoder-cli-install",
+    "./skills/soia-env-storage-cleanup",
+    "./skills/soia-env-workbuddy-install"
+  ],
+  "expertType": "agent",
+  "agentName": "soia-env",
+  "displayName": {
+    "en": "Soia Env",
+    "zh": "Soia Env"
+  },
+  "profession": {
+    "en": "Environment Engineer",
+    "zh": "环境安装工程师"
+  },
+  "displayDescription": {
+    "en": "Installs and verifies Node, Python and a dozen AI CLIs for beginners, diagnoses network failures read-only, and reclaims space only when authorized.",
+    "zh": "面向新手安装并验证 Node、Python 与十余款 AI CLI，只读诊断网络故障，按授权清空间。"
+  },
+  "avatar": "assets/icon.png",
+  "categoryId": "02-Engineering",
+  "defaultInitPrompt": {
+    "en": "I am setting up a new machine and need a working AI development environment. Plan it and verify each step.",
+    "zh": "我在配一台新电脑，需要一套能用的 AI 开发环境，帮我规划并逐步验证。"
+  },
+  "tags": [
+    {
+      "en": "AI CLI Install",
+      "zh": "AI CLI 安装"
+    },
+    {
+      "en": "Network Diagnosis",
+      "zh": "网络诊断"
+    },
+    {
+      "en": "Environment Verification",
+      "zh": "环境验证"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "I am setting up a new machine and need a working AI development environment. Plan it and verify each step.",
+      "zh": "我在配一台新电脑，需要一套能用的 AI 开发环境，帮我规划并逐步验证。"
+    },
+    {
+      "en": "My install keeps timing out. Diagnose whether it is DNS, proxy or certificate.",
+      "zh": "我装东西老是超时，帮我判断是 DNS、代理还是证书的问题。"
+    },
+    {
+      "en": "Check which AI CLIs are outdated and upgrade the ones I approve.",
+      "zh": "看看哪些 AI CLI 该升级了，我批准的再升。"
+    }
+  ]
+}
