@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/hero.webp" width="640" alt="">
+<img src="assets/icon.png" width="88" alt="">
 
 # SOIA Open Env Skills
 
@@ -35,36 +35,36 @@ flowchart LR
 
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
-| `soia-env-environment-setup` | 从零规划并验证开发环境，协调所需的安装技能 | ✅ |
-| `soia-env-ai-cli-upgrade` | 审计并按授权升级多款 AI CLI，先预演再核验结果 | ✅ |
-| `soia-env-network-diagnose` | 只读诊断 DNS、HTTPS、代理、证书与官方源，按固定七列汇报 | ✅ |
-| `soia-env-storage-cleanup` | 统计受管配置、状态、缓存占用，出清单；授权后才删，事后复核 | ✅ |
+| [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | 从零规划并验证开发环境，协调所需的安装技能 | ✅ |
+| [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | 审计并按授权升级多款 AI CLI，先预演再核验结果 | ✅ |
+| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | 只读诊断 DNS、HTTPS、代理、证书与官方源，按固定七列汇报 | ✅ |
+| [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | 统计受管配置、状态、缓存占用，出清单；授权后才删，事后复核 | ✅ |
 
 ### 02 运行时　`空环境 → 可用的 Node 与 Python`
 
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
-| `soia-env-node-install` | 安装、验证或按授权更新 Node.js 与 npm | ✅ |
-| `soia-env-python-install` | 安装、验证或按授权更新 Python 与 pip | ✅ |
+| [`soia-env-node-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-node-install.md) | 安装、验证或按授权更新 Node.js 与 npm | ✅ |
+| [`soia-env-python-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-python-install.md) | 安装、验证或按授权更新 Python 与 pip | ✅ |
 
 ### 03 AI CLI　`命令不存在 → 装好、登录、版本核对完`
 
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
-| `soia-env-claude-cli-install` | Anthropic Claude Code CLI 的安装、登录与授权更新 | ✅ |
-| `soia-env-codex-install` | OpenAI Codex CLI 的安装、验证与授权更新 | ✅ |
-| `soia-env-codex-setup-support` | 诊断 Codex 桌面版与 CLI 的安装、登录、性能与存储问题 | ✅ |
-| `soia-env-kimi-cli-install` | Moonshot Kimi Code CLI；识别官方独立安装与 npm 两种来源 | ✅ |
-| `soia-env-opencode-cli-install` | OpenCode CLI 的安装、登录与配置 | ✅ |
-| `soia-env-antigravity-cli-install` | Google Antigravity CLI（`agy`）安装、登录与从 Gemini CLI 迁移 | ✅ |
-| `soia-env-deepcode-cli-install` | 开源 Deep Code Agent CLI 的安装与配置 | ✅ |
-| `soia-env-qoder-cli-install` | Qoder CLI；识别官方独立安装、Homebrew 与 npm 三种来源 | ✅ |
+| [`soia-env-claude-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-claude-cli-install.md) | Anthropic Claude Code CLI 的安装、登录与授权更新 | ✅ |
+| [`soia-env-codex-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-codex-install.md) | OpenAI Codex CLI 的安装、验证与授权更新 | ✅ |
+| [`soia-env-codex-setup-support`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-codex-setup-support.md) | 诊断 Codex 桌面版与 CLI 的安装、登录、性能与存储问题 | ✅ |
+| [`soia-env-kimi-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-kimi-cli-install.md) | Moonshot Kimi Code CLI；识别官方独立安装与 npm 两种来源 | ✅ |
+| [`soia-env-opencode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-opencode-cli-install.md) | OpenCode CLI 的安装、登录与配置 | ✅ |
+| [`soia-env-antigravity-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-antigravity-cli-install.md) | Google Antigravity CLI（`agy`）安装、登录与从 Gemini CLI 迁移 | ✅ |
+| [`soia-env-deepcode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-deepcode-cli-install.md) | 开源 Deep Code Agent CLI 的安装与配置 | ✅ |
+| [`soia-env-qoder-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-qoder-cli-install.md) | Qoder CLI；识别官方独立安装、Homebrew 与 npm 三种来源 | ✅ |
 
 ### 04 桌面客户端　`下载页 → 装好、签名验过、能启动`
 
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
-| `soia-env-workbuddy-install` | WorkBuddy 桌面端安装、签名验证与按授权更新 | ✅ |
+| [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy 桌面端安装、签名验证与按授权更新 | ✅ |
 
 ✅ 全部 15 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
 

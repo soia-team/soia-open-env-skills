@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/hero.webp" width="640" alt="">
+<img src="assets/icon.png" width="88" alt="">
 
 # SOIA Open Env Skills
 
@@ -35,36 +35,36 @@ flowchart LR
 
 | Skill | Responsibility | Ready |
 |---|---|:-:|
-| `soia-env-environment-setup` | Plans and verifies a development environment from scratch, coordinating the install skills it needs | ✅ |
-| `soia-env-ai-cli-upgrade` | Audits and upgrades several AI CLIs under authorization, dry-running first and verifying after | ✅ |
-| `soia-env-network-diagnose` | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, reported in a fixed seven-column table | ✅ |
-| `soia-env-storage-cleanup` | Measures managed config, state and cache usage and produces a list; deletes only after consent, then rechecks | ✅ |
+| [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | Plans and verifies a development environment from scratch, coordinating the install skills it needs | ✅ |
+| [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | Audits and upgrades several AI CLIs under authorization, dry-running first and verifying after | ✅ |
+| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, reported in a fixed seven-column table | ✅ |
+| [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | Measures managed config, state and cache usage and produces a list; deletes only after consent, then rechecks | ✅ |
 
 ### 02 Runtimes　`Empty machine → working Node and Python`
 
 | Skill | Responsibility | Ready |
 |---|---|:-:|
-| `soia-env-node-install` | Installs, verifies or updates Node.js and npm under authorization | ✅ |
-| `soia-env-python-install` | Installs, verifies or updates Python and pip under authorization | ✅ |
+| [`soia-env-node-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-node-install.md) | Installs, verifies or updates Node.js and npm under authorization | ✅ |
+| [`soia-env-python-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-python-install.md) | Installs, verifies or updates Python and pip under authorization | ✅ |
 
 ### 03 AI CLIs　`command not found → installed, logged in, version confirmed`
 
 | Skill | Responsibility | Ready |
 |---|---|:-:|
-| `soia-env-claude-cli-install` | Anthropic Claude Code CLI install, login and authorized update | ✅ |
-| `soia-env-codex-install` | OpenAI Codex CLI install, verification and authorized update | ✅ |
-| `soia-env-codex-setup-support` | Diagnoses Codex desktop and CLI install, login, performance and storage issues | ✅ |
-| `soia-env-kimi-cli-install` | Moonshot Kimi Code CLI; distinguishes the official standalone install from the npm one | ✅ |
-| `soia-env-opencode-cli-install` | OpenCode CLI install, login and configuration | ✅ |
-| `soia-env-antigravity-cli-install` | Google Antigravity CLI (`agy`) install, login and migration from Gemini CLI | ✅ |
-| `soia-env-deepcode-cli-install` | Open-source Deep Code Agent CLI install and configuration | ✅ |
-| `soia-env-qoder-cli-install` | Qoder CLI; distinguishes official standalone, Homebrew and npm sources | ✅ |
+| [`soia-env-claude-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-claude-cli-install.md) | Anthropic Claude Code CLI install, login and authorized update | ✅ |
+| [`soia-env-codex-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-codex-install.md) | OpenAI Codex CLI install, verification and authorized update | ✅ |
+| [`soia-env-codex-setup-support`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-codex-setup-support.md) | Diagnoses Codex desktop and CLI install, login, performance and storage issues | ✅ |
+| [`soia-env-kimi-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-kimi-cli-install.md) | Moonshot Kimi Code CLI; distinguishes the official standalone install from the npm one | ✅ |
+| [`soia-env-opencode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-opencode-cli-install.md) | OpenCode CLI install, login and configuration | ✅ |
+| [`soia-env-antigravity-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-antigravity-cli-install.md) | Google Antigravity CLI (`agy`) install, login and migration from Gemini CLI | ✅ |
+| [`soia-env-deepcode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-deepcode-cli-install.md) | Open-source Deep Code Agent CLI install and configuration | ✅ |
+| [`soia-env-qoder-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-qoder-cli-install.md) | Qoder CLI; distinguishes official standalone, Homebrew and npm sources | ✅ |
 
 ### 04 Desktop clients　`Download page → installed, signature verified, launches`
 
 | Skill | Responsibility | Ready |
 |---|---|:-:|
-| `soia-env-workbuddy-install` | WorkBuddy desktop install, signature verification and authorized update | ✅ |
+| [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy desktop install, signature verification and authorized update | ✅ |
 
 ✅ All 15 skills work right after install — no API key needed. Logins and system prompts are completed by you in each official interface
 
