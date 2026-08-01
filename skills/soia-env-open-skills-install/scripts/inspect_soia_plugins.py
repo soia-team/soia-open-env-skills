@@ -6,9 +6,9 @@
 
 import argparse
 import json
+import pathlib
 import shutil
 import subprocess
-import sys
 from datetime import datetime, timezone
 
 
@@ -23,6 +23,8 @@ SOIA_DOMAINS = [
     "soia-env",
     "soia-edu-course",
 ]
+# WorkBuddy 自建专家唯一识别目录（与 install_workbuddy_experts.py 同源）
+WORKBUDDY_EXPERTS = pathlib.PurePosixPath(".workbuddy/plugins/marketplaces/my-experts/plugins")
 
 
 def _run(cmd: list[str]) -> tuple[int, str, str]:
@@ -41,16 +43,27 @@ def check_claude() -> dict:
     code, out, _ = _run(["claude", "plugin", "list"])
     if code != 0:
         return {"available": True, "market_connected": False, "plugins": []}
-    lines = out.splitlines()
+    # 输出为块状：插件名行（❯ name@market）后跟若干缩进属性行（Version:/Status:）
     plugins = []
-    for line in lines:
+    current = None
+    for line in out.splitlines():
+        stripped = line.strip()
         for d in SOIA_DOMAINS:
-            if f"{d}@soia" in line:
-                parts = line.split()
-                version = next((p for p in parts if p.startswith("Version:")), "")
-                plugins.append({"name": d, "version": version.replace("Version:", "").strip()})
-    market_connected = any(f"@soia" in l for l in lines)
-    return {"available": True, "market_connected": market_connected, "plugins": plugins}
+            if f"{d}@soia" in stripped:
+                current = {"name": d, "version": ""}
+                plugins.append(current)
+                break
+        else:
+            if current and stripped.startswith("Version:"):
+                current["version"] = stripped.removeprefix("Version:").strip()
+                current = None
+            elif "❯" in stripped:
+                current = None  # 非 soia 插件块，丢弃其属性行
+    return {
+        "available": True,
+        "market_connected": "@soia" in out,
+        "plugins": plugins,
+    }
 
 
 def check_codex() -> dict:
@@ -59,22 +72,30 @@ def check_codex() -> dict:
     code, out, _ = _run(["codex", "plugin", "list"])
     if code != 0:
         return {"available": True, "market_connected": False, "plugins": []}
-    lines = out.splitlines()
+    # 输出为表格行：<name>@<market>  installed, enabled  <version>  <source>
     plugins = []
-    for line in lines:
+    for line in out.splitlines():
+        cols = line.split()
+        if not cols:
+            continue
         for d in SOIA_DOMAINS:
-            if f"{d}@soia" in line:
-                plugins.append({"name": d, "version": ""})
-    market_connected = any("@soia" in l for l in lines)
-    return {"available": True, "market_connected": market_connected, "plugins": plugins}
+            if cols[0] == f"{d}@soia":
+                version = next(
+                    (c for c in cols[1:] if c[0].isdigit() and "." in c), "")
+                plugins.append({"name": d, "version": version})
+    return {
+        "available": True,
+        "market_connected": any("@soia" in l for l in out.splitlines()),
+        "plugins": plugins,
+    }
 
 
 def check_workbuddy() -> dict:
-    import pathlib
-    wb_path = pathlib.Path.home() / "Library/Application Support/WorkBuddy/my-experts"
-    if not wb_path.exists():
-        return {"available": False, "reason": "WorkBuddy my-experts directory not found"}
-    installed = [p.name for p in wb_path.iterdir() if p.is_dir()]
+    experts_dir = pathlib.Path.home() / WORKBUDDY_EXPERTS
+    if not experts_dir.exists():
+        return {"available": False,
+                "reason": f"~/{WORKBUDDY_EXPERTS} not found"}
+    installed = sorted(p.name for p in experts_dir.iterdir() if p.is_dir())
     return {"available": True, "experts": installed}
 
 
@@ -103,6 +124,8 @@ def main():
         if host == "workbuddy":
             experts = info.get("experts", [])
             print(f"workbuddy: 可用，已安装专家 {len(experts)} 个")
+            for e in experts:
+                print(f"  {e}")
         else:
             plugins = info.get("plugins", [])
             market = "已接入" if info.get("market_connected") else "未接入"
