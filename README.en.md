@@ -6,13 +6,13 @@
 
 **The most misleading state an AI tool can be in: the command runs, but it isn't usable**
 
-15 skills that install it, verify it, and diagnose it. Read-only diagnosis; destructive actions need your authorization
+16 skills that install it, verify it, and diagnose it. Read-only diagnosis; destructive actions need your authorization
 
 [中文](README.md) · English · [Ecosystem portal](https://github.com/soia-team/soia-open-skills)
 
 <p align="center">
   <img alt="plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsoia-team%2Fsoia-open-env-skills%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=F5A623&prefix=v">
-  <img alt="skills" src="https://img.shields.io/badge/skills-15-brightgreen">
+  <img alt="skills" src="https://img.shields.io/badge/skills-16-brightgreen">
   <img alt="hosts" src="https://img.shields.io/badge/hosts-Claude%20%C2%B7%20Codex%20%C2%B7%20WorkBuddy-8A2BE2">
   <img alt="always-on cost" src="https://img.shields.io/badge/always--on-~1.5k%20tok-lightgrey">
   <img alt="license" src="https://img.shields.io/github/license/soia-team/soia-open-env-skills?color=blue">
@@ -37,13 +37,14 @@ flowchart LR
     E --> G["Disk hygiene<br/>list → consent → delete → recheck"]
 ```
 
-## 15 skills
+## 16 skills
 
 ### 01 Planning and verification　`A new machine → a verified, working AI environment`
 
 | Skill | Responsibility | Ready |
 |---|---|:-:|
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | Plans and verifies a development environment from scratch, coordinating the install skills it needs | ✅ |
+| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | Installs or updates SOIA open skills across the three hosts, at full, per-plugin or per-host scope | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | Audits and upgrades several AI CLIs under authorization, dry-running first and verifying after | ✅ |
 | [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, reported in a fixed seven-column table | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | Measures managed config, state and cache usage and produces a list; deletes only after consent, then rechecks | ✅ |
@@ -74,11 +75,11 @@ flowchart LR
 |---|---|:-:|
 | [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy desktop install, signature verification and authorized update | ✅ |
 
-✅ All 15 skills work right after install — no API key needed. Logins and system prompts are completed by you in each official interface
+✅ All 16 skills work right after install — no API key needed. Logins and system prompts are completed by you in each official interface
 
 ## Install
 
-Any of three hosts. Installing the domain plugin brings all 15 skills at once.
+Any of three hosts. Installing the domain plugin brings all 16 skills at once.
 
 ```bash
 claude plugin marketplace add soia-team/soia-open-skills && claude plugin install soia-env@soia

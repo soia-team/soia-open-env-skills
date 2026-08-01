@@ -6,13 +6,13 @@
 
 **AI 工具最会骗人的状态：命令能跑，但实际不能用**
 
-15 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
+16 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
 
 [English](README.en.md) · 中文 · [全生态门户](https://github.com/soia-team/soia-open-skills)
 
 <p align="center">
   <img alt="plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsoia-team%2Fsoia-open-env-skills%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=F5A623&prefix=v">
-  <img alt="skills" src="https://img.shields.io/badge/技能-15-brightgreen">
+  <img alt="skills" src="https://img.shields.io/badge/技能-16-brightgreen">
   <img alt="hosts" src="https://img.shields.io/badge/宿主-Claude%20%C2%B7%20Codex%20%C2%B7%20WorkBuddy-8A2BE2">
   <img alt="always-on cost" src="https://img.shields.io/badge/常驻-~1.5k%20tok-lightgrey">
   <img alt="license" src="https://img.shields.io/github/license/soia-team/soia-open-env-skills?color=blue">
@@ -37,13 +37,14 @@ flowchart LR
     E --> G["空间治理<br/>出清单 → 授权 → 删除 → 复核"]
 ```
 
-## 15 个技能
+## 16 个技能
 
 ### 01 规划与验证　`一台新机器 → 可用且验证过的 AI 环境`
 
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | 从零规划并验证开发环境，协调所需的安装技能 | ✅ |
+| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | 在三个宿主上安装或更新 SOIA 开源技能，支持全量、单插件与指定宿主 | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | 审计并按授权升级多款 AI CLI，先预演再核验结果 | ✅ |
 | [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | 只读诊断 DNS、HTTPS、代理、证书与官方源，按固定七列汇报 | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | 统计受管配置、状态、缓存占用，出清单；授权后才删，事后复核 | ✅ |
@@ -74,11 +75,11 @@ flowchart LR
 |---|---|:-:|
 | [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy 桌面端安装、签名验证与按授权更新 | ✅ |
 
-✅ 全部 15 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
+✅ 全部 16 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
 
 ## 安装
 
-三个宿主任选，装整个领域插件即 15 个技能一次到位。
+三个宿主任选，装整个领域插件即 16 个技能一次到位。
 
 ```bash
 claude plugin marketplace add soia-team/soia-open-skills && claude plugin install soia-env@soia
