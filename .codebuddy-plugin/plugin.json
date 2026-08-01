@@ -1,6 +1,6 @@
 {
   "name": "soia-env",
-  "version": "1.1.1",
+  "version": "1.2.0-SNAPSHOT",
   "description": "Environment readiness engineer: installs and verifies Node, Python and a dozen AI CLIs for beginners, diagnoses network and certificate failures read-only, and reclaims disk space only with explicit authorization.",
   "author": {
     "name": "soia-team"
