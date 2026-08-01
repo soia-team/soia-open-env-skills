@@ -32,20 +32,37 @@ class TestCheckClaude(unittest.TestCase):
         self.assertEqual(result["plugins"], [])
         self.assertFalse(result["market_connected"])
 
-    def test_claude_with_soia_plugin(self):
+    def test_claude_version_on_following_line(self):
         fake_out = (
             "Installed plugins:\n"
+            "\n"
             "  ❯ soia-meta@soia\n"
-            "    Version: 1.8.0\n"
+            "    Version: 1.8.1\n"
+            "    Status: ✔ enabled\n"
+            "\n"
+            "  ❯ soia-env@soia\n"
+            "    Version: 1.7.0\n"
             "    Status: ✘ disabled\n"
         )
         with patch("shutil.which", return_value="/usr/bin/claude"), \
              patch.object(_mod, "_run", return_value=(0, fake_out, "")):
             result = _mod.check_claude()
-        self.assertTrue(result["available"])
         self.assertTrue(result["market_connected"])
+        got = {p["name"]: p["version"] for p in result["plugins"]}
+        self.assertEqual(got, {"soia-meta": "1.8.1", "soia-env": "1.7.0"})
+
+    def test_claude_non_soia_version_not_misattributed(self):
+        fake_out = (
+            "  ❯ soia-env@soia\n"
+            "    Version: 1.7.0\n"
+            "  ❯ context7@claude-plugins-official\n"
+            "    Version: 9.9.9\n"
+        )
+        with patch("shutil.which", return_value="/usr/bin/claude"), \
+             patch.object(_mod, "_run", return_value=(0, fake_out, "")):
+            result = _mod.check_claude()
         self.assertEqual(len(result["plugins"]), 1)
-        self.assertEqual(result["plugins"][0]["name"], "soia-meta")
+        self.assertEqual(result["plugins"][0]["version"], "1.7.0")
 
     def test_claude_list_failure_reports_disconnected(self):
         with patch("shutil.which", return_value="/usr/bin/claude"), \
@@ -61,12 +78,17 @@ class TestCheckCodex(unittest.TestCase):
             result = _mod.check_codex()
         self.assertFalse(result["available"])
 
-    def test_codex_with_soia_plugin(self):
+    def test_codex_table_row_with_version(self):
+        fake_out = (
+            "soia-env@soia            installed, enabled  1.7.0    "
+            "https://github.com/soia-team/soia-open-env-skills.git, ref `02382c7`\n"
+            "soia-corp@soia-private-corp  installed, enabled  1.4.0    /some/path\n"
+        )
         with patch("shutil.which", return_value="/usr/bin/codex"), \
-             patch.object(_mod, "_run", return_value=(0, "soia-env@soia\n", "")):
+             patch.object(_mod, "_run", return_value=(0, fake_out, "")):
             result = _mod.check_codex()
         self.assertTrue(result["market_connected"])
-        self.assertEqual(result["plugins"][0]["name"], "soia-env")
+        self.assertEqual(result["plugins"], [{"name": "soia-env", "version": "1.7.0"}])
 
 
 class TestCheckWorkbuddy(unittest.TestCase):
@@ -76,15 +98,15 @@ class TestCheckWorkbuddy(unittest.TestCase):
                 result = _mod.check_workbuddy()
         self.assertFalse(result["available"])
 
-    def test_workbuddy_with_experts(self):
+    def test_workbuddy_expert_under_plugins_dir(self):
         with tempfile.TemporaryDirectory() as tmp:
-            wb = Path(tmp) / "Library/Application Support/WorkBuddy/my-experts"
+            wb = Path(tmp) / ".workbuddy/plugins/marketplaces/my-experts/plugins"
             wb.mkdir(parents=True)
-            (wb / "soia-meta").mkdir()
+            (wb / "soia-env").mkdir()
             with patch("pathlib.Path.home", return_value=Path(tmp)):
                 result = _mod.check_workbuddy()
         self.assertTrue(result["available"])
-        self.assertIn("soia-meta", result["experts"])
+        self.assertEqual(result["experts"], ["soia-env"])
 
 
 if __name__ == "__main__":
