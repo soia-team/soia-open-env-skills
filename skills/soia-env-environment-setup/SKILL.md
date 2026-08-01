@@ -3,12 +3,12 @@ name: soia-env-environment-setup
 description: 从零规划并验证面向新手的开发环境，协调所需安装技能。触发：「从零配置开发环境」「准备 AI CLI 环境」「新电脑开发环境搭建」
 dependencies:
   hard: [soia-env-network-diagnose]
-  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup]
-version: 1.6.2
+  optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup, soia-env-open-skills-install]
+version: 1.6.3
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-27 10:47:17
+updated_at: 2026-08-01 15:30:00
 created_by: gpt-5
-updated_by: gpt-5.6-sol
+updated_by: claude fable 5
 ---
 
 # soia-env-environment-setup
@@ -69,6 +69,7 @@ updated_by: gpt-5.6-sol
 | `soia-env-codex-setup-support` | 按目标启用 | 同时涉及桌面版、CLI 或 Codex 故障排查时调用 |
 | `soia-env-workbuddy-install` | 按目标启用 | 客户明确要使用 WorkBuddy 时调用 |
 | `soia-env-storage-cleanup` | 按目标启用 | 客户要求统计或清理 SOIA 受管空间时调用；删除必须先展示计划并重新取得明确授权 |
+| `soia-env-open-skills-install` | 按目标启用 | 环境就绪后客户要装 SOIA 技能生态时调用；接管插件市场接入与域插件安装，不由本技能执行 |
 | `soia-open-skills` | 方法邻居 | 完成环境摘要后再衔接 PKM/云盘技能，不复制其文件 |
 | `soia-private-skills` | 私有方法邻居 | 只有已安装且任务需要时才提示，不自动安装 |
 
@@ -121,7 +122,7 @@ tools:
   deepcode: {status: <ready|needs_configuration|missing|update_available|blocked>, version: <version-or-null>}
 network: {status: <ready|degraded|blocked>, checked_sources: <count>}
 blockers: []
-next_handoff: <none|soia-open-skills|soia-private-skills>
+next_handoff: <none|soia-env-open-skills-install|soia-open-skills|soia-private-skills>
 ```
 
 `node`、`python`、`codex` 和 `workbuddy` 保持兼容性字段；新增 Agent CLI 只在本次被请求或实际检查时加入。只传递状态、版本和阻塞类别，不传递用户名、路径、token、cookie、命令历史或配置内容。

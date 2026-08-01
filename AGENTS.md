@@ -62,6 +62,7 @@ private configuration.
 This repository owns environment readiness only. It may recommend or hand off
 to:
 
+- `soia-env-open-skills-install` (this repo): installs SOIA open-skill plugins across hosts after CLIs are ready;
 - `soia-open-skills`: public PKM, cloud-drive, and knowledge-base workflows;
 - `soia-private-skills`: private SOIA governance and internal execution skills.
 

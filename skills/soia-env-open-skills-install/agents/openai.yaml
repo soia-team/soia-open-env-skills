@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOIA Skills Install"
+  short_description: "Install SOIA open-skill plugins across Claude Code, Codex and WorkBuddy"
+  default_prompt: "Use $soia-env-soia-skills-install to check current SOIA plugin status and install selected domain plugins across available AI hosts. Ask the user which domains to install before making any changes."
