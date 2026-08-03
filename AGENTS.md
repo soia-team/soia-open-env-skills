@@ -86,9 +86,13 @@ For changed skills, run the available quick validator as an additional check.
 
 ## GitHub workflow
 
-Develop on a short-lived branch, open a PR to `main`, wait for the `audit`
-status check, and merge through GitHub. Keep `main` protected and require the
-repository audit workflow for pull requests.
+Develop on a short-lived branch, open a PR to `dev`, wait for the `audit`
+status check, and merge through GitHub. `dev` is the rolling integration
+branch; `main` always equals the latest formal release and only accepts
+release PRs from `dev` (driven by `soia-meta-skill-release`). Keep `main`
+protected and require the repository audit workflow for pull requests.
+Plugin manifests on `dev` carry a `-SNAPSHOT` version naming the next release
+target; manifest versions move only in release PRs, never in feature PRs.
 
 ## 维护本仓技能
 

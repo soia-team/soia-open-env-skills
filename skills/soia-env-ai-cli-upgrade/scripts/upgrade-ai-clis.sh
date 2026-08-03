@@ -447,6 +447,8 @@ upgrade_tool() {
     opencode) cmd="opencode"; package="opencode-ai" ;;
     qodercli) cmd="qodercli" ;;
     cursor)   cmd="cursor" ;;
+    deepcode) cmd="deepcode"; package="@vegamo/deepcode-cli" ;;
+    pi)       cmd="pi";       package="@earendil-works/pi-coding-agent" ;;
     *)        cmd="$tool" ;;
   esac
 
@@ -516,7 +518,7 @@ upgrade_tool() {
         return
       fi
       ;;
-    gemini|qwen|opencode|kimi)
+    gemini|qwen|opencode|kimi|deepcode)
       local brew_formula=""
       brew_formula="$(detect_brew_formula_from_bin "$bin")" || true
       if [[ -n "$brew_formula" ]]; then
@@ -623,6 +625,12 @@ upgrade_tool() {
         return
       fi
       ;;
+    pi)
+      if ! "$bin" update --self >>"$log_file" 2>&1; then
+        print_result "$tool" "$cmd" "$old_version" "$old_version" "FAILED" "pi update --self failed; path=$bin"
+        return
+      fi
+      ;;
     cursor)
       if [[ -z "${CURSOR_UPGRADE_CMD:-}" ]]; then
         print_result "$tool" "$cmd" "$old_version" "$old_version" "MANUAL" "no default updater; set CURSOR_UPGRADE_CMD"
@@ -677,7 +685,7 @@ print_header
 # Gemini CLI remains supported for Standard/Enterprise, API-key, and Vertex AI
 # users, but it is intentionally opt-in. Including it in the default batch would
 # reinstall a CLI that consumer Google-login users have just migrated away from.
-default_tools=(codex claude agy kimi mmx qwen opencode qodercli cursor)
+default_tools=(codex claude agy kimi mmx qwen opencode qodercli cursor deepcode pi)
 all_tools=("${default_tools[@]}")
 
 tool_selector="${TOOLS:-${NPM_PACKAGES:-}}"

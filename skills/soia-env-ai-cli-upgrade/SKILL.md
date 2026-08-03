@@ -1,11 +1,11 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.0.1
+version: 2.1.0
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-07-23 07:16:11
+updated_at: 2026-08-03 16:00:00
 created_by: claude opus 4.6
-updated_by: gpt-5
+updated_by: gpt-5.6-luna
 ---
 
 # soia-env-ai-cli-upgrade
@@ -21,7 +21,8 @@ version audit or batch workflow is needed.
 ### 这个技能可以做什么
 
 Audit and upgrade AI/developer CLIs (codex, claude, Antigravity/agy,
-Gemini's supported non-consumer lanes, kimi, qwen, opencode, cursor, etc.)
+Gemini's supported non-consumer lanes, kimi, qwen, opencode, cursor,
+deepcode, pi, etc.)
 with dry-run reports and logs.
 
 进阶维护工具：面向已装多套 AI CLI 的用户，与本仓其他面向小白的单工具安装技能定位不同。
@@ -106,6 +107,8 @@ SOIA_ENV_AI_CLI_UPGRADE_CONFIG_FILE=<custom-config-path>
 | Kimi Code | `kimi` | auto-detected: Homebrew formula, including relative `bin` symlinks, → `brew upgrade <formula>`; npm → `npm install -g @moonshot-ai/kimi-code`; native (curl) → `kimi upgrade`; Homebrew failures are reported instead of being treated as “already latest” |
 | OpenCode | `opencode` | auto-detected: brew formula (`brew install opencode`) → `brew upgrade <formula>`; npm → `npm install -g opencode-ai`; native (curl) → MANUAL (re-run `curl -fsSL https://opencode.ai/install \| bash`); **⚑ npm path**: NOTE column shows curl recommendation |
 | Qoder CLI | `qodercli` | `qodercli update` |
+| DeepCode Agent CLI | `deepcode` | npm → `npm install -g deepcode`（@vegamo/deepcode-cli 已装时更新包名） |
+| Pi (pi-coding-agent) | `pi` | `pi update --self`（npm 包 `@earendil-works/pi-coding-agent`） |
 | Cursor | `cursor` | version audit only unless `CURSOR_UPGRADE_CMD` is set |
 
 Why both rows remain: `agy` is the replacement for Gemini CLI's consumer

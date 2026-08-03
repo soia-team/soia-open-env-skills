@@ -6,13 +6,13 @@
 
 **AI 工具最会骗人的状态：命令能跑，但实际不能用**
 
-16 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
+17 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
 
 [English](README.en.md) · 中文 · [全生态门户](https://github.com/soia-team/soia-open-skills)
 
 <p align="center">
   <img alt="plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsoia-team%2Fsoia-open-env-skills%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=F5A623&prefix=v">
-  <img alt="skills" src="https://img.shields.io/badge/技能-16-brightgreen">
+  <img alt="skills" src="https://img.shields.io/badge/技能-17-brightgreen">
   <img alt="hosts" src="https://img.shields.io/badge/宿主-Claude%20%C2%B7%20Codex%20%C2%B7%20WorkBuddy-8A2BE2">
   <img alt="always-on cost" src="https://img.shields.io/badge/常驻-~1.5k%20tok-lightgrey">
   <img alt="license" src="https://img.shields.io/github/license/soia-team/soia-open-env-skills?color=blue">
@@ -37,7 +37,7 @@ flowchart LR
     E --> G["空间治理<br/>出清单 → 授权 → 删除 → 复核"]
 ```
 
-## 16 个技能
+## 17 个技能
 
 ### 01 规划与验证　`一台新机器 → 可用且验证过的 AI 环境`
 
@@ -67,6 +67,7 @@ flowchart LR
 | [`soia-env-opencode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-opencode-cli-install.md) | OpenCode CLI 的安装、登录与配置 | ✅ |
 | [`soia-env-antigravity-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-antigravity-cli-install.md) | Google Antigravity CLI（`agy`）安装、登录与从 Gemini CLI 迁移 | ✅ |
 | [`soia-env-deepcode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-deepcode-cli-install.md) | 开源 Deep Code Agent CLI 的安装与配置 | ✅ |
+| [`soia-env-pi-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-pi-cli-install.md) | Pi（pi-coding-agent）CLI 的安装与配置 | ✅ |
 | [`soia-env-qoder-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-qoder-cli-install.md) | Qoder CLI；识别官方独立安装、Homebrew 与 npm 三种来源 | ✅ |
 
 ### 04 桌面客户端　`下载页 → 装好、签名验过、能启动`
