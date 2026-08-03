@@ -2,7 +2,7 @@
 
 > Generated from `skills/*/SKILL.md` and optional `agents/openai.yaml`.
 > Do not edit by hand. Run `python3 scripts/generate_skill_catalog.py`.
-> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 16 skills.
+> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 17 skills.
 
 ## Source Fields
 
@@ -27,6 +27,7 @@
 | [`soia-env-node-install`](./soia-env-node-install/) | Install and verify Node.js and npm. | Install Node.js and npm for my project. |
 | [`soia-env-open-skills-install`](./soia-env-open-skills-install/) | Install SOIA open-skill plugins across Claude Code, Codex and WorkBuddy | Use $soia-env-soia-skills-install to check current SOIA plugin status and install selected domain plugins across available AI hosts. Ask the user which domains to install before making any changes. |
 | [`soia-env-opencode-cli-install`](./soia-env-opencode-cli-install/) | Install and verify the standalone OpenCode CLI | Use $soia-env-opencode-cli-install to check or install OpenCode CLI, distinguish opencode.json from auth.json, and guide opencode auth login without updating an existing installation unless I request the latest version. |
+| [`soia-env-pi-cli-install`](./soia-env-pi-cli-install/) | Install and verify the Pi (pi-coding-agent) CLI | Use $soia-env-pi-cli-install to check or install Pi CLI, verify ~/.pi/agent/settings.json, guide Provider credential setup, and run a real no-side-effect validation without updating an existing installation unless I request the latest version. |
 | [`soia-env-python-install`](./soia-env-python-install/) | Install and verify Python and pip. | Install Python and make pip work. |
 | [`soia-env-qoder-cli-install`](./soia-env-qoder-cli-install/) | Install and verify the standalone Qoder CLI | Use $soia-env-qoder-cli-install to check or install Qoder CLI, report whether ~/.qoder/settings.json is actually present, and guide qodercli /login without updating an existing installation unless I request the latest version. |
 | [`soia-env-storage-cleanup`](./soia-env-storage-cleanup/) | 统计 SOIA 受管目录空间，并在客户明确授权后安全清理过期数据 | Use $soia-env-storage-cleanup to scan managed storage, show cleanup risks, and delete only after my explicit approval. |

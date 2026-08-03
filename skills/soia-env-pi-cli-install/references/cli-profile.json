@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "display_name": "Pi",
+  "command": "pi",
+  "version_args": ["--version"],
+  "default_config_paths": ["~/.pi/agent"],
+  "config_file_paths": ["~/.pi/agent/settings.json"],
+  "config_env_vars": [],
+  "known_user_paths": [
+    "~/.npm-global/bin/pi",
+    "%APPDATA%/npm/pi.cmd"
+  ],
+  "package_ecosystem": "npm",
+  "package_name": "@earendil-works/pi-coding-agent",
+  "native_installer": false,
+  "latest": {
+    "type": "npm",
+    "package": "@earendil-works/pi-coding-agent"
+  }
+}
