@@ -21,6 +21,7 @@
     "./skills/soia-env-node-install",
     "./skills/soia-env-open-skills-install",
     "./skills/soia-env-opencode-cli-install",
+    "./skills/soia-env-pi-cli-install",
     "./skills/soia-env-python-install",
     "./skills/soia-env-qoder-cli-install",
     "./skills/soia-env-storage-cleanup",

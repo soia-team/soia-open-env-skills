@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pi CLI Install"
+  short_description: "Install and verify the Pi (pi-coding-agent) CLI"
+  default_prompt: "Use $soia-env-pi-cli-install to check or install Pi CLI, verify ~/.pi/agent/settings.json, guide Provider credential setup, and run a real no-side-effect validation without updating an existing installation unless I request the latest version."
