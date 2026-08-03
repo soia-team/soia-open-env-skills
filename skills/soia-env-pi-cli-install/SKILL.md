@@ -5,10 +5,10 @@ dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
 version: 1.0.0
-created_at: 2026-08-03 00:00:00
-updated_at: 2026-08-03 15:55:00
-created_by: gpt-5.6-luna
-updated_by: gpt-5.6-luna
+created_at: 2026-08-03 15:55:00
+updated_at: 2026-08-03 16:10:00
+created_by: deepseek/deepseek-v4-flash
+updated_by: deepseek/deepseek-v4-flash
 ---
 
 # soia-env-pi-cli-install
