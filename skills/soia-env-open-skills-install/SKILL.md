@@ -4,7 +4,7 @@ description: 在 Claude Code、Codex、WorkBuddy 上安装或更新 SOIA 开源�
 dependencies:
   optional: [soia-env-claude-cli-install, soia-env-codex-install, soia-env-workbuddy-install, soia-env-network-diagnose]
 version: 1.0.1
-created_at: 2026-08-01 00:00:00
+created_at: 2026-08-01 15:47:43
 updated_at: 2026-08-01 17:40:00
 created_by: claude sonnet 4.6
 updated_by: claude fable 5
