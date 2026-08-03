@@ -5,7 +5,7 @@ dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
 version: 1.0.2
-created_at: 2026-07-21 00:00:00
+created_at: 2026-07-21 11:20:00
 updated_at: 2026-07-23 07:16:11
 created_by: gpt-5
 updated_by: gpt-5

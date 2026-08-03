@@ -4,7 +4,7 @@ description: 面向小白检查、安装、登录和按明确授权更新 Qoder 
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
 version: 1.0.1
-created_at: 2026-07-21 00:00:00
+created_at: 2026-07-21 11:20:00
 updated_at: 2026-07-21 14:40:00
 created_by: gpt-5
 updated_by: gpt-5
