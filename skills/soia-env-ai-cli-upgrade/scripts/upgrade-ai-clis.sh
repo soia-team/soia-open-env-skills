@@ -447,7 +447,7 @@ upgrade_tool() {
     opencode) cmd="opencode"; package="opencode-ai" ;;
     qodercli) cmd="qodercli" ;;
     cursor)   cmd="cursor" ;;
-    deepcode) cmd="deepcode"; package="deepcode" ;;
+    deepcode) cmd="deepcode"; package="@vegamo/deepcode-cli" ;;
     pi)       cmd="pi";       package="@earendil-works/pi-coding-agent" ;;
     *)        cmd="$tool" ;;
   esac
