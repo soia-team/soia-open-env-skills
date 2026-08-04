@@ -84,15 +84,18 @@ git diff --check
 
 For changed skills, run the available quick validator as an additional check.
 
-## GitHub workflow
+## Git Workflow
 
-Develop on a short-lived branch, open a PR to `dev`, wait for the `audit`
-status check, and merge through GitHub. `dev` is the rolling integration
-branch; `main` always equals the latest formal release and only accepts
-release PRs from `dev` (driven by `soia-meta-skill-release`). Keep `main`
-protected and require the repository audit workflow for pull requests.
-Plugin manifests on `dev` carry a `-SNAPSHOT` version naming the next release
-target; manifest versions move only in release PRs, never in feature PRs.
+- **Branch off `main`** (the latest formal release), then open the PR against
+  `dev` and wait for the `audit` check. `main` is always an ancestor of `dev`,
+  so such a branch always merges cleanly. Branch off `dev` only when your change
+  genuinely builds on unreleased work, and say so in the PR body.
+- `main` never receives PRs. It moves only by **fast-forward from `dev`** during
+  a formal release driven by `soia-meta-skill-release`, so `main` and `dev` then
+  point at the same commit. Never push directly to `main` or `dev`.
+- Plugin manifests on `dev` carry a `-SNAPSHOT` version naming the next release
+  target. Do not change manifest versions in feature PRs; versions move only
+  during a release.
 
 ## 维护本仓技能
 
