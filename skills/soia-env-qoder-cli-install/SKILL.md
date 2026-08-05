@@ -116,3 +116,18 @@ checking → planning → [waiting_confirmation] → installing/updating → ver
 ## 前向测试
 
 用临时 fake `qodercli` 覆盖缺失、正常、版本异常和多副本；mock npm 最新版响应；验证固定列表、路径脱敏、默认不更新和更新授权门禁。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-qoder-cli-install -y
+```
+
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。

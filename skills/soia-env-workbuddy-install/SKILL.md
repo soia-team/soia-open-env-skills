@@ -123,3 +123,16 @@ python3 scripts/record_install_progress.py --run-id <run-id> --action update --s
 ## 前向测试
 
 用平台 fixture 验证 macOS ARM64、macOS x64、Windows x64 和未知平台的选择逻辑；真实验收必须由客户确认官方安装器和登录页面，不把网页可达当成客户端可用。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-workbuddy-install -y
+```

@@ -53,6 +53,8 @@ SOIA_SKILLS_TEMP_HOME
 
 使用环境变量指定自定义根目录时，必须先向客户展示目标目录并取得配置确认，再写入类别匹配的 `.soia-storage-root.json`；缺少标记时执行器拒绝把任意目录认领为 SOIA 存储。
 
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
+
 ### 私密信息与中间数据
 
 - 配置目录只统计、不删除；凭据仍由 provider 登录态或系统凭据库管理。

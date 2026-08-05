@@ -121,3 +121,18 @@ checking → planning → [waiting_confirmation] → installing/updating → ver
 ## 前向测试
 
 用临时 fake `agy` 覆盖缺失、正常和异常；mock Google 不同平台清单；验证 `gemini` 不会误报 `agy` 已安装、固定十列、路径脱敏和更新授权门禁。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-antigravity-cli-install -y
+```
+
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。

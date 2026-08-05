@@ -113,3 +113,18 @@ python3 scripts/record_install_progress.py --run-id <run-id> --action update --s
 ## 前向测试
 
 用 fixture 覆盖 Python 已有、仅有 Python 2、pip 缺失、Windows `py` 可用和虚拟环境创建失败；真实验收必须分别验证解释器、pip 和项目虚拟环境。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-python-install -y
+```
+
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
