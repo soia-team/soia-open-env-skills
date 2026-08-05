@@ -152,3 +152,16 @@ next_handoff: <none|soia-env-open-skills-install|soia-open-skills|soia-private-s
 ## 前向验收
 
 用 fixture 模拟“Node 缺失、Python 已有、网络阻断”三种状态，确认编排结果只推进可用步骤，并将阻塞写入 `blockers`；真实安装必须另外验证官方二进制版本和客户可用的 GUI 登录状态。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-environment-setup -y
+```

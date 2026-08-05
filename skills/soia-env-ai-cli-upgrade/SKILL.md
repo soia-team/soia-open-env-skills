@@ -69,6 +69,8 @@ SOIA_ENV_AI_CLI_UPGRADE_CONFIG_FILE=<custom-config-path>
 - **日志位置与保留**：升级日志定位为**用完即弃**——当次报告看完即无价值，默认落系统临时区 `${TMPDIR:-/tmp}/soia-env-ai-cli-upgrade/logs/`（macOS 的 $TMPDIR 约 3 天自动清、/tmp 重启清），同日多次运行由 `LOG_KEEP`（默认 10）轮转防堆积。若确需留审计追溯（例如排查"哪天升了什么版本导致行为变化"），设 `LOG_DIR` 改道到持久位置（如 `~/.local/state/...`）。
 - 第三方 skill 只能声明依赖和安装方式，不直接修改第三方 skill 文件。
 
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
+
 ### 日志与完成回执
 
 每次执行都要让客户看见过程和结果。最低回执格式：

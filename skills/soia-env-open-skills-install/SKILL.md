@@ -75,6 +75,19 @@ updated_by: claude fable 5
 
 ## 标准流程
 
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-open-skills-install -y
+```
+
 ### 阶段 0 · 检查（只读，不改动机器）
 
 ```bash

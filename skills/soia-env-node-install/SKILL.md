@@ -130,3 +130,18 @@ python3 scripts/record_install_progress.py --run-id <run-id> --action update --s
 ## 前向测试
 
 用 fixture 覆盖 Node 已有、Node 缺失、PATH 不一致和项目要求冲突；真实验收必须分别执行 Node 和 npm 版本检查。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-node-install -y
+```
+
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
