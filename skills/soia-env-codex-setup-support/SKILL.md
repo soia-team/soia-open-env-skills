@@ -3,11 +3,11 @@ name: soia-env-codex-setup-support
 description: 诊断并支持 Codex 桌面版与 CLI 的安装、登录、性能和存储问题。触发：「Codex 打不开」「Codex 变慢」「检查 logs_2.sqlite」
 dependencies:
   optional: [soia-env-network-diagnose, soia-env-node-install, soia-env-codex-install]
-version: 1.4.1
+version: 1.4.2
 created_at: 2026-07-20 18:30:00
-updated_at: 2026-07-27 10:47:17
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5.6-sol
+updated_by: claude-opus-5
 ---
 
 # soia-env-codex-setup-support

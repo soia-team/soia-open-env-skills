@@ -1,11 +1,11 @@
 ---
 name: soia-env-network-diagnose
 description: 只读诊断小白安装工具时的网络问题：检查 DNS、HTTPS、代理、证书、官方源和超时，区分故障来源，并用固定七列列表汇报网络状态与处理结果。触发：「网络不通」「下载失败」「npm/pip 超时」「证书错误」「安装卡住」。
-version: 1.2.0
+version: 1.2.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-21 00:14:50
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude-opus-5
 ---
 
 # soia-env-network-diagnose

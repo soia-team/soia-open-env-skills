@@ -4,11 +4,11 @@ description: 为小白安装、配置与授权更新开源 Deep Code Agent CLI�
 dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
-version: 1.0.2
+version: 1.0.3
 created_at: 2026-07-21 11:20:00
-updated_at: 2026-07-23 07:16:11
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude-opus-5
 ---
 
 # soia-env-deepcode-cli-install

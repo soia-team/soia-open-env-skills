@@ -3,11 +3,11 @@ name: soia-env-claude-cli-install
 description: 为小白安装、登录与授权更新 Anthropic Claude Code CLI。触发：「安装 Claude CLI」「Claude 命令不存在」「Claude 登录」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.2
+version: 1.0.3
 created_at: 2026-07-21 11:20:00
-updated_at: 2026-07-23 07:16:11
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude-opus-5
 ---
 
 # soia-env-claude-cli-install

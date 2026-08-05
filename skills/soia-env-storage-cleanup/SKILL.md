@@ -1,11 +1,11 @@
 ---
 name: soia-env-storage-cleanup
 description: 面向小白统计 SOIA 受管配置、状态、缓存和临时目录的空间占用，生成可清理清单并提醒删除风险；只有客户看过最新清单并明确授权后才执行删除，随后复核实际释放空间。触发：「检查 SOIA 占用」「统计缓存大小」「清理临时文件」「清理过期状态」「释放磁盘空间」；不用于未经授权的全盘清理。
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-07-21 07:45:43
-updated_at: 2026-07-21 07:45:43
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5
+updated_by: claude-opus-5
 ---
 
 # soia-env-storage-cleanup

@@ -3,11 +3,11 @@ name: soia-env-antigravity-cli-install
 description: 为新手安装、登录、迁移或按授权更新 Google Antigravity CLI（agy）。触发：「安装 agy」「Gemini CLI 迁移」「agy 登录」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.0.2
+version: 1.0.3
 created_at: 2026-07-21 11:20:00
-updated_at: 2026-07-27 10:47:17
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5.6-sol
+updated_by: claude-opus-5
 ---
 
 # soia-env-antigravity-cli-install

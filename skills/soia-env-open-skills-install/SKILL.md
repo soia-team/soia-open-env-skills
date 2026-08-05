@@ -3,11 +3,11 @@ name: soia-env-open-skills-install
 description: 在 Claude Code、Codex、WorkBuddy 上安装或更新 SOIA 开源技能，支持全部/单插件/单技能粒度与指定宿主。触发：「装好所有 SOIA 插件」「在 Codex 下装 SOIA」「更新 soia-dev 插件」。
 dependencies:
   optional: [soia-env-claude-cli-install, soia-env-codex-install, soia-env-workbuddy-install, soia-env-network-diagnose]
-version: 1.0.1
+version: 1.0.2
 created_at: 2026-08-01 15:47:43
-updated_at: 2026-08-01 17:40:00
+updated_at: 2026-08-05 13:30:00
 created_by: claude sonnet 4.6
-updated_by: claude fable 5
+updated_by: claude-opus-5
 ---
 
 # soia-env-open-skills-install

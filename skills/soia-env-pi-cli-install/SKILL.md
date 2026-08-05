@@ -4,11 +4,11 @@ description: 为小白安装、配置与授权更新 Pi（pi-coding-agent）CLI�
 dependencies:
   hard: [soia-env-node-install]
   optional: [soia-env-network-diagnose]
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-08-03 15:55:00
-updated_at: 2026-08-03 16:10:00
+updated_at: 2026-08-05 13:30:00
 created_by: deepseek/deepseek-v4-flash
-updated_by: deepseek/deepseek-v4-flash
+updated_by: claude-opus-5
 ---
 
 # soia-env-pi-cli-install
