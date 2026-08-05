@@ -4,11 +4,11 @@ description: 从零规划并验证面向新手的开发环境，协调所需安�
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup, soia-env-open-skills-install]
-version: 1.6.3
+version: 1.6.4
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-01 15:30:00
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: claude fable 5
+updated_by: claude-opus-5
 ---
 
 # soia-env-environment-setup

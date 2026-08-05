@@ -3,11 +3,11 @@ name: soia-env-node-install
 description: 为新手安装、验证或按授权更新 Node.js 与 npm。触发：「安装 Node.js」「更新 Node.js」「node 命令不存在」
 dependencies:
   optional: [soia-env-network-diagnose]
-version: 1.4.1
+version: 1.4.2
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-07-27 10:47:17
+updated_at: 2026-08-05 13:30:00
 created_by: gpt-5
-updated_by: gpt-5.6-sol
+updated_by: claude-opus-5
 ---
 
 # soia-env-node-install
