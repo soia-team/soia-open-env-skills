@@ -1,11 +1,11 @@
 ---
 name: soia-env-network-diagnose
 description: 只读诊断小白安装工具时的网络问题：检查 DNS、HTTPS、代理、证书、官方源和超时，区分故障来源，并用固定七列列表汇报网络状态与处理结果。触发：「网络不通」「下载失败」「npm/pip 超时」「证书错误」「安装卡住」。
-version: 1.2.1
+version: 1.3.0
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-05 13:30:00
+updated_at: 2026-08-06 11:39:00
 created_by: gpt-5
-updated_by: claude-opus-5
+updated_by: pi deepseek-v4-flash
 ---
 
 # soia-env-network-diagnose
@@ -42,10 +42,11 @@ python3 scripts/probe_endpoints.py --url https://nodejs.org/en --url https://www
 ## 只读诊断流程
 
 1. 记录 OS、架构、时间、网络类型和原始错误；不保存完整命令环境。
-2. 先探测 DNS/HTTPS，再探测目标包管理器或官方 CDN。
+2. 按「基准组 → 目标组 → 镜像组」三组对照探测：先探国内基准源判断本机网络是否正常，再探目标官方入口，最后探国内镜像源；源清单见 [providers.md](references/providers.md)。
 3. 逐层分类：`dns_failed`、`tls_failed`、`timeout`、`http_error`、`proxy_required` 或 `reachable`。
-4. 不因一次探测失败就断言“网络完全不可用”；至少使用两个相关官方源复核。
-5. 交付结构化摘要，供环境编排技能或安装技能消费。
+4. 基准组至少收录 2 个独立来源，任一可达即基准通过；不因一次探测失败就断言“网络完全不可用”。
+5. 将三组结果对照 [providers.md](references/providers.md) 的判定矩阵得出结论与下一步。
+6. 交付结构化摘要，供环境编排技能或安装技能消费。
 
 ## 客户状态列表（强制）
 
@@ -79,6 +80,16 @@ python3 scripts/probe_endpoints.py --url https://nodejs.org/en --url https://www
 |---|---|---|---|---|---|---|
 | 网络诊断 | <状态> | 不适用 | 不适用 | <运行状态> | <RFC3339-with-timezone> | <处理结果> |
 ```
+
+## 输出样例
+
+以下为示例（数值取自一次真实探测：基准组 4 个国内源全部可达，目标组官方入口与镜像组 4 个镜像全部可达）：
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|
+| 网络诊断 | 已检查 | 不适用 | 不适用 | 正常 | 2026-08-06T11:37:42+08:00 | 可以继续安装：网络正常，问题不在网络 |
+
+判定说明：基准组全部可达，目标组官方入口除 Codex 帮助页对 HEAD 探测返回 403（方法级拒绝，非链路故障）外均可达，镜像组全部可达，对照判定矩阵判定为「网络正常」，下一步应转查命令参数、磁盘、权限，而不是继续排查网络。
 
 ## 前向测试
 
