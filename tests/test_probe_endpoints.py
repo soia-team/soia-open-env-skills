@@ -6,7 +6,16 @@ import urllib.error
 
 
 ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills" / "soia-env-network-diagnose" / "scripts" / "probe_endpoints.py"
+_REPO_LAYOUT = ROOT / "skills" / "soia-env-network-diagnose" / "scripts" / "probe_endpoints.py"
+_PACKAGE_LAYOUT = ROOT / "scripts" / "probe_endpoints.py"
+if _REPO_LAYOUT.exists():
+    SCRIPT = _REPO_LAYOUT
+elif _PACKAGE_LAYOUT.exists():
+    SCRIPT = _PACKAGE_LAYOUT
+else:
+    raise FileNotFoundError(
+        "找不到 probe_endpoints.py：仓布局 {} 与包布局 {} 均不存在".format(_REPO_LAYOUT, _PACKAGE_LAYOUT)
+    )
 SPEC = importlib.util.spec_from_file_location("probe_endpoints", SCRIPT)
 probe_endpoints = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(probe_endpoints)
