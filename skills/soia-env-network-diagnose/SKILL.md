@@ -1,9 +1,9 @@
 ---
 name: soia-env-network-diagnose
 description: 只读诊断安装 AI 工具前的环境问题：网络侧检查 DNS、HTTPS、代理、证书、官方源和超时；本机侧按 Node/Python/Rust/Go/包管理器/Shell 分类盘点运行时，推导当前机器能装哪些 AI CLI，并用固定七列列表汇报。触发：「网络不通」「下载失败」「npm/pip 超时」「证书错误」「安装卡住」「装之前先检查环境」「这台机器能装什么」「有没有装 node」。
-version: 1.4.1
+version: 1.4.2
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-07 12:48:00
+updated_at: 2026-08-08 00:30:00
 created_by: gpt-5
 updated_by: claude-opus-5
 ---
@@ -44,6 +44,21 @@ python3 scripts/probe_runtimes.py --json
 ```
 
 不要把包含用户名、密码或 token 的 URL 传给探测器。官方站点清单见 [providers.md](references/providers.md)，运行时清单与渠道依赖见 [runtimes.md](references/runtimes.md)。
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装这一个技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-network-diagnose -y
+```
+
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
 
 ## 只读诊断流程
 
