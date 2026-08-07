@@ -3,6 +3,21 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.10.0 — 2026-08-08
+
+network-diagnose 1.4.2：本机运行时分类盘点（23 项六类）与 AI CLI 可安装性推导、npm 渠道 Node 版本门槛、安装章节规范位；environment-setup 1.6.5 接入运行时盘点
+
+## 新增
+- feat(network-diagnose): 新增本机运行时分类盘点与 AI CLI 可安装性推导 (#60)
+
+## 修复
+- fix(network-diagnose): 安装命令移入「依赖与安装」节（发版体检要求） (#62)
+- fix(network-diagnose): 补齐 npm 渠道的 Node 版本门槛,并修 README 覆盖漏洞 (#61)
+
+## 维护
+- chore(release): feat 在列,版本列车提为 next-minor
+- chore(release): open next train after release
+
 ## v1.9.0 — 2026-08-06
 
 network-diagnose providers 扩展、安装章节三宿主覆盖、config 归位 assets
