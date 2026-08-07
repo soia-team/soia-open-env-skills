@@ -36,21 +36,39 @@
 
 ## AI CLI 渠道依赖
 
-来源是本仓各安装技能 `SKILL.md` 的「依赖与安装」表，**不是推测**；上游技能改了依赖，要同步 `scripts/probe_runtimes.py` 里的 `AI_CLIS`。
+渠道来源是本仓各安装技能 `SKILL.md` 的「依赖与安装」表，Node 版本门槛来源是各技能
+`references/official-sources.md` 的「已核对事实」段——**都不是推测**。上游技能改了依赖或版本，
+要同步 `scripts/probe_runtimes.py` 里的 `AI_CLIS` 和对应断言。
 
-| AI 工具 | 可用渠道 | 是否硬依赖 Node.js | 依据技能 |
-|---|---|---|---|
-| Claude Code | 官方独立安装 / npm | 否 | `soia-env-claude-cli-install` |
-| Codex CLI | 官方独立安装 / Homebrew / npm | 否 | `soia-env-codex-install` |
-| Kimi Code CLI | 官方独立安装 / npm | 否 | `soia-env-kimi-cli-install` |
-| Qoder CLI | 官方独立安装 / Homebrew / npm | 否 | `soia-env-qoder-cli-install` |
-| OpenCode CLI | 官方独立安装 / Homebrew / npm | 否 | `soia-env-opencode-cli-install` |
-| Antigravity CLI | 官方独立安装 | 否 | `soia-env-antigravity-cli-install` |
-| WorkBuddy | 官方桌面安装包 | 否 | `soia-env-workbuddy-install` |
-| Pi | 仅 npm | **是** | `soia-env-pi-cli-install` |
-| Deep Code CLI | 仅 npm，且 Node **≥ 22** | **是** | `soia-env-deepcode-cli-install` |
+| AI 工具 | 可用渠道 | npm 渠道的 Node 门槛 | 是否硬依赖 Node.js | 依据技能 |
+|---|---|---|---|---|
+| Claude Code | 官方独立安装 / npm | **≥ 22** | 否 | `soia-env-claude-cli-install` |
+| Codex CLI | 官方独立安装 / Homebrew / npm | 未核对到具体版本 | 否 | `soia-env-codex-install` |
+| Kimi Code CLI | 官方独立安装 / npm | **≥ 22.19** | 否 | `soia-env-kimi-cli-install` |
+| Qoder CLI | 官方独立安装 / Homebrew / npm | **≥ 20** | 否 | `soia-env-qoder-cli-install` |
+| OpenCode CLI | 官方独立安装 / Homebrew / npm | 未核对到具体版本 | 否 | `soia-env-opencode-cli-install` |
+| Antigravity CLI | 官方独立安装 | 不适用 | 否 | `soia-env-antigravity-cli-install` |
+| WorkBuddy | 官方桌面安装包 | 不适用 | 否 | `soia-env-workbuddy-install` |
+| Pi | 仅 npm | 未核对到具体版本 | **是** | `soia-env-pi-cli-install` |
+| Deep Code CLI | 仅 npm | **≥ 22** | **是** | `soia-env-deepcode-cli-install` |
 
-**反直觉但已核对**：九个目标里七个有官方独立安装渠道，一台没有 node/npm/brew 的裸机照样装得上；只有 Pi 与 Deep Code 把 `soia-env-node-install` 标为 `hard` 依赖。所以「装不上 AI CLI」多数时候不是缺 Node，先别急着装环境。
+「未核对到具体版本」表示**仓内尚无已核对事实**，不表示「没有版本要求」——Codex 的
+`official-sources.md` 明确写了以官方页面与实际 `codex --help` 为准。这类目标不做版本判定，
+不要在这里凭印象填一个版本号；补齐要先由对应安装技能核对并写进它的 `official-sources.md`。
+
+**反直觉但已核对**：九个目标里七个有官方独立安装渠道，一台没有 node/npm/brew 的裸机照样装得上；
+只有 Pi 与 Deep Code 把 `soia-env-node-install` 标为 `hard` 依赖。所以「装不上 AI CLI」多数时候不是缺 Node，
+先别急着装环境。**但反过来也成立**：Node 版本太旧时被挡掉的只是 npm 渠道，官方独立安装照样能用——
+实测一台 Node 20.19.0 的机器，Claude Code 与 Kimi Code 的 npm 渠道被挡，整体仍判「可安装」；
+只有没有兜底渠道的 Deep Code 真被阻塞。
+
+## OS 与架构
+
+输出里的 `host` 段（`os` / `arch` / `os_version`）只作为**事实上报**，本技能不判断某个 CLI 是否支持该平台。
+
+多个安装技能把「官方支持的操作系统/架构」列为强依赖，但支持矩阵在各家官方清单里
+（例如 Antigravity 由自己的 `check_latest.py` 从 Google 平台清单实时拉取），仓内没有静态真源。
+在这里维护一张矩阵等于造事实，也必然过期。平台是否受支持由对应安装技能判定，本技能只提供输入。
 
 ## 推导规则
 

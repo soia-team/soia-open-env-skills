@@ -1,9 +1,9 @@
 ---
 name: soia-env-network-diagnose
 description: 只读诊断安装 AI 工具前的环境问题：网络侧检查 DNS、HTTPS、代理、证书、官方源和超时；本机侧按 Node/Python/Rust/Go/包管理器/Shell 分类盘点运行时，推导当前机器能装哪些 AI CLI，并用固定七列列表汇报。触发：「网络不通」「下载失败」「npm/pip 超时」「证书错误」「安装卡住」「装之前先检查环境」「这台机器能装什么」「有没有装 node」。
-version: 1.4.0
+version: 1.4.1
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-07 11:52:00
+updated_at: 2026-08-07 12:48:00
 created_by: gpt-5
 updated_by: claude-opus-5
 ---
@@ -62,9 +62,10 @@ python3 scripts/probe_runtimes.py --json
 6. 执行 `python3 scripts/probe_runtimes.py --json`，按 Node/Python/Rust/Go/JVM/包管理器/Shell 分类盘点；只跑白名单内的版本查询命令。
 7. 版本参数按工具适配，不得统一改写成 `--version`——差异与实测依据见 [runtimes.md](references/runtimes.md)。
 8. 状态为 `timeout` 时判「待复核」，放宽 `--timeout` 重跑后再下结论；**不得直接当成未安装**。
-9. 用运行时结果对照各安装技能声明的渠道依赖，得出「可安装 / 待复核 / 被阻塞」；被阻塞时写明具体缺口，并指向对应安装技能，不代为安装。
+9. 用运行时结果对照各安装技能声明的渠道依赖与 Node 版本门槛，得出「可安装 / 待复核 / 被阻塞」；被阻塞时写明具体缺口（例如 `node 20.19.0 < 22`），并指向对应安装技能，不代为安装。
+10. `host` 段的 OS/架构只作为事实上报，**不判断某个 CLI 是否支持该平台**——支持矩阵在各家官方清单里，由对应安装技能判定，见 [runtimes.md](references/runtimes.md)。
 
-10. 交付结构化摘要，供环境编排技能或安装技能消费。
+11. 交付结构化摘要，供环境编排技能或安装技能消费。
 
 ## 客户状态列表（强制）
 
@@ -124,7 +125,7 @@ python3 scripts/probe_runtimes.py --json
 
 网络侧判定：基准组全部可达，目标组官方入口除 Codex 帮助页对 HEAD 探测返回 403（方法级拒绝，非链路故障）外均可达，镜像组全部可达，对照判定矩阵判定为「网络正常」，下一步应转查命令参数、磁盘、权限，而不是继续排查网络。
 
-本机侧盘点（23 项并发探测，耗时 0.25s）：
+本机侧盘点（darwin 26.5.2 / arm64，23 项并发探测，耗时 0.25s）：
 
 | 类别 | 可用 | 缺失 |
 |---|---|---|
@@ -137,6 +138,8 @@ python3 scripts/probe_runtimes.py --json
 | Shell | bash 5.3.15、zsh 5.9 | — |
 
 同机把 PATH 收窄到 `/usr/bin:/bin`（模拟没有 node/npm/brew 的裸机）复跑，结论变为：Claude Code、Codex CLI、Kimi Code CLI、Qoder CLI、OpenCode CLI、Antigravity CLI、WorkBuddy 七项仍判「可安装」（走官方独立安装渠道），只有 Pi 与 Deep Code CLI 判「被阻塞 — npm 全局安装：缺 node、缺 npm」。**缺 Node 不等于装不了 AI CLI**，多数目标有官方独立安装渠道，先别急着装环境。
+
+再把 node 换成 20.19.0 复跑，版本门槛按各技能核对过的要求分道：Qoder CLI 的 npm 渠道保留（要求 ≥ 20），Claude Code（≥ 22）与 Kimi Code CLI（≥ 22.19）的 npm 渠道被摘掉但仍可走官方独立安装，只有没有兜底渠道的 Deep Code CLI 判「被阻塞 — node 20.19.0 < 22」。**版本不够挡掉的是渠道，不一定是这个工具。**
 
 ## 前向测试
 

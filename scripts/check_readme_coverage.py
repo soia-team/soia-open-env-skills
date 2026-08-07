@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""Check that every real skill under skills/ is mentioned in the top-level README.md.
+"""Check that every real skill under skills/ is mentioned in each top-level README.
+
+Covers README.md and, when present, README.en.md. Checking only the Chinese
+README let soia-env-pi-cli-install go missing from README.en.md for several
+releases while its own "16 skills" counters stayed self-consistent -- the
+translated README is exactly where a newly added skill gets forgotten.
 
 Scope, on purpose: this is a literal substring presence check only. It answers
-one narrow question -- "does this skill name appear anywhere in README.md's
+one narrow question -- "does this skill name appear anywhere in the README's
 text?" -- and nothing else. It does not check whether the description is
 accurate, whether the status marker (checked/warning) is correct, or whether
 the skill is filed under the right section. That kind of semantic review is
 expensive to automate reliably and produces high false-positive rates as the
 README's prose evolves; a human (or a doc-sync skill) is the right tool for
 that job. This script only guards against the cheapest, highest-value failure
-mode: a skill quietly shipped or renamed and the top-level README never
+mode: a skill quietly shipped or renamed and a top-level README never
 mentions it at all.
 """
 
@@ -55,9 +60,21 @@ def find_missing(skill_names: list[str], readme_text: str) -> list[str]:
     return [name for name in skill_names if name not in readme_text]
 
 
+def readmes_to_check(repo_root: Path) -> list[Path]:
+    """README.md is required; translated READMEs are checked when they exist.
+
+    A missing README.en.md is a deliberate choice (not every repo is bilingual),
+    so it is skipped rather than reported. An existing one is held to the same
+    coverage bar as the Chinese original.
+    """
+    paths = [repo_root / "README.md"]
+    paths.extend(path for path in (repo_root / "README.en.md",) if path.is_file())
+    return paths
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Check that every skills/<name>/SKILL.md skill is mentioned in the top-level README.md."
+        description="Check that every skills/<name>/SKILL.md skill is mentioned in each top-level README."
     )
     parser.add_argument(
         "--repo-root",
@@ -68,27 +85,26 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve() if args.repo_root else find_repo_root(Path.cwd())
-    readme_path = repo_root / "README.md"
 
     skill_names = discover_skill_names(repo_root)
     if not skill_names:
         print(f"no skills with SKILL.md found under {repo_root / 'skills'}", file=sys.stderr)
         return 1
 
-    if not readme_path.is_file():
-        print(f"missing {readme_path}", file=sys.stderr)
-        return 1
-
-    readme_text = readme_path.read_text(encoding="utf-8")
-    missing = find_missing(skill_names, readme_text)
-
-    if missing:
-        for name in missing:
-            print(name)
-        return 1
-
-    print(f"✓ 全部 {len(skill_names)} 个技能都在 README.md 里被提及")
-    return 0
+    failed = False
+    for readme_path in readmes_to_check(repo_root):
+        if not readme_path.is_file():
+            print(f"missing {readme_path}", file=sys.stderr)
+            failed = True
+            continue
+        missing = find_missing(skill_names, readme_path.read_text(encoding="utf-8"))
+        if missing:
+            failed = True
+            for name in missing:
+                print(f"{readme_path.name}: {name}")
+        else:
+            print(f"✓ 全部 {len(skill_names)} 个技能都在 {readme_path.name} 里被提及")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
