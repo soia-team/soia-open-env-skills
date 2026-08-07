@@ -46,7 +46,7 @@ flowchart LR
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | Plans and verifies a development environment from scratch, coordinating the install skills it needs | ✅ |
 | [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | Installs or updates SOIA open skills across the three hosts, at full, per-plugin or per-host scope | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | Audits and upgrades several AI CLIs under authorization, dry-running first and verifying after | ✅ |
-| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, reported in a fixed seven-column table | ✅ |
+| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, plus a categorized local runtime inventory that derives which AI CLIs this machine can install, reported in a fixed seven-column table | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | Measures managed config, state and cache usage and produces a list; deletes only after consent, then rechecks | ✅ |
 
 ### 02 Runtimes　`Empty machine → working Node and Python`

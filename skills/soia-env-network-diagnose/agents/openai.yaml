@@ -1,4 +1,4 @@
 interface:
-  display_name: "Network Diagnose"
-  short_description: "Diagnose network access before installing tools."
-  default_prompt: "Check why downloads or package installs fail."
+  display_name: "Network & Runtime Diagnose"
+  short_description: "Diagnose network access and local runtimes before installing AI tools."
+  default_prompt: "Check why downloads or package installs fail, and what this machine can install."

@@ -45,10 +45,13 @@
 
 ### soia-env-network-diagnose
 
-只读诊断，任何安装类技能卡住时的第一站；不修改代理、DNS、证书或防火墙。
+只读诊断，任何安装类技能卡住时的第一站；不修改代理、DNS、证书或防火墙，也不安装任何运行时。分两侧：网络侧判断外面连不连得上，本机侧判断缺不缺运行时。
 
 ```bash
+# 网络侧
 python3 scripts/probe_endpoints.py --url https://nodejs.org/en --url https://www.python.org/downloads/ --json
+# 本机侧：分类盘点运行时并推导可安装的 AI CLI
+python3 scripts/probe_runtimes.py --json
 ```
 
 **典型输出**：固定七列状态表，`处理结果` 明确写“可以继续安装”或“需要处理：<错误类别>”；错误类别限定在 `dns_failed`/`tls_failed`/`timeout`/`http_error`/`proxy_required`/`reachable` 之内，不做“网络整体不可用”这种一次探测就下的断言。
