@@ -76,11 +76,11 @@ flowchart LR
 |---|---|:-:|
 | [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy 桌面端安装、签名验证与按授权更新 | ✅ |
 
-✅ 全部 16 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
+✅ 全部 17 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
 
 ## 安装
 
-三个宿主任选，装整个领域插件即 16 个技能一次到位。
+三个宿主任选，装整个领域插件即 17 个技能一次到位。
 
 ```bash
 claude plugin marketplace add soia-team/soia-open-skills && claude plugin install soia-env@soia

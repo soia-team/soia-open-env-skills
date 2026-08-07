@@ -4,9 +4,9 @@ description: 从零规划并验证面向新手的开发环境，协调所需安�
 dependencies:
   hard: [soia-env-network-diagnose]
   optional: [soia-env-node-install, soia-env-python-install, soia-env-codex-install, soia-env-claude-cli-install, soia-env-qoder-cli-install, soia-env-antigravity-cli-install, soia-env-opencode-cli-install, soia-env-kimi-cli-install, soia-env-deepcode-cli-install, soia-env-codex-setup-support, soia-env-workbuddy-install, soia-env-storage-cleanup, soia-env-open-skills-install]
-version: 1.6.4
+version: 1.6.5
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-05 13:30:00
+updated_at: 2026-08-07 12:50:00
 created_by: gpt-5
 updated_by: claude-opus-5
 ---
@@ -56,7 +56,7 @@ updated_by: claude-opus-5
 
 | 依赖 | 类型 | 处理方式 |
 |---|---|---|
-| `soia-env-network-diagnose` | 前置技能 | 先检查 DNS/HTTPS/下载源；缺少时做最小网络检查 |
+| `soia-env-network-diagnose` | 前置技能 | 网络侧先检查 DNS/HTTPS/下载源，本机侧盘点运行时并推导各 AI CLI 可安装性；缺少时做最小检查 |
 | `soia-env-node-install` | 按目标启用 | Codex 或 Node 项目需要时调用 |
 | `soia-env-python-install` | 按目标启用 | Python 项目或脚本需要时调用 |
 | `soia-env-codex-install` | 按目标启用 | 客户明确要使用 Codex 时调用 |
@@ -77,9 +77,9 @@ updated_by: claude-opus-5
 
 ## 执行流程
 
-1. 识别 OS、版本、架构、shell、当前用户权限和项目目录；缺失信息由 Agent 只读探测。
+1. 识别 OS、版本、架构、shell、当前用户权限和项目目录。运行时盘点走 `soia-env-network-diagnose` 的 `scripts/probe_runtimes.py --json`，**不要自己临场拼版本命令**——各运行时的版本参数不一致（`go` 不认 `--version`、`java` 把版本写进 stderr、`rustc` 冷启动会超时），该脚本已按工具适配并有测试锁住。
 2. 把目标拆成 `network → runtime → package manager → AI tool → downstream handoff`。
-3. 使用 `soia-env-network-diagnose` 的只读流程检查官方站点。出现代理、证书、DNS 或超时问题时，先输出诊断，不自动改网络配置。
+3. 用 `soia-env-network-diagnose` 的只读流程分两侧检查：网络侧按三组对照探测官方站点，本机侧按类别盘点运行时并给出各 AI CLI 的「可安装 / 待复核 / 被阻塞」。出现代理、证书、DNS 或超时问题时，先输出诊断，不自动改网络配置；运行时状态为 `timeout` 时判「待复核」并放宽超时复核，**不得当成未安装直接触发安装**。
 4. 按依赖顺序执行：选择 npm 渠道的 Agent CLI 先满足对应 Node.js 要求；Deep Code 固定要求 Node.js 22+；Claude Code、Qoder、OpenCode、Kimi Code 有独立安装时不因 Node.js 缺失而阻塞；Antigravity 使用 Google 独立安装；Python 工作流先准备 Python/venv；WorkBuddy 使用官方桌面安装包。
 5. 对已安装工具默认只比较版本；没有明确“更新到最新”时不得进入专门技能的更新执行阶段。
 6. 安装或明确授权的更新由专门技能边执行边显示阶段状态并记录私有进度；每一步完成后验证命令、版本、路径和一次无副作用的 `--help`/版本调用。对需要登录或 API key 的 CLI，还必须完成首次配置和真实认证验证；否则标记为 `needs_configuration`。

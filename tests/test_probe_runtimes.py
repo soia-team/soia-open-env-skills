@@ -88,6 +88,40 @@ class RuntimeTableTests(unittest.TestCase):
                     with self.subTest(cli=cli["name"], channel=label):
                         self.assertIn(runtime, declared)
 
+    def test_npm_node_thresholds_match_upstream_official_sources(self):
+        """门槛取自各安装技能 references/official-sources.md 的「已核对事实」段。
+
+        这些包在 package.json 里声明了 engines.node，装在低版本 Node 上会失败；
+        门槛漏填会让低版本机器误判「可安装」。上游改版本要同步改这里和本断言。
+        """
+        expected = {
+            "Claude Code": "22",       # @anthropic-ai/claude-code 声明 Node.js 22+
+            "Kimi Code CLI": "22.19",  # @moonshot-ai/kimi-code 声明 Node.js 22.19+
+            "Qoder CLI": "20",         # @qoder-ai/qodercli 声明 Node.js 20+
+            "Deep Code CLI": "22",     # @vegamo/deepcode-cli 声明 Node.js 22+
+        }
+        found = {}
+        for cli in probe_runtimes.AI_CLIS:
+            for label, requires in cli["channels"]:
+                if "npm" not in label:
+                    continue
+                for runtime, minimum in requires:
+                    if runtime == "node" and minimum:
+                        found[cli["name"]] = minimum
+        self.assertEqual(found, expected)
+
+
+class PlatformInfoTests(unittest.TestCase):
+    def test_reports_os_arch_without_leaking_identity(self):
+        host = probe_runtimes.platform_info()
+        self.assertEqual(set(host), {"os", "arch", "os_version"})
+        for value in host.values():
+            self.assertIsInstance(value, str)
+            self.assertTrue(value)
+        home = probe_runtimes.os.path.expanduser("~")
+        self.assertNotIn(home, str(host))
+        self.assertNotIn(probe_runtimes.os.path.basename(home), str(host))
+
 
 class DetectTests(unittest.TestCase):
     def test_missing_command_is_absent(self):
@@ -166,6 +200,23 @@ class InstallabilityTests(unittest.TestCase):
         self.assertEqual(verdicts["Deep Code CLI"], "被阻塞")
         blocked = next(e for e in probe_runtimes.installability(rows) if e["name"] == "Deep Code CLI")
         self.assertIn("node 18.20.0 < 22", blocked["channels"][0]["blockers"])
+
+    def test_node_20_splits_the_npm_channel_by_threshold(self):
+        """Node 20 满足 Qoder 但不满足 Claude/Kimi/Deep Code——门槛漏填就会全判可装。"""
+        rows = self.runtimes(node=("available", "20.19.0"), npm=("available", "10.8.2"))
+        report = {entry["name"]: entry for entry in probe_runtimes.installability(rows)}
+
+        def npm_channel(name):
+            return next(c for c in report[name]["channels"] if "npm" in c["label"])
+
+        self.assertEqual(npm_channel("Qoder CLI")["status"], "ok")
+        self.assertEqual(npm_channel("Claude Code")["status"], "blocked")
+        self.assertIn("node 20.19.0 < 22", npm_channel("Claude Code")["blockers"])
+        self.assertIn("node 20.19.0 < 22.19", npm_channel("Kimi Code CLI")["blockers"])
+        # 官方独立安装渠道不受 Node 版本影响，整体仍判可安装。
+        self.assertEqual(report["Claude Code"]["verdict"], "可安装")
+        # Deep Code 只有 npm 一条渠道，没有兜底，直接被阻塞。
+        self.assertEqual(report["Deep Code CLI"]["verdict"], "被阻塞")
 
     def test_timeout_downgrades_to_review_not_blocked(self):
         rows = self.runtimes(node=("timeout", None), npm=("available", "10.8.2"))

@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -59,20 +60,27 @@ RUNTIMES: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("zsh", "shell", ("--version",)),
 )
 
-# 渠道依赖取自本仓各安装技能 SKILL.md 的「依赖与安装」表；上游改了要同步这里。
+# 渠道依赖取自本仓各安装技能 SKILL.md 的「依赖与安装」表；
+# Node 版本门槛取自各技能 references/official-sources.md 的「已核对事实」段。
+# 上游改了要同步这里，别在这里凭印象填版本号。
 # 关键事实：多数 AI CLI 有官方独立安装渠道，并不强依赖 Node.js；
 # 只有 Pi 与 Deep Code 把 soia-env-node-install 列为 hard 依赖。
+# 门槛为 None 表示「仓内尚未核对到具体版本」，不表示「没有要求」——见 runtimes.md。
 AI_CLIS: tuple[dict[str, object], ...] = (
     {"name": "Claude Code", "source": "soia-env-claude-cli-install",
-     "channels": (("官方独立安装", ()), ("npm 全局安装", (("node", None), ("npm", None))))},
+     # official-sources.md：@anthropic-ai/claude-code 当前包声明 Node.js 22 或更高
+     "channels": (("官方独立安装", ()), ("npm 全局安装", (("node", "22"), ("npm", None))))},
     {"name": "Codex CLI", "source": "soia-env-codex-install",
+     # official-sources.md 明确「Node 版本要求以官方页面与实际 codex --help 为准」，不写死
      "channels": (("官方独立安装", ()), ("Homebrew", (("brew", None),)),
                   ("npm 全局安装", (("node", None), ("npm", None))))},
     {"name": "Kimi Code CLI", "source": "soia-env-kimi-cli-install",
-     "channels": (("官方独立安装", ()), ("npm 全局安装", (("node", None), ("npm", None))))},
+     # official-sources.md：@moonshot-ai/kimi-code 当前包声明 Node.js 22.19 或更高
+     "channels": (("官方独立安装", ()), ("npm 全局安装", (("node", "22.19"), ("npm", None))))},
     {"name": "Qoder CLI", "source": "soia-env-qoder-cli-install",
+     # official-sources.md：@qoder-ai/qodercli 当前包声明 Node.js 20 或更高
      "channels": (("官方独立安装", ()), ("Homebrew", (("brew", None),)),
-                  ("npm 全局安装", (("node", None), ("npm", None))))},
+                  ("npm 全局安装", (("node", "20"), ("npm", None))))},
     {"name": "OpenCode CLI", "source": "soia-env-opencode-cli-install",
      "channels": (("官方独立安装", ()), ("Homebrew", (("brew", None),)),
                   ("npm 全局安装", (("node", None), ("npm", None))))},
@@ -83,6 +91,7 @@ AI_CLIS: tuple[dict[str, object], ...] = (
     {"name": "Pi", "source": "soia-env-pi-cli-install",
      "channels": (("npm 全局安装", (("node", None), ("npm", None))),)},
     {"name": "Deep Code CLI", "source": "soia-env-deepcode-cli-install",
+     # official-sources.md：@vegamo/deepcode-cli 要求 Node.js 22 或更高
      "channels": (("npm 全局安装", (("node", "22"), ("npm", None))),)},
 )
 
@@ -92,6 +101,23 @@ _VERSION_BARE = re.compile(r"\d+")
 
 def now_rfc3339() -> str:
     return datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+
+def platform_info() -> dict[str, str]:
+    """OS 与架构只作为事实上报，本技能不判断某个 CLI 是否支持该平台。
+
+    多个安装技能把「官方支持的操作系统/架构」列为强依赖，但支持矩阵在各家官方
+    清单里（例如 Antigravity 由自己的 check_latest.py 实时拉取），仓内没有静态真源。
+    在这里编一张矩阵等于造事实，所以只提供 os/arch 供下游安装技能自行判断。
+    """
+    system = (platform.system() or "unknown").lower()
+    if system == "darwin":
+        version = platform.mac_ver()[0] or platform.release()
+    elif system == "windows":
+        version = platform.win32_ver()[0] or platform.release()
+    else:
+        version = platform.release()
+    return {"os": system, "arch": platform.machine() or "unknown", "os_version": version or "unknown"}
 
 
 def sanitized_path(path: str) -> str:
@@ -188,7 +214,9 @@ LABELS = {"absent": "未安装", "timeout": "版本查询超时（不等于未�
 
 
 def render(results: list[dict[str, object]], report: list[dict[str, object]], timeout: float) -> None:
-    print(f"运行时盘点（timeout={timeout}s，{now_rfc3339()}）")
+    host = platform_info()
+    print(f"运行时盘点（{host['os']} {host['os_version']} / {host['arch']}，"
+          f"timeout={timeout}s，{now_rfc3339()}）")
     for key, title in CATEGORIES.items():
         rows = [item for item in results if item["category"] == key]
         if not rows:
@@ -233,7 +261,8 @@ def main() -> int:
     report = installability(results)
     if args.json:
         print(json.dumps({"checked_at": now_rfc3339(), "timeout_s": timeout,
-                          "runtimes": results, "installable": report}, ensure_ascii=False))
+                          "host": platform_info(), "runtimes": results,
+                          "installable": report}, ensure_ascii=False))
     else:
         render(results, report, timeout)
     return 0

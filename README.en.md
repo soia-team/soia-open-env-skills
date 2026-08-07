@@ -6,13 +6,13 @@
 
 **The most misleading state an AI tool can be in: the command runs, but it isn't usable**
 
-16 skills that install it, verify it, and diagnose it. Read-only diagnosis; destructive actions need your authorization
+17 skills that install it, verify it, and diagnose it. Read-only diagnosis; destructive actions need your authorization
 
 [中文](README.md) · English · [Ecosystem portal](https://github.com/soia-team/soia-open-skills)
 
 <p align="center">
   <img alt="plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsoia-team%2Fsoia-open-env-skills%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=F5A623&prefix=v">
-  <img alt="skills" src="https://img.shields.io/badge/skills-16-brightgreen">
+  <img alt="skills" src="https://img.shields.io/badge/skills-17-brightgreen">
   <img alt="hosts" src="https://img.shields.io/badge/hosts-Claude%20%C2%B7%20Codex%20%C2%B7%20WorkBuddy-8A2BE2">
   <img alt="always-on cost" src="https://img.shields.io/badge/always--on-~1.5k%20tok-lightgrey">
   <img alt="license" src="https://img.shields.io/github/license/soia-team/soia-open-env-skills?color=blue">
@@ -37,7 +37,7 @@ flowchart LR
     E --> G["Disk hygiene<br/>list → consent → delete → recheck"]
 ```
 
-## 16 skills
+## 17 skills
 
 ### 01 Planning and verification　`A new machine → a verified, working AI environment`
 
@@ -67,6 +67,7 @@ flowchart LR
 | [`soia-env-opencode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-opencode-cli-install.md) | OpenCode CLI install, login and configuration | ✅ |
 | [`soia-env-antigravity-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-antigravity-cli-install.md) | Google Antigravity CLI (`agy`) install, login and migration from Gemini CLI | ✅ |
 | [`soia-env-deepcode-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-deepcode-cli-install.md) | Open-source Deep Code Agent CLI install and configuration | ✅ |
+| [`soia-env-pi-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-pi-cli-install.md) | Pi (pi-coding-agent) CLI install and configuration | ✅ |
 | [`soia-env-qoder-cli-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-qoder-cli-install.md) | Qoder CLI; distinguishes official standalone, Homebrew and npm sources | ✅ |
 
 ### 04 Desktop clients　`Download page → installed, signature verified, launches`
@@ -75,11 +76,11 @@ flowchart LR
 |---|---|:-:|
 | [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy desktop install, signature verification and authorized update | ✅ |
 
-✅ All 16 skills work right after install — no API key needed. Logins and system prompts are completed by you in each official interface
+✅ All 17 skills work right after install — no API key needed. Logins and system prompts are completed by you in each official interface
 
 ## Install
 
-Any of three hosts. Installing the domain plugin brings all 16 skills at once.
+Any of three hosts. Installing the domain plugin brings all 17 skills at once.
 
 ```bash
 claude plugin marketplace add soia-team/soia-open-skills && claude plugin install soia-env@soia
