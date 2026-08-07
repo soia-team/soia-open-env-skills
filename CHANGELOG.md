@@ -3,6 +3,16 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.10.1 — 2026-08-08
+
+对齐 codex 版本轨道（v1.10.0 时 codex manifest 停在 1.9.1 的修正补发）；内容与 v1.10.0 一致
+
+## 修复
+- fix(release): 对齐 codex 版本轨道至 claude 列车 (1.9.2 -> 1.10.1-SNAPSHOT) (#65)
+
+## 维护
+- chore(release): open next train after v1.10.0 (#64)
+
 ## v1.10.0 — 2026-08-08
 
 network-diagnose 1.4.2：本机运行时分类盘点（23 项六类）与 AI CLI 可安装性推导、npm 渠道 Node 版本门槛、安装章节规范位；environment-setup 1.6.5 接入运行时盘点
