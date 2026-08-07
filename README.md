@@ -46,7 +46,7 @@ flowchart LR
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | 从零规划并验证开发环境，协调所需的安装技能 | ✅ |
 | [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | 在三个宿主上安装或更新 SOIA 开源技能，支持全量、单插件与指定宿主 | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | 审计并按授权升级多款 AI CLI，先预演再核验结果 | ✅ |
-| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | 只读诊断 DNS、HTTPS、代理、证书与官方源，按固定七列汇报 | ✅ |
+| [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | 只读诊断 DNS、HTTPS、代理、证书与官方源，并按类别盘点本机运行时、推导能装哪些 AI CLI，按固定七列汇报 | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | 统计受管配置、状态、缓存占用，出清单；授权后才删，事后复核 | ✅ |
 
 ### 02 运行时　`空环境 → 可用的 Node 与 Python`
