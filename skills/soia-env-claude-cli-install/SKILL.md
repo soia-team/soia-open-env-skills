@@ -3,9 +3,9 @@ name: soia-env-claude-cli-install
 description: 为小白安装、登录与授权更新 Anthropic Claude Code CLI。触发：「安装 Claude CLI」「Claude 命令不存在」「Claude 登录」。
 dependencies:
   optional: [soia-env-node-install, soia-env-network-diagnose]
-version: 1.0.3
+version: 1.0.4
 created_at: 2026-07-21 11:20:00
-updated_at: 2026-08-05 13:30:00
+updated_at: 2026-08-08 16:40:00
 created_by: gpt-5
 updated_by: claude-opus-5
 ---
@@ -50,6 +50,13 @@ updated_by: claude-opus-5
 | Anthropic 账号 | 登录依赖 | 客户在官方浏览器完成授权，Agent 不读取凭据 |
 
 官方来源、包名、配置和自动更新事实见 [official-sources.md](references/official-sources.md)。
+
+国内网络环境提示：npm 渠道安装超时、下载失败时，可先切换 npmmirror 国内镜像源再重试，完成后按需切回官方源；最新版查询走 npm 官方 registry，受限网络下如实写「未取得」，不猜测：
+
+```bash
+npm config set registry https://registry.npmmirror.com   # 切国内镜像
+npm config set registry https://registry.npmjs.org       # 切回官方源
+```
 
 ## 标准流程
 
@@ -114,6 +121,38 @@ checking → planning → [waiting_confirmation] → installing/updating → ver
 ## 日志与完成回执
 
 最终回执包含固定十列表格、验证过的命令类别、是否需要浏览器授权，以及失败时可恢复的原版本。正常依赖不展开为额外行。
+
+## 样例：一次真实检查
+
+2026-08-08 在 macOS（arm64）真机执行标准流程第 1、2 步的实际结果（路径经 `~` 脱敏，数据逐字保留）：
+
+`inspect_cli.py --json` 关键字段：
+
+| 字段 | 实际值 |
+|---|---|
+| current_status | 已安装 |
+| current_version | 2.1.226 |
+| install_method | Homebrew 安装 |
+| install_dir | /opt/homebrew/Caskroom/claude-code@latest/2.1.226 |
+| config_status / config_file_status | 已创建 / 已存在 |
+| runtime_status | 正常 |
+
+`check_latest.py --json`：latest_version 2.1.226（source: npm）。
+
+最终十列客户状态表（`render_status.py` 实际渲染）：
+
+| 技能 | 当前状态 | 当前版本 | 最新版本 | 运行状态 | 安装方式 | 安装目录 | 配置文件目录 | 更新时间 | 处理结果 |
+|---|---|---|---|---|---|---|---|---|---|
+| Claude Code CLI | 已安装 | 2.1.226 | 2.1.226 | 正常 | Homebrew 安装 | /opt/homebrew/Caskroom/claude-code@latest/2.1.226 | ~/.claude | 2026-08-08T16:25:10+08:00 | 已是最新 |
+
+真实细节一则：这台机器当天 14:40 检查时版本还是 2.1.224，16:25 已是 2.1.226——Homebrew `claude-code@latest` 通道的产品自动更新在工作，这正是「产品自动更新边界」一节要求必须披露的情形。
+
+## 不负责什么（能力边界）
+
+- **不代客户完成登录与授权**：浏览器授权、验证码、API key 创建都由客户在 Anthropic 官方页面完成；不读取、不接收、不回显任何凭据
+- **默认不更新已装版本**：「帮我安装」只授权装缺失的；更新需要「更新到最新版本」级别的明确表述
+- **不动系统**：不默认 `sudo`，不改 shell profile 与 PATH，不卸载或清理机器上的其他 `claude` 副本（发现多副本只汇报冲突）
+- **不负责 Claude 桌面应用与账号计费**：只管 CLI 的安装、检查、更新与登录引导
 
 ## 前向测试
 
