@@ -201,18 +201,18 @@ class InstallabilityTests(unittest.TestCase):
         blocked = next(e for e in probe_runtimes.installability(rows) if e["name"] == "Deep Code CLI")
         self.assertIn("node 18.20.0 < 22", blocked["channels"][0]["blockers"])
 
-    def test_node_20_splits_the_npm_channel_by_threshold(self):
+    def test_node_20_splits_the_pkg_channel_by_threshold(self):
         """Node 20 满足 Qoder 但不满足 Claude/Kimi/Deep Code——门槛漏填就会全判可装。"""
         rows = self.runtimes(node=("available", "20.19.0"), npm=("available", "10.8.2"))
         report = {entry["name"]: entry for entry in probe_runtimes.installability(rows)}
 
-        def npm_channel(name):
+        def pkg_channel(name):
             return next(c for c in report[name]["channels"] if "npm" in c["label"])
 
-        self.assertEqual(npm_channel("Qoder CLI")["status"], "ok")
-        self.assertEqual(npm_channel("Claude Code")["status"], "blocked")
-        self.assertIn("node 20.19.0 < 22", npm_channel("Claude Code")["blockers"])
-        self.assertIn("node 20.19.0 < 22.19", npm_channel("Kimi Code CLI")["blockers"])
+        self.assertEqual(pkg_channel("Qoder CLI")["status"], "ok")
+        self.assertEqual(pkg_channel("Claude Code")["status"], "blocked")
+        self.assertIn("node 20.19.0 < 22", pkg_channel("Claude Code")["blockers"])
+        self.assertIn("node 20.19.0 < 22.19", pkg_channel("Kimi Code CLI")["blockers"])
         # 官方独立安装渠道不受 Node 版本影响，整体仍判可安装。
         self.assertEqual(report["Claude Code"]["verdict"], "可安装")
         # Deep Code 只有 npm 一条渠道，没有兜底，直接被阻塞。

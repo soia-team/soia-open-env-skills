@@ -1,9 +1,9 @@
 ---
 name: soia-env-network-diagnose
 description: 只读诊断安装 AI 工具前的环境问题：网络侧检查 DNS、HTTPS、代理、证书、官方源和超时；本机侧按 Node/Python/Rust/Go/包管理器/Shell 分类盘点运行时，推导当前机器能装哪些 AI CLI，并用固定七列列表汇报。触发：「网络不通」「下载失败」「npm/pip 超时」「证书错误」「安装卡住」「装之前先检查环境」「这台机器能装什么」「有没有装 node」。
-version: 1.4.2
+version: 1.4.3
 created_at: 2026-07-20 18:00:00
-updated_at: 2026-08-08 00:30:00
+updated_at: 2026-08-09 00:20:00
 created_by: gpt-5
 updated_by: claude-opus-5
 ---
@@ -106,7 +106,7 @@ npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-network-diag
 
 ## 安全边界
 
-- 不执行 `curl | bash`、未知脚本、临时关闭 TLS 校验或绕过系统安全策略。
+- 不执行 pipe-to-shell 形式的远程安装命令与未知脚本；涉及安装建议时一律采用「下载 → 审阅 → 本地执行」三段式表述，不临时关闭 TLS 校验或绕过系统安全策略。
 - 不把代理 URL、Authorization header、cookie、包管理器凭据写入日志。
 - 不自动替换 npm/pip 源；如用户明确要求，先显示当前值、目标值和恢复命令。
 - 网络探测脚本只返回状态码、错误类别和耗时，不保存响应正文。
