@@ -1,51 +1,59 @@
-"""soia-env-ai-cli-upgrade 专属自包含测试。
+"""soia-env-ai-cli-upgrade 专属自包含契约测试。
 
-只引用本技能文件与 Python 标准库，离线可跑：用临时桩命令验证 dry-run 审计的
-三条核心承诺——只读不升级、缺失工具如实报告、日志落盘。
-支持仓布局与市场包布局双解析（进包后照常实跑）。
+只引用本技能文件与 Python 标准库，离线可跑。契约锁定引擎的全部对外行为：
+表格列、状态字、环境变量语义、退出码、日志落盘与轮转。测试对仓内存在的
+每个引擎（bash 旧引擎 / Python 新引擎）逐一运行同一套断言——进市场包后
+只剩 Python 引擎，套件自动收敛到它。支持仓布局与市场包布局双解析。
 """
+import os
 import pathlib
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-_REPO_LAYOUT = ROOT / "skills" / "soia-env-ai-cli-upgrade" / "scripts" / "upgrade-ai-clis.sh"
-_PACKAGE_LAYOUT = ROOT / "scripts" / "upgrade-ai-clis.sh"
-if _REPO_LAYOUT.exists():
-    SCRIPT = _REPO_LAYOUT
-elif _PACKAGE_LAYOUT.exists():
-    SCRIPT = _PACKAGE_LAYOUT
-else:
-    raise FileNotFoundError(
-        "找不到 upgrade-ai-clis.sh：仓布局 {} 与包布局 {} 均不存在".format(
-            _REPO_LAYOUT, _PACKAGE_LAYOUT))
+_SKILL_DIRS = [ROOT / "skills" / "soia-env-ai-cli-upgrade", ROOT]
+SKILL_DIR = next((d for d in _SKILL_DIRS if (d / "scripts").is_dir()), None)
+if SKILL_DIR is None:
+    raise FileNotFoundError(f"找不到 scripts 目录：仓布局与包布局均不存在（尝试 {_SKILL_DIRS}）")
+
+ENGINES = []
+_SH = SKILL_DIR / "scripts" / "upgrade-ai-clis.sh"
+_PY = SKILL_DIR / "scripts" / "upgrade_ai_clis.py"
+if _SH.exists():
+    ENGINES.append(("bash", ["bash", str(_SH)]))
+if _PY.exists():
+    ENGINES.append(("python", [sys.executable, str(_PY)]))
+if not ENGINES:
+    raise FileNotFoundError("找不到任何引擎：upgrade-ai-clis.sh 与 upgrade_ai_clis.py 均不存在")
 
 STUB_VERSION = "9.9.9"
-STUB = "#!/bin/sh\nif [ \"$1\" = \"--version\" ]; then echo {v}; exit 0; fi\nexit 1\n"
+STUB_UPDATED_VERSION = "9.10.0"
 
 
-def run_script(env_overrides, workdir):
-    """在受控 PATH 与临时 HOME 下跑脚本，返回 CompletedProcess。"""
-    env = {
-        "HOME": str(workdir / "home"),
-        "PATH": env_overrides.pop("PATH", "/usr/bin:/bin:/usr/sbin:/sbin"),
-        "TMPDIR": str(workdir / "tmp"),
-        "DRY_RUN": "1",
-        "NPM_PREFIX": str(workdir / "npm-absent"),
-        "LOG_DIR": str(workdir / "logs"),
-    }
-    env.update(env_overrides)
-    for key in ("HOME", "TMPDIR"):
-        pathlib.Path(env[key]).mkdir(parents=True, exist_ok=True)
-    return subprocess.run(
-        ["bash", str(SCRIPT)], env=env, cwd=str(workdir),
-        capture_output=True, text=True, timeout=120,
-    )
+def make_stub(stub_dir, name, update_behavior="noop"):
+    """生成有状态桩命令：--version 读版本文件；update 按行为改状态或失败。"""
+    stub_dir.mkdir(parents=True, exist_ok=True)
+    version_file = stub_dir / f"{name}.version"
+    version_file.write_text(STUB_VERSION + "\n")
+    if update_behavior == "bump":
+        update_lines = f'echo "{STUB_UPDATED_VERSION}" > "$d/{name}.version"; exit 0'
+    elif update_behavior == "fail":
+        update_lines = "exit 1"
+    else:
+        update_lines = "exit 0"
+    stub = stub_dir / name
+    stub.write_text(
+        '#!/bin/sh\nd="$(cd "$(dirname "$0")" && pwd)"\n'
+        f'case "$1" in\n  --version) cat "$d/{name}.version"; exit 0;;\n'
+        f'  update) {update_lines};;\nesac\nexit 1\n')
+    stub.chmod(stub.stat().st_mode | stat.S_IXUSR)
+    return stub_dir
 
 
-class DryRunAuditTests(unittest.TestCase):
+class EngineContractTests(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory(prefix="ai-cli-upgrade-test.")
         self.workdir = pathlib.Path(self._tmp.name)
@@ -53,46 +61,156 @@ class DryRunAuditTests(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
-    def _make_stub(self, name):
-        stub_dir = self.workdir / "stub-bin"
-        stub_dir.mkdir(exist_ok=True)
-        stub = stub_dir / name
-        stub.write_text(STUB.format(v=STUB_VERSION))
-        stub.chmod(stub.stat().st_mode | stat.S_IXUSR)
-        return stub_dir
+    def run_engine(self, argv, env_overrides, workdir=None):
+        workdir = workdir or self.workdir
+        env = {
+            "HOME": str(workdir / "home"),
+            "PATH": env_overrides.pop("PATH", "/usr/bin:/bin:/usr/sbin:/sbin"),
+            "TMPDIR": str(workdir / "tmp"),
+            "NPM_PREFIX": str(workdir / "npm-absent"),
+            "LOG_DIR": str(workdir / "logs"),
+        }
+        env.update(env_overrides)
+        for key in ("HOME", "TMPDIR"):
+            pathlib.Path(env[key]).mkdir(parents=True, exist_ok=True)
+        return subprocess.run(argv, env=env, cwd=str(workdir),
+                              capture_output=True, text=True, timeout=120)
 
-    def test_script_syntax_is_valid(self):
-        result = subprocess.run(["bash", "-n", str(SCRIPT)],
-                                capture_output=True, text=True, timeout=30)
-        self.assertEqual(result.returncode, 0, result.stderr)
+    def each_engine(self):
+        for name, argv in ENGINES:
+            with self.subTest(engine=name):
+                yield name, argv
+
+    # ---- 静态检查 --------------------------------------------------------
+
+    def test_engine_sources_are_valid(self):
+        for name, argv in self.each_engine():
+            if name == "bash":
+                result = subprocess.run(["bash", "-n", argv[1]],
+                                        capture_output=True, text=True, timeout=30)
+            else:
+                result = subprocess.run(
+                    [sys.executable, "-m", "py_compile", argv[1]],
+                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    # ---- dry-run 契约 ----------------------------------------------------
 
     def test_dry_run_audits_without_upgrading(self):
-        """桩工具在 PATH 上：报 SKIP_DRY_RUN 与当前版本，不执行任何升级。"""
-        stub_dir = self._make_stub("qodercli")
-        result = run_script(
-            {"TOOLS": "qodercli",
-             "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"},
-            self.workdir,
-        )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("SKIP_DRY_RUN", result.stdout)
-        self.assertIn(STUB_VERSION, result.stdout)
-        self.assertNotIn("NOT_INSTALLED", result.stdout)
-        self.assertNotIn("FAILED", result.stdout)
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-{name}", "qodercli")
+            result = self.run_engine(argv, {
+                "DRY_RUN": "1", "TOOLS": "qodercli",
+                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("SKIP_DRY_RUN", result.stdout)
+            self.assertIn(STUB_VERSION, result.stdout)
+            self.assertNotIn("FAILED", result.stdout)
+            version_file = stub_dir / "qodercli.version"
+            self.assertEqual(version_file.read_text().strip(), STUB_VERSION,
+                             "dry-run 不得触发升级改动状态")
+
+    def test_header_and_mode_line(self):
+        for name, argv in self.each_engine():
+            result = self.run_engine(argv, {"DRY_RUN": "1", "TOOLS": "qodercli"})
+            for column in ("TOOL", "COMMAND", "OLD", "NEW", "STATUS", "NOTE"):
+                self.assertIn(column, result.stdout)
+            self.assertIn("Mode: DRY_RUN", result.stdout)
+            self.assertIn("DONE. detail log:", result.stdout)
 
     def test_missing_tool_reported_without_failure(self):
-        """工具缺失：如实报 NOT_INSTALLED，且不视为脚本失败（退出码 0）。"""
-        result = run_script({"TOOLS": "qodercli"}, self.workdir)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("NOT_INSTALLED", result.stdout)
-        self.assertIn("command not found", result.stdout)
+        for name, argv in self.each_engine():
+            result = self.run_engine(argv, {"DRY_RUN": "1", "TOOLS": "qodercli"})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("NOT_INSTALLED", result.stdout)
+            self.assertIn("command not found", result.stdout)
 
-    def test_log_file_is_written_to_log_dir(self):
-        """每次运行落一份时间戳日志到 LOG_DIR。"""
-        run_script({"TOOLS": "qodercli"}, self.workdir)
-        logs = list((self.workdir / "logs").glob("cli-upgrade-*.log"))
-        self.assertEqual(len(logs), 1, "应恰好产生一份日志文件")
-        self.assertIn("Mode: DRY_RUN", logs[0].read_text())
+    # ---- LIVE 契约（桩内完成，不触网、不动真环境） ------------------------
+
+    def test_live_no_delta_reports_already_latest(self):
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-al-{name}", "qodercli", "noop")
+            result = self.run_engine(argv, {
+                "TOOLS": "qodercli",
+                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("ALREADY_LATEST", result.stdout)
+            self.assertIn("Mode: LIVE", result.stdout)
+
+    def test_live_version_delta_reports_updated(self):
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-up-{name}", "qodercli", "bump")
+            result = self.run_engine(argv, {
+                "TOOLS": "qodercli",
+                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("UPDATED", result.stdout)
+            self.assertIn(STUB_UPDATED_VERSION, result.stdout)
+
+    def test_live_update_failure_sets_exit_code(self):
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-fail-{name}", "qodercli", "fail")
+            result = self.run_engine(argv, {
+                "TOOLS": "qodercli",
+                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+            self.assertEqual(result.returncode, 1, "FAILED 行必须带动非零退出码")
+            self.assertIn("FAILED", result.stdout)
+            self.assertIn("DONE_WITH_FAILURES", result.stdout)
+
+    # ---- 环境变量语义 ----------------------------------------------------
+
+    def test_invalid_claude_channel_rejected(self):
+        for name, argv in self.each_engine():
+            result = self.run_engine(argv, {"CLAUDE_CHANNEL": "nightly",
+                                            "TOOLS": "qodercli"})
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("invalid CLAUDE_CHANNEL", result.stderr + result.stdout)
+
+    def test_npm_packages_alias_and_tools_priority(self):
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-alias-{name}", "qodercli")
+            common = {"DRY_RUN": "1",
+                      "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"}
+            via_alias = self.run_engine(argv, dict(common, NPM_PACKAGES="qodercli"))
+            self.assertIn("qodercli", via_alias.stdout)
+            self.assertIn("SKIP_DRY_RUN", via_alias.stdout)
+            tools_wins = self.run_engine(
+                argv, dict(common, TOOLS="qodercli", NPM_PACKAGES="cursor"))
+            self.assertIn("qodercli", tools_wins.stdout)
+            self.assertNotIn("cursor", tools_wins.stdout)
+
+    # ---- 日志契约 --------------------------------------------------------
+
+    def test_log_file_written_and_rotated(self):
+        for name, argv in self.each_engine():
+            workdir = self.workdir / f"logs-case-{name}"
+            log_dir = workdir / "logs"
+            log_dir.mkdir(parents=True)
+            for i in range(12):
+                stale = log_dir / f"cli-upgrade-2020-01-01_00-00-{i:02d}-1.log"
+                stale.write_text("old")
+                os.utime(stale, (1577836800 + i, 1577836800 + i))
+            result = self.run_engine(argv, {"DRY_RUN": "1", "TOOLS": "qodercli",
+                                            "LOG_KEEP": "3"}, workdir=workdir)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            logs = sorted(log_dir.glob("cli-upgrade-*.log"))
+            self.assertLessEqual(len(logs), 4, "轮转后至多保留 LOG_KEEP+新一份")
+            newest = max(logs, key=lambda p: p.stat().st_mtime)
+            self.assertIn("Mode: DRY_RUN", newest.read_text())
+
+    # ---- 2.2.0 新增行为（仅 Python 引擎） --------------------------------
+
+    def test_python_engine_finds_opencode_native_dir(self):
+        py = dict(ENGINES).get("python")
+        if py is None:
+            self.skipTest("Python 引擎不在场")
+        home = self.workdir / "home"
+        make_stub(home / ".opencode" / "bin", "opencode")
+        result = self.run_engine(py, {"DRY_RUN": "1", "TOOLS": "opencode"})
+        self.assertIn("SKIP_DRY_RUN", result.stdout)
+        self.assertIn(STUB_VERSION, result.stdout)
+        self.assertNotIn("NOT_INSTALLED", result.stdout,
+                         "~/.opencode/bin 未入 PATH 时也必须探测到")
 
 
 if __name__ == "__main__":
