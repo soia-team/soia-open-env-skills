@@ -1,11 +1,11 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.1.1
+version: 2.1.2
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-08-05 13:30:00
+updated_at: 2026-08-08 09:20:00
 created_by: claude opus 4.6
-updated_by: claude-opus-5
+updated_by: claude-fable-5
 ---
 
 # soia-env-ai-cli-upgrade
@@ -54,6 +54,13 @@ claude plugin install soia-env@soia
 
 ```bash
 npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
+```
+
+国内网络环境提示：npm 通道安装或升级 CLI 超时、下载失败时，可先切换 npmmirror 国内镜像源再重试，完成后按需切回官方源：
+
+```bash
+npm config set registry https://registry.npmmirror.com   # 切国内镜像
+npm config set registry https://registry.npmjs.org       # 切回官方源
 ```
 
 配置约定：
@@ -221,6 +228,32 @@ The script writes one timestamped log file and prints a table:
 binary directory is absent from PATH, or PATH resolves to a different binary.
 The script reports the absolute resolved path and never edits PATH itself.
 
+## 样例：一次真实的 dry-run 审计
+
+2026-08-08 在 macOS（arm64）真机运行 `DRY_RUN=1 bash scripts/upgrade-ai-clis.sh`
+的实际输出（用户主目录已脱敏为 `~`，数据逐字保留）：
+
+| TOOL | OLD | NEW | STATUS | NOTE |
+|---|---|---|---|---|
+| codex | 0.146.0 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/codex; no upgrade; npm detected (legacy); recommend: native curl installer |
+| claude | 2.1.218 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/claude; no upgrade; channel=claude-code@latest |
+| agy | 1.1.10 | N/A | SKIP_DRY_RUN | path=~/.local/bin/agy; no upgrade |
+| kimi | 0.28.1 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/kimi; no upgrade; npm detected; recommend: brew install kimi-code |
+| mmx | 1.0.16 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/mmx; no upgrade |
+| qwen | 0.19.10 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/qwen; no upgrade; npm detected; recommend: native curl installer |
+| opencode | 1.18.4 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/opencode; no upgrade; npm detected; recommend: native curl installer |
+| qodercli | 1.1.13 | N/A | SKIP_DRY_RUN | path=~/.local/bin/qodercli; no upgrade |
+| cursor | UNKNOWN | N/A | SKIP_DRY_RUN | path=~/.local/bin/cursor; no upgrade |
+| deepcode | 0.1.34 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/deepcode; no upgrade |
+| pi | 0.84.0 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/pi; no upgrade |
+
+末行回执：`DONE. detail log: $TMPDIR/soia-env-ai-cli-upgrade/logs/cli-upgrade-2026-08-08_09-04-40-31364.log`
+
+读法：这台机器装了 11 款 AI CLI；dry-run 只审计不动手，`OLD` 列即当前版本。
+`cursor` 是桌面应用，CLI 无版本命令故显示 `UNKNOWN`（属预期，见能力边界）。
+`NOTE` 列同时给出安装通道体检——npm 装的 codex/qwen/opencode 建议迁移到官方
+native 安装器，`recommend:` 后面就是可直接复制的迁移命令。
+
 ## Validation
 
 Before claiming the skill or script changed safely:
@@ -240,6 +273,16 @@ Do not copy a local checkout into an agent skill directory and call that tested:
 npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
 DRY_RUN=1 bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
 ```
+
+## 不负责什么（能力边界）
+
+- **不首次安装缺失的 CLI**：没装的工具只报 `NOT_INSTALLED`，不代装（唯一例外是
+  `agy`，且必须显式 `AGY_INSTALL=1` 授权）；安装请走各工具官方渠道或对应安装技能
+- **不改 shell profile、PATH、登录态**：升级后需要重新登录时如实报告并停下，
+  不代客户完成任何认证流程
+- **不升级桌面应用**：Cursor 只做版本审计，除非客户自己提供 `CURSOR_UPGRADE_CMD`
+- **不判断新版本是否更好**：只做版本对齐与结果核验；是否回滚、锁版本归客户决策
+- **不碰秘密**：API key、token、cookie 一律不读取、不记录、不回显
 
 ## 私密信息与中间数据
 
