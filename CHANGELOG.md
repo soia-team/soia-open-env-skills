@@ -3,6 +3,16 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.11.0 — 2026-08-08
+
+ai-cli-upgrade 2.2.0：契约锁定的 Python 引擎替换 bash，解锁 Red Skill 上架；新增 ~/.opencode/bin 探测回退
+
+## 新增
+- feat(ai-cli-upgrade): replace bash engine with contract-locked Python engine (#71)
+
+## 维护
+- chore(release): open next train after v1.10.2 (#70)
+
 ## v1.10.2 — 2026-08-08
 
 ai-cli-upgrade 市场上架就绪：能力边界、真实样例、专属测试、境内源提示
