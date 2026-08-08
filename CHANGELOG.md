@@ -3,6 +3,14 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.10.2 — 2026-08-08
+
+ai-cli-upgrade 市场上架就绪：能力边界、真实样例、专属测试、境内源提示
+
+## 维护
+- docs(ai-cli-upgrade): market readiness — capability boundary, real dry-run sample, exclusive test, npmmirror hint (#68)
+- chore(release): open next train after v1.10.1 (#67)
+
 ## v1.10.1 — 2026-08-08
 
 对齐 codex 版本轨道（v1.10.0 时 codex manifest 停在 1.9.1 的修正补发）；内容与 v1.10.0 一致
