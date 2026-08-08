@@ -3,6 +3,18 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.12.0 — 2026-08-08
+
+ai-cli-upgrade 2.3.0：原生 Windows 实验性支持（windows-latest 真机契约回归）+ 平台范围声明
+
+## 新增
+- feat(ai-cli-upgrade): experimental native Windows support with windows-latest CI regression (#75)
+
+## 维护
+- chore(release): promote train to 1.12.0-SNAPSHOT (Windows support = minor) (#76)
+- docs(ai-cli-upgrade): declare platform scope — macOS/Linux(WSL) supported, native Windows not yet (#74)
+- chore(release): open next train after v1.11.0 (#73)
+
 ## v1.11.0 — 2026-08-08
 
 ai-cli-upgrade 2.2.0：契约锁定的 Python 引擎替换 bash，解锁 Red Skill 上架；新增 ~/.opencode/bin 探测回退
