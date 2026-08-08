@@ -1,9 +1,9 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.1.2
+version: 2.2.0
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-08-08 09:20:00
+updated_at: 2026-08-08 14:30:00
 created_by: claude opus 4.6
 updated_by: claude-fable-5
 ---
@@ -15,6 +15,13 @@ developer CLIs in a repeatable way.
 
 Do not use it when the user only asks how to install one known CLI and no
 version audit or batch workflow is needed.
+
+> **引擎（v2.2.0）**：纯 Python 标准库单文件 `scripts/upgrade_ai_clis.py`。
+> 由同名 bash 引擎逐行为移植而来，对外契约（环境变量、表格列、状态字、退出码、
+> 日志命名与轮转）由仓级契约测试双引擎锁定后完成切换；真机全量 dry-run 逐行
+> 对照仅存在一处**有意差异**：新增 `~/.opencode/bin` 原生安装探测回退
+> （2026-08-08 真机实跑发现旧 shell PATH 缺失时误报未安装）。纯 Python 也是
+> 外部技能市场文件白名单（不收 .sh）的硬前提。
 
 ## 客户可读说明
 
@@ -185,32 +192,32 @@ From this repository:
 
 ```bash
 # Version audit only
-DRY_RUN=1 bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+DRY_RUN=1 python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 
 # Upgrade all supported tools
-bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 
 # Upgrade a consumer-safe subset
 TOOLS="codex,claude,agy" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+  python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 
 # After separate channel-switch authorization, migrate Homebrew Claude to @latest
 CLAUDE_CHANNEL=latest TOOLS="claude" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+  python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 
 # Upgrade Gemini CLI only after confirming a supported non-consumer lane
 TOOLS="gemini" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+  python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 
 # Explicitly install agy if it is missing; this does not perform login
 AGY_INSTALL=1 TOOLS="agy" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+  python3 skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 ```
 
 From an installed skill:
 
 ```bash
-DRY_RUN=1 bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
+DRY_RUN=1 python3 ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade_ai_clis.py
 ```
 
 The script writes one timestamped log file and prints a table:
@@ -230,49 +237,28 @@ The script reports the absolute resolved path and never edits PATH itself.
 
 ## 样例：一次真实的 dry-run 审计
 
-2026-08-08 在 macOS（arm64）真机运行 `DRY_RUN=1 bash scripts/upgrade-ai-clis.sh`
+2026-08-08 在 macOS（arm64）真机运行 `DRY_RUN=1 python3 scripts/upgrade_ai_clis.py`
 的实际输出（用户主目录已脱敏为 `~`，数据逐字保留）：
 
 | TOOL | OLD | NEW | STATUS | NOTE |
 |---|---|---|---|---|
-| codex | 0.146.0 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/codex; no upgrade; npm detected (legacy); recommend: native curl installer |
-| claude | 2.1.218 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/claude; no upgrade; channel=claude-code@latest |
-| agy | 1.1.10 | N/A | SKIP_DRY_RUN | path=~/.local/bin/agy; no upgrade |
-| kimi | 0.28.1 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/kimi; no upgrade; npm detected; recommend: brew install kimi-code |
+| codex | 0.147.0 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/codex; no upgrade |
+| claude | 2.1.224 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/claude; no upgrade; channel=claude-code@latest |
+| agy | 1.1.11 | N/A | SKIP_DRY_RUN | path=~/.local/bin/agy; no upgrade |
+| kimi | 0.34.0 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/kimi; no upgrade |
 | mmx | 1.0.16 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/mmx; no upgrade |
-| qwen | 0.19.10 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/qwen; no upgrade; npm detected; recommend: native curl installer |
-| opencode | 1.18.4 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/opencode; no upgrade; npm detected; recommend: native curl installer |
-| qodercli | 1.1.13 | N/A | SKIP_DRY_RUN | path=~/.local/bin/qodercli; no upgrade |
+| qwen | 0.21.6 | N/A | SKIP_DRY_RUN | path=/opt/homebrew/bin/qwen; no upgrade |
+| opencode | 1.18.15 | N/A | SKIP_DRY_RUN | path=~/.opencode/bin/opencode; no upgrade |
+| qodercli | 1.1.17 | N/A | SKIP_DRY_RUN | path=~/.local/bin/qodercli; no upgrade |
 | cursor | UNKNOWN | N/A | SKIP_DRY_RUN | path=~/.local/bin/cursor; no upgrade |
 | deepcode | 0.1.34 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/deepcode; no upgrade |
-| pi | 0.84.0 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/pi; no upgrade |
-
-末行回执：`DONE. detail log: $TMPDIR/soia-env-ai-cli-upgrade/logs/cli-upgrade-2026-08-08_09-04-40-31364.log`
+| pi | 0.84.1 | N/A | SKIP_DRY_RUN | path=~/.npm-global/bin/pi; no upgrade |
 
 读法：这台机器装了 11 款 AI CLI；dry-run 只审计不动手，`OLD` 列即当前版本。
 `cursor` 是桌面应用，CLI 无版本命令故显示 `UNKNOWN`（属预期，见能力边界）。
-`NOTE` 列同时给出安装通道体检——npm 装的 codex/qwen/opencode 建议迁移到官方
-native 安装器，`recommend:` 后面就是可直接复制的迁移命令。
-
-## Validation
-
-Before claiming the skill or script changed safely:
-
-```bash
-bash -n skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
-bash skills/soia-env-ai-cli-upgrade/tests/test_upgrade_ai_clis.sh
-DRY_RUN=1 TOOLS="codex,agy" \
-  bash skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
-python3 scripts/audit_skills.py
-```
-
-For final install validation after release, install through the remote npx path.
-Do not copy a local checkout into an agent skill directory and call that tested:
-
-```bash
-npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-ai-cli-upgrade -y
-DRY_RUN=1 bash ~/.agents/skills/soia-env-ai-cli-upgrade/scripts/upgrade-ai-clis.sh
-```
+`opencode` 由 v2.2.0 新增的 `~/.opencode/bin` 原生目录回退探测到——不在当前
+shell 的 PATH 上也不会误报未安装。安装通道与官方推荐不一致时（如 npm 装的
+codex），`NOTE` 列会附上可直接复制的迁移命令；本机各工具已迁到推荐通道故无此提示。
 
 ## 不负责什么（能力边界）
 
