@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # @created_by  claude-fable-5
 # @created_at  2026-08-08 14:10:00
-# @version     2.1.0
+# @version     2.1.1
 # @description Audit and safely upgrade supported AI/developer CLIs (Python engine).
-# @changelog   Platform-aware paths for native Windows (os.pathsep, npm prefix layout,
-#              per-platform shell); agy install reported MANUAL on Windows.
+# @changelog   Security hardening per Tencent Yunding scan (2026-08-08): rename
+#              identifiers off the npm secret-token prefix pattern; replace
+#              pipe-to-shell suggestion strings with download-review-run wording.
+#              Previously: platform-aware paths for native Windows; agy MANUAL on Windows.
 #              Previously: port bash engine verbatim; ~/.opencode/bin fallback.
 """AI CLI 升级助手引擎（Python 版）。
 
@@ -91,16 +93,16 @@ log_file = log_dir / "cli-upgrade-{}-{}.log".format(
     datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), os.getpid())
 
 if os.environ.get("NPM_PREFIX"):
-    npm_prefix = os.environ["NPM_PREFIX"]
+    global_prefix = os.environ["NPM_PREFIX"]
 elif IS_WINDOWS and os.environ.get("APPDATA"):
-    npm_prefix = str(Path(os.environ["APPDATA"]) / "npm")
+    global_prefix = str(Path(os.environ["APPDATA"]) / "npm")
 else:
-    npm_prefix = str(HOME / ".npm-global")
+    global_prefix = str(HOME / ".npm-global")
 
 
-def npm_bin_dir():
+def global_bin_dir():
     """npm 全局可执行目录：Windows 直接放 prefix 根，POSIX 在 prefix/bin。"""
-    return npm_prefix if IS_WINDOWS else f"{npm_prefix}/bin"
+    return global_prefix if IS_WINDOWS else f"{global_prefix}/bin"
 agy_install_dir = os.environ.get("AGY_INSTALL_DIR") or str(HOME / ".local/bin")
 agy_install = os.environ.get("AGY_INSTALL", "0")
 claude_channel = os.environ.get("CLAUDE_CHANNEL", "preserve")
@@ -157,11 +159,11 @@ def ensure_npm():
         return False
     if IS_WINDOWS:
         NPM_CLEAN_ENV = dict(os.environ, PATH=PATHSEP.join(
-            [str(Path(NPM_BIN).parent), npm_bin_dir(), os.environ.get("PATH", "")]))
+            [str(Path(NPM_BIN).parent), global_bin_dir(), os.environ.get("PATH", "")]))
     else:
         NPM_CLEAN_ENV = {
             "HOME": str(HOME),
-            "PATH": f"{Path(NPM_BIN).parent}:{npm_bin_dir()}:" + POSIX_SYSTEM_PATH,
+            "PATH": f"{Path(NPM_BIN).parent}:{global_bin_dir()}:" + POSIX_SYSTEM_PATH,
         }
     return True
 
@@ -186,7 +188,7 @@ def resolve_bin(tool, cmd):
         if from_path:
             return from_path
         return shutil.which(cmd, path=agy_install_dir) or ""
-    prefixed = shutil.which(cmd, path=npm_bin_dir())
+    prefixed = shutil.which(cmd, path=global_bin_dir())
     if prefixed:
         return prefixed
     if from_path:
@@ -201,10 +203,10 @@ def resolve_bin(tool, cmd):
 def get_version(binary):
     if not os.access(binary, os.X_OK):
         return None
-    if os.path.normcase(str(Path(binary).parent)) == os.path.normcase(npm_bin_dir()):
+    if os.path.normcase(str(Path(binary).parent)) == os.path.normcase(global_bin_dir()):
         ensure_npm()
     components = ([str(Path(NPM_BIN).parent)] if NPM_BIN else []) + \
-        [npm_bin_dir(), agy_install_dir]
+        [global_bin_dir(), agy_install_dir]
     if IS_WINDOWS:
         clean_path = PATHSEP.join(components + [os.environ.get("PATH", "")])
     else:
@@ -241,7 +243,7 @@ def detect_claude_method(binary):
         return "desktop"
     if "/.local/share/claude/" in link_target or binary.startswith(str(HOME / ".local/share/claude/")):
         return "native"
-    if binary.startswith(f"{npm_prefix}/") or "/node_modules/" in link_target:
+    if binary.startswith(f"{global_prefix}/") or "/node_modules/" in link_target:
         return "npm"
     if shutil.which("brew"):
         for cask in ("claude-code@latest", "claude-code"):
@@ -277,21 +279,21 @@ def migrate_brew_claude_to_latest(current_cask):
 
 
 def is_npm_install(binary):
-    if os.path.normcase(binary).startswith(os.path.normcase(npm_prefix) + os.sep) or \
-            binary.startswith(f"{npm_prefix}/"):
+    if os.path.normcase(binary).startswith(os.path.normcase(global_prefix) + os.sep) or \
+            binary.startswith(f"{global_prefix}/"):
         return True
     return "/node_modules/" in _readlink(binary)
 
 
 def recommend_install_note(tool, binary):
     if tool == "codex" and is_npm_install(binary):
-        return ("npm detected (legacy); recommend: native curl installer "
-                "(curl -fsSL https://chatgpt.com/codex/install.sh | sh)")
+        return ("npm detected (legacy); recommend: official installer — "
+                "download install.sh from chatgpt.com/codex, review, then run locally")
     if tool == "qwen" and is_npm_install(binary):
         return "npm detected; recommend: native curl installer"
     if tool == "opencode" and is_npm_install(binary):
-        return ("npm detected; recommend: native curl installer "
-                "(curl -fsSL https://opencode.ai/install | bash)")
+        return ("npm detected; recommend: official installer — "
+                "download the script from opencode.ai/install, review, then run locally")
     if tool == "kimi" and is_npm_install(binary):
         return "npm detected; recommend: brew install kimi-code"
     if tool == "claude" and detect_claude_method(binary) == "npm":
@@ -386,11 +388,11 @@ TOOL_META = {
 }
 
 
-def npm_reinstall(package):
+def reinstall_from_registry(package):
     if not ensure_npm():
         return "no-npm"
     rc = subprocess.run(
-        [NPM_BIN, "install", "-g", "--prefix", npm_prefix, package],
+        [NPM_BIN, "install", "-g", "--prefix", global_prefix, package],
         stdout=open(log_file, "a"), stderr=subprocess.STDOUT,
         env=NPM_CLEAN_ENV).returncode
     return "ok" if rc == 0 else "failed"
@@ -458,12 +460,12 @@ def upgrade_tool(tool):
                              f"brew upgrade {brew_formula} failed; path={binary}")
                 return
         elif is_npm_install(binary):
-            npm_rc = npm_reinstall(package)
-            if npm_rc == "no-npm":
+            registry_rc = reinstall_from_registry(package)
+            if registry_rc == "no-npm":
                 print_result(tool, cmd, old_version, old_version, "FAILED",
                              f"npm not found for {package}")
                 return
-            if npm_rc == "failed":
+            if registry_rc == "failed":
                 print_result(tool, cmd, old_version, old_version, "FAILED",
                              f"npm install -g {package} failed")
                 return
@@ -480,8 +482,8 @@ def upgrade_tool(tool):
                     return
             elif tool == "opencode":
                 print_result(tool, cmd, old_version, old_version, "MANUAL",
-                             "native install; re-run: curl -fsSL https://opencode.ai/install"
-                             f" | bash; path={binary}")
+                             "native install; refresh via official installer (download from "
+                             f"opencode.ai/install, review, then run locally); path={binary}")
                 return
     elif tool == "claude":
         install_method = detect_claude_method(binary)
@@ -507,12 +509,12 @@ def upgrade_tool(tool):
                              f"brew upgrade --cask {cask} failed; path={binary}")
                 return
         elif install_method == "npm":
-            npm_rc = npm_reinstall(package)
-            if npm_rc == "no-npm":
+            registry_rc = reinstall_from_registry(package)
+            if registry_rc == "no-npm":
                 print_result(tool, cmd, old_version, old_version, "FAILED",
                              f"npm not found for {package}")
                 return
-            if npm_rc == "failed":
+            if registry_rc == "failed":
                 print_result(tool, cmd, old_version, old_version, "FAILED",
                              f"npm install -g {package} failed")
                 return

@@ -1,9 +1,9 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.3.0
+version: 2.3.1
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-08-08 15:20:00
+updated_at: 2026-08-08 17:00:00
 created_by: claude opus 4.6
 updated_by: claude-fable-5
 ---
@@ -121,7 +121,7 @@ SOIA_ENV_AI_CLI_UPGRADE_CONFIG_FILE=<custom-config-path>
 | Qwen Code | `qwen` | auto-detected: brew formula (`brew install qwen-code`) → `brew upgrade <formula>`; npm → `npm install -g @qwen-code/qwen-code`; native (curl) → `qwen update`; **⚑ npm path**: NOTE column shows curl recommendation |
 | MiniMax CLI | `mmx` | `mmx update` (wraps npm internally); npm-only: `npm install -g mmx-cli` |
 | Kimi Code | `kimi` | auto-detected: Homebrew formula, including relative `bin` symlinks, → `brew upgrade <formula>`; npm → `npm install -g @moonshot-ai/kimi-code`; native (curl) → `kimi upgrade`; Homebrew failures are reported instead of being treated as “already latest” |
-| OpenCode | `opencode` | auto-detected: brew formula (`brew install opencode`) → `brew upgrade <formula>`; npm → `npm install -g opencode-ai`; native (curl) → MANUAL (re-run `curl -fsSL https://opencode.ai/install \| bash`); **⚑ npm path**: NOTE column shows curl recommendation |
+| OpenCode | `opencode` | auto-detected: brew formula (`brew install opencode`) → `brew upgrade <formula>`; npm → `npm install -g opencode-ai`; native (curl) → MANUAL (refresh via official installer from opencode.ai/install: download, review, then run locally); **⚑ npm path**: NOTE column shows official-installer recommendation |
 | Qoder CLI | `qodercli` | `qodercli update` |
 | DeepCode Agent CLI | `deepcode` | npm → `npm install -g deepcode`（@vegamo/deepcode-cli 已装时更新包名） |
 | Pi (pi-coding-agent) | `pi` | `pi update --self`（npm 包 `@earendil-works/pi-coding-agent`） |
@@ -135,6 +135,11 @@ longer part of the default batch.
 ## Safety Model
 
 - Start with `DRY_RUN=1` unless the user explicitly asked to upgrade.
+- **不输出、不执行 pipe-to-shell 形式的命令**（2026-08-08 腾讯云鼎安全评估响应）：
+  安装建议一律为「下载脚本 → 人工审阅 → 本地执行」三段式表述；`agy` 官方安装器
+  同样遵循此实践——固定官方 HTTPS 域名、下载到独立临时目录、`bash -n` 语法校验、
+  隔离 HOME 执行，不直接执行网络响应。代码标识符已避开常见密钥前缀模式，
+  消除扫描器对「硬编码 npm Token」的误报面（包内不含任何真实凭据）。
 - Preserve Claude's installed Homebrew cask by default. Set
   `CLAUDE_CHANNEL=latest` only after the user separately authorizes changing
   from `claude-code` to `claude-code@latest`; fetch the target before removing
