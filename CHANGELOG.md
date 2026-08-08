@@ -3,6 +3,14 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.12.1 — 2026-08-08
+
+claude-cli-install 1.0.4 市场上架就绪：能力边界、真机样例、专属测试、境内源提示
+
+## 维护
+- docs(claude-cli-install): market readiness — capability boundary, real check sample, exclusive tests, npmmirror hint (#79)
+- chore(release): open next train after v1.12.0 (#78)
+
 ## v1.12.0 — 2026-08-08
 
 ai-cli-upgrade 2.3.0：原生 Windows 实验性支持（windows-latest 真机契约回归）+ 平台范围声明
