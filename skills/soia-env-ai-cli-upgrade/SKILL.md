@@ -1,9 +1,9 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.2.1
+version: 2.3.0
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-08-08 14:55:00
+updated_at: 2026-08-08 15:20:00
 created_by: claude opus 4.6
 updated_by: claude-fable-5
 ---
@@ -269,9 +269,11 @@ codex），`NOTE` 列会附上可直接复制的迁移命令；本机各工具�
 - **不升级桌面应用**：Cursor 只做版本审计，除非客户自己提供 `CURSOR_UPGRADE_CMD`
 - **不判断新版本是否更好**：只做版本对齐与结果核验；是否回滚、锁版本归客户决策
 - **不碰秘密**：API key、token、cookie 一律不读取、不记录、不回显
-- **平台范围**：当前支持 macOS 与 Linux（含 WSL）；**原生 Windows 尚未支持**——
-  PATH 语义与探测路径按 POSIX 设计且未经 Windows 真机验证，Windows 用户请在
-  WSL 中使用（注意：装在 Windows 侧的 CLI 在 WSL 里探测不到）
+- **平台范围**：macOS 与 Linux（含 WSL）完整支持；**原生 Windows 自 2.3.0 起
+  实验性支持**——引擎平台化（os.pathsep、Windows npm 全局布局 `%AppData%\npm`、
+  平台 shell），契约测试在 GitHub Actions windows-latest 真机回归。已知限制：
+  `agy` 官方安装器是 bash 脚本，原生 Windows 下如实报 MANUAL（请走 WSL）；
+  brew 通道在 Windows 天然缺席时自动跳过
 
 ## 私密信息与中间数据
 

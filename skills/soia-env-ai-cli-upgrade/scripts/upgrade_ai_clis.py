@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # @created_by  claude-fable-5
 # @created_at  2026-08-08 14:10:00
-# @version     2.0.0
+# @version     2.1.0
 # @description Audit and safely upgrade supported AI/developer CLIs (Python engine).
-# @changelog   Port the bash engine verbatim-behavior to Python; add ~/.opencode/bin
-#              detection fallback. Contract locked by tests/test_upgrade_ai_clis_dry_run.py.
+# @changelog   Platform-aware paths for native Windows (os.pathsep, npm prefix layout,
+#              per-platform shell); agy install reported MANUAL on Windows.
+#              Previously: port bash engine verbatim; ~/.opencode/bin fallback.
 """AI CLI 升级助手引擎（Python 版）。
 
 与原 bash 引擎保持同一对外契约：环境变量、表格列、状态字、退出码、日志命名
@@ -24,6 +25,9 @@ from datetime import datetime
 from pathlib import Path
 
 HOME = Path.home()
+IS_WINDOWS = os.name == "nt"
+PATHSEP = os.pathsep
+POSIX_SYSTEM_PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin"
 
 # ---------------------------------------------------------------- config file
 
@@ -73,7 +77,7 @@ load_config_env()
 # ---------------------------------------------------------------- settings
 
 log_dir = Path(os.environ.get("LOG_DIR") or
-               Path(os.environ.get("TMPDIR", "/tmp")) / "soia-env-ai-cli-upgrade/logs")
+               Path(tempfile.gettempdir()) / "soia-env-ai-cli-upgrade/logs")
 log_dir.mkdir(parents=True, exist_ok=True)
 log_keep = int(os.environ.get("LOG_KEEP", "10") or "10")
 _old_logs = sorted(log_dir.glob("cli-upgrade-*.log"),
@@ -86,7 +90,17 @@ for _stale in _old_logs[log_keep:]:
 log_file = log_dir / "cli-upgrade-{}-{}.log".format(
     datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), os.getpid())
 
-npm_prefix = os.environ.get("NPM_PREFIX") or str(HOME / ".npm-global")
+if os.environ.get("NPM_PREFIX"):
+    npm_prefix = os.environ["NPM_PREFIX"]
+elif IS_WINDOWS and os.environ.get("APPDATA"):
+    npm_prefix = str(Path(os.environ["APPDATA"]) / "npm")
+else:
+    npm_prefix = str(HOME / ".npm-global")
+
+
+def npm_bin_dir():
+    """npm 全局可执行目录：Windows 直接放 prefix 根，POSIX 在 prefix/bin。"""
+    return npm_prefix if IS_WINDOWS else f"{npm_prefix}/bin"
 agy_install_dir = os.environ.get("AGY_INSTALL_DIR") or str(HOME / ".local/bin")
 agy_install = os.environ.get("AGY_INSTALL", "0")
 claude_channel = os.environ.get("CLAUDE_CHANNEL", "preserve")
@@ -117,20 +131,21 @@ def _capture(cmd, env=None, timeout=60):
 
 
 def _find_arm64_npm():
-    node = Path("/opt/homebrew/bin/node")
-    npm = Path("/opt/homebrew/bin/npm")
-    if npm.exists() and os.access(npm, os.X_OK) and node.exists() and os.access(node, os.X_OK):
-        out = _capture(["file", str(node)])
-        if out and "arm64" in out.stdout:
-            return str(npm)
-    for pattern in ("v24*", "v22*", "v2*"):
-        for d in sorted((HOME / ".nvm/versions/node").glob(pattern)):
-            cand_npm, cand_node = d / "bin/npm", d / "bin/node"
-            if not (os.access(cand_npm, os.X_OK) and os.access(cand_node, os.X_OK)):
-                continue
-            out = _capture(["file", str(cand_node)])
+    if not IS_WINDOWS:
+        node = Path("/opt/homebrew/bin/node")
+        npm = Path("/opt/homebrew/bin/npm")
+        if npm.exists() and os.access(npm, os.X_OK) and node.exists() and os.access(node, os.X_OK):
+            out = _capture(["file", str(node)])
             if out and "arm64" in out.stdout:
-                return str(cand_npm)
+                return str(npm)
+        for pattern in ("v24*", "v22*", "v2*"):
+            for d in sorted((HOME / ".nvm/versions/node").glob(pattern)):
+                cand_npm, cand_node = d / "bin/npm", d / "bin/node"
+                if not (os.access(cand_npm, os.X_OK) and os.access(cand_node, os.X_OK)):
+                    continue
+                out = _capture(["file", str(cand_node)])
+                if out and "arm64" in out.stdout:
+                    return str(cand_npm)
     return shutil.which("npm") or ""
 
 
@@ -140,11 +155,14 @@ def ensure_npm():
         NPM_BIN = _find_arm64_npm()
     if not (NPM_BIN and os.access(NPM_BIN, os.X_OK)):
         return False
-    NPM_CLEAN_ENV = {
-        "HOME": str(HOME),
-        "PATH": f"{Path(NPM_BIN).parent}:{npm_prefix}/bin:"
-                "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin",
-    }
+    if IS_WINDOWS:
+        NPM_CLEAN_ENV = dict(os.environ, PATH=PATHSEP.join(
+            [str(Path(NPM_BIN).parent), npm_bin_dir(), os.environ.get("PATH", "")]))
+    else:
+        NPM_CLEAN_ENV = {
+            "HOME": str(HOME),
+            "PATH": f"{Path(NPM_BIN).parent}:{npm_bin_dir()}:" + POSIX_SYSTEM_PATH,
+        }
     return True
 
 
@@ -167,30 +185,30 @@ def resolve_bin(tool, cmd):
     if tool == "agy":
         if from_path:
             return from_path
-        cand = Path(agy_install_dir) / "agy"
-        return str(cand) if os.access(cand, os.X_OK) else ""
-    prefixed = Path(npm_prefix) / "bin" / cmd
-    if os.access(prefixed, os.X_OK):
-        return str(prefixed)
+        return shutil.which(cmd, path=agy_install_dir) or ""
+    prefixed = shutil.which(cmd, path=npm_bin_dir())
+    if prefixed:
+        return prefixed
     if from_path:
         return from_path
     if tool == "opencode":
         # 2026-08-08 真机实跑：原生安装落 ~/.opencode/bin，旧 shell 未刷 PATH 时
         # 误报未安装；与 agy 的安装目录回退同一策略。
-        cand = HOME / ".opencode/bin/opencode"
-        if os.access(cand, os.X_OK):
-            return str(cand)
+        return shutil.which(cmd, path=str(HOME / ".opencode/bin")) or ""
     return ""
 
 
 def get_version(binary):
     if not os.access(binary, os.X_OK):
         return None
-    if binary.startswith(f"{npm_prefix}/bin/"):
+    if os.path.normcase(str(Path(binary).parent)) == os.path.normcase(npm_bin_dir()):
         ensure_npm()
-    node_path = f"{Path(NPM_BIN).parent}:" if NPM_BIN else ""
-    clean_path = (f"{node_path}{npm_prefix}/bin:{agy_install_dir}:"
-                  "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin")
+    components = ([str(Path(NPM_BIN).parent)] if NPM_BIN else []) + \
+        [npm_bin_dir(), agy_install_dir]
+    if IS_WINDOWS:
+        clean_path = PATHSEP.join(components + [os.environ.get("PATH", "")])
+    else:
+        clean_path = ":".join(components) + ":" + POSIX_SYSTEM_PATH
     env = dict(os.environ, PATH=clean_path)
     for args in ([binary, "--version"], [binary, "version"]):
         out = _capture(args, env=env)
@@ -259,7 +277,8 @@ def migrate_brew_claude_to_latest(current_cask):
 
 
 def is_npm_install(binary):
-    if binary.startswith(f"{npm_prefix}/"):
+    if os.path.normcase(binary).startswith(os.path.normcase(npm_prefix) + os.sep) or \
+            binary.startswith(f"{npm_prefix}/"):
         return True
     return "/node_modules/" in _readlink(binary)
 
@@ -311,6 +330,8 @@ def detect_brew_formula_from_bin(binary):
 
 def install_agy():
     installer_url = "https://antigravity.google/cli/install.sh"
+    if IS_WINDOWS:
+        return False  # 官方安装器是 bash 脚本；原生 Windows 请走 WSL
     if not shutil.which("curl"):
         return False
     with tempfile.TemporaryDirectory(
@@ -520,7 +541,8 @@ def upgrade_tool(tool):
             print_result(tool, cmd, old_version, old_version, "MANUAL",
                          "no default updater; set CURSOR_UPGRADE_CMD")
             return
-        if _run(["bash", "-lc", cursor_cmd]).returncode != 0:
+        shell_argv = ["cmd", "/c", cursor_cmd] if IS_WINDOWS else ["bash", "-lc", cursor_cmd]
+        if _run(shell_argv).returncode != 0:
             print_result(tool, cmd, old_version, old_version, "FAILED",
                          "CURSOR_UPGRADE_CMD failed")
             return
