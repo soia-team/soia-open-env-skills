@@ -31,13 +31,32 @@ if not ENGINES:
 
 STUB_VERSION = "9.9.9"
 STUB_UPDATED_VERSION = "9.10.0"
+IS_WINDOWS = os.name == "nt"
+SYSTEM_PATH = os.environ.get("SystemRoot", "C:\\Windows") + "\\System32;" + \
+    os.environ.get("SystemRoot", "C:\\Windows") if IS_WINDOWS else \
+    "/usr/bin:/bin:/usr/sbin:/sbin"
 
 
 def make_stub(stub_dir, name, update_behavior="noop"):
-    """生成有状态桩命令：--version 读版本文件；update 按行为改状态或失败。"""
+    """生成有状态桩命令：--version 读版本文件；update 按行为改状态或失败。
+    POSIX 出 sh 脚本，Windows 出 .cmd——契约本身跨平台同一套断言。"""
     stub_dir.mkdir(parents=True, exist_ok=True)
     version_file = stub_dir / f"{name}.version"
     version_file.write_text(STUB_VERSION + "\n")
+    if IS_WINDOWS:
+        if update_behavior == "bump":
+            update_line = f'>"%~dp0{name}.version" echo {STUB_UPDATED_VERSION}\r\nexit /b 0'
+        elif update_behavior == "fail":
+            update_line = "exit /b 1"
+        else:
+            update_line = "exit /b 0"
+        stub = stub_dir / f"{name}.cmd"
+        stub.write_text(
+            "@echo off\r\n"
+            f'if "%~1"=="--version" (type "%~dp0{name}.version" & exit /b 0)\r\n'
+            f'if "%~1"=="update" ({update_line})\r\n'
+            "exit /b 1\r\n")
+        return stub_dir
     if update_behavior == "bump":
         update_lines = f'echo "{STUB_UPDATED_VERSION}" > "$d/{name}.version"; exit 0'
     elif update_behavior == "fail":
@@ -65,11 +84,17 @@ class EngineContractTests(unittest.TestCase):
         workdir = workdir or self.workdir
         env = {
             "HOME": str(workdir / "home"),
-            "PATH": env_overrides.pop("PATH", "/usr/bin:/bin:/usr/sbin:/sbin"),
+            "PATH": env_overrides.pop("PATH", SYSTEM_PATH),
             "TMPDIR": str(workdir / "tmp"),
             "NPM_PREFIX": str(workdir / "npm-absent"),
             "LOG_DIR": str(workdir / "logs"),
         }
+        if IS_WINDOWS:
+            env["USERPROFILE"] = env["HOME"]
+            for passthrough in ("SystemRoot", "ComSpec", "windir", "TEMP", "TMP",
+                                "PATHEXT", "SystemDrive"):
+                if os.environ.get(passthrough):
+                    env[passthrough] = os.environ[passthrough]
         env.update(env_overrides)
         for key in ("HOME", "TMPDIR"):
             pathlib.Path(env[key]).mkdir(parents=True, exist_ok=True)
@@ -101,7 +126,7 @@ class EngineContractTests(unittest.TestCase):
             stub_dir = make_stub(self.workdir / f"stub-{name}", "qodercli")
             result = self.run_engine(argv, {
                 "DRY_RUN": "1", "TOOLS": "qodercli",
-                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("SKIP_DRY_RUN", result.stdout)
             self.assertIn(STUB_VERSION, result.stdout)
@@ -132,7 +157,7 @@ class EngineContractTests(unittest.TestCase):
             stub_dir = make_stub(self.workdir / f"stub-al-{name}", "qodercli", "noop")
             result = self.run_engine(argv, {
                 "TOOLS": "qodercli",
-                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("ALREADY_LATEST", result.stdout)
             self.assertIn("Mode: LIVE", result.stdout)
@@ -142,7 +167,7 @@ class EngineContractTests(unittest.TestCase):
             stub_dir = make_stub(self.workdir / f"stub-up-{name}", "qodercli", "bump")
             result = self.run_engine(argv, {
                 "TOOLS": "qodercli",
-                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("UPDATED", result.stdout)
             self.assertIn(STUB_UPDATED_VERSION, result.stdout)
@@ -152,7 +177,7 @@ class EngineContractTests(unittest.TestCase):
             stub_dir = make_stub(self.workdir / f"stub-fail-{name}", "qodercli", "fail")
             result = self.run_engine(argv, {
                 "TOOLS": "qodercli",
-                "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"})
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
             self.assertEqual(result.returncode, 1, "FAILED 行必须带动非零退出码")
             self.assertIn("FAILED", result.stdout)
             self.assertIn("DONE_WITH_FAILURES", result.stdout)
@@ -170,7 +195,7 @@ class EngineContractTests(unittest.TestCase):
         for name, argv in self.each_engine():
             stub_dir = make_stub(self.workdir / f"stub-alias-{name}", "qodercli")
             common = {"DRY_RUN": "1",
-                      "PATH": f"{stub_dir}:/usr/bin:/bin:/usr/sbin:/sbin"}
+                      "PATH": str(stub_dir) + os.pathsep + SYSTEM_PATH}
             via_alias = self.run_engine(argv, dict(common, NPM_PACKAGES="qodercli"))
             self.assertIn("qodercli", via_alias.stdout)
             self.assertIn("SKIP_DRY_RUN", via_alias.stdout)
@@ -201,6 +226,8 @@ class EngineContractTests(unittest.TestCase):
     # ---- 2.2.0 新增行为（仅 Python 引擎） --------------------------------
 
     def test_python_engine_finds_opencode_native_dir(self):
+        if IS_WINDOWS:
+            self.skipTest("~/.opencode/bin 是 POSIX 原生安装布局，Windows 无此形态")
         py = dict(ENGINES).get("python")
         if py is None:
             self.skipTest("Python 引擎不在场")

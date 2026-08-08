@@ -1,0 +1,21 @@
+name: windows-contract
+# ai-cli-upgrade 契约测试的 Windows 真机回归（windows-latest runner）。
+# 独立于 audit（非必过检查）：验证 Python 引擎在原生 Windows 上的平台契约，
+# 失败不阻塞其他技能的 PR，但本技能改动应以它为准绳。
+on:
+  pull_request:
+    paths:
+      - "skills/soia-env-ai-cli-upgrade/**"
+      - "tests/test_upgrade_ai_clis_dry_run.py"
+      - ".github/workflows/windows-contract.yml"
+  workflow_dispatch:
+jobs:
+  contract:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run contract suite on native Windows
+        run: python tests/test_upgrade_ai_clis_dry_run.py
