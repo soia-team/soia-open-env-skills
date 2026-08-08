@@ -3,6 +3,16 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.12.2 — 2026-08-08
+
+ai-cli-upgrade 2.3.1：云鼎安全评估响应——去 pipe-to-shell 字样、标识符避开密钥前缀模式、安全模型披露
+
+## 修复
+- fix(ai-cli-upgrade): security hardening per Tencent Yunding assessment (2.3.1) (#82)
+
+## 维护
+- chore(release): open next train after v1.12.1 (#81)
+
 ## v1.12.1 — 2026-08-08
 
 claude-cli-install 1.0.4 市场上架就绪：能力边界、真机样例、专属测试、境内源提示
