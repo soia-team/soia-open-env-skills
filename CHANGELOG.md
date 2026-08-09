@@ -3,6 +3,17 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.12.3 — 2026-08-09
+
+SKILL.md 渐进式披露瘦身（7 技能 ≤200 行/≤10k 字符，细节下沉 references/）+ network-diagnose R6 安全加固
+
+## 修复
+- fix(network-diagnose): R6 安全加固——pipe-to-shell 表述三段式化、测试标识符避开密钥前缀模式 (#85)
+
+## 维护
+- refactor(skills): SKILL.md 渐进式披露瘦身——7 技能正文 ≤200 行/≤10k 字符，细节下沉 references/ (#86)
+- chore(release): open next train after v1.12.2 (#84)
+
 ## v1.12.2 — 2026-08-08
 
 ai-cli-upgrade 2.3.1：云鼎安全评估响应——去 pipe-to-shell 字样、标识符避开密钥前缀模式、安全模型披露
