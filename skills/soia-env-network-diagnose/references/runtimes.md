@@ -82,3 +82,9 @@
 - 不执行安装、升级、换源或改 PATH；缺什么由对应安装技能处理。
 - 不回显命令输出正文、绝对路径（home 折成 `~`）、环境变量和账号信息。
 - PATH 决定命中哪个副本：同一工具在系统目录与 Homebrew 下版本可能不同（实测 `git` 2.50.1 与 2.54.0、`bash` 3.2.57 与 5.3.15）。报告的是**当前 PATH 下会被用到的那个**，与安装技能的多副本排查不冲突。
+
+## 真机复跑样例（两种受限环境）
+
+同机把 PATH 收窄到 `/usr/bin:/bin`（模拟没有 node/npm/brew 的裸机）复跑，结论变为：Claude Code、Codex CLI、Kimi Code CLI、Qoder CLI、OpenCode CLI、Antigravity CLI、WorkBuddy 七项仍判「可安装」（走官方独立安装渠道），只有 Pi 与 Deep Code CLI 判「被阻塞 — npm 全局安装：缺 node、缺 npm」。**缺 Node 不等于装不了 AI CLI**，多数目标有官方独立安装渠道，先别急着装环境。
+
+再把 node 换成 20.19.0 复跑，版本门槛按各技能核对过的要求分道：Qoder CLI 的 npm 渠道保留（要求 ≥ 20），Claude Code（≥ 22）与 Kimi Code CLI（≥ 22.19）的 npm 渠道被摘掉但仍可走官方独立安装，只有没有兜底渠道的 Deep Code CLI 判「被阻塞 — node 20.19.0 < 22」。**版本不够挡掉的是渠道，不一定是这个工具。**
