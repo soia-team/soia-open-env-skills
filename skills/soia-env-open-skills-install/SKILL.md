@@ -3,11 +3,11 @@ name: soia-env-open-skills-install
 description: 在 Claude Code、Codex、WorkBuddy 上安装或更新 SOIA 开源技能，支持全部/单插件/单技能粒度与指定宿主。触发：「装好所有 SOIA 插件」「在 Codex 下装 SOIA」「更新 soia-dev 插件」。
 dependencies:
   optional: [soia-env-claude-cli-install, soia-env-codex-install, soia-env-workbuddy-install, soia-env-network-diagnose]
-version: 1.0.2
+version: 1.0.3
 created_at: 2026-08-01 15:47:43
-updated_at: 2026-08-05 13:30:00
+updated_at: 2026-08-09 01:40:00
 created_by: claude sonnet 4.6
-updated_by: claude-opus-5
+updated_by: deepseek-v4-flash
 ---
 
 # soia-env-open-skills-install
@@ -30,35 +30,9 @@ updated_by: claude-opus-5
 
 > **粒度说明**：SOIA 以「域插件」为最小交付单元（如 `soia-dev@soia` 含 9 个技能）。「更新单个技能」在插件模式下等价于更新整个域插件，但技能会说明是哪个技能触发了更新。若需要真正按技能粒度安装（不安装同域其他技能），必须改用 `npx skills add` 路线——技能会提示该路线与插件路线互斥，让客户选择。
 
-### 客户如何使用（自然语言示例）
+### 客户如何使用
 
-| 客户说 | 技能的理解 | 执行范围 |
-|---|---|---|
-| 「帮我装好所有 SOIA 技能」 | 全量安装，全宿主 | 8 域 × 3 宿主 |
-| 「帮我装好所有 SOIA 插件」 | 全量安装，全宿主 | 8 域 × 3 宿主 |
-| 「帮我在 Codex 下装好所有 SOIA 技能」 | 全量安装，Codex 宿主 | 8 域 × Codex |
-| 「帮我在 Codex 下装好所有 SOIA 插件」 | 全量安装，Codex 宿主 | 8 域 × Codex |
-| 「帮我在 Claude Code 下装好所有 SOIA 技能」 | 全量安装，Claude Code 宿主 | 8 域 × Claude Code |
-| 「帮我更新 Claude Code 下所有 SOIA 插件」 | 全量更新，Claude Code 宿主 | 8 域 × Claude Code |
-| 「帮我更新 Claude Code 下 soia-dev 插件」 | 单域更新，Claude Code 宿主 | soia-dev × Claude Code |
-| 「帮我更新 Claude Code 下 soia-dev 里的 soia-dev-coding-agent 技能」 | 单技能触发，更新整个插件 | soia-dev × Claude Code |
-| 「帮我在 WorkBuddy 里装好所有 SOIA 专家」 | 全量安装，WorkBuddy 宿主 | 8 域 × WorkBuddy |
-| 「只查看当前状态，不安装」 | 只读检查 | 3 宿主全查，不改动 |
-
-执行任何安装/更新前都展示计划并等客户确认；没有得到明确同意前不改动机器。
-
-### 8 个开源域插件
-
-| 插件名 | 域仓 | 技能数 | 常驻成本 |
-|---|---|---|---|
-| `soia-meta` | soia-open-skills | 4 | ~428 tok |
-| `soia-dev` | soia-open-dev-skills | 9 | — |
-| `soia-dev-design` | soia-open-dev-design-skills | 5 | — |
-| `soia-pkm-vault` | soia-open-pkm-vault-skills | 15 | — |
-| `soia-media-content` | soia-open-media-content-skills | 6 | ~728 tok |
-| `soia-cwork-office` | soia-open-cwork-office-skills | 3 | — |
-| `soia-env` | soia-open-env-skills | 15 | — |
-| `soia-edu-course` | soia-open-edu-course-skills | — | — |
+完整自然语言示例表（10 条：全量/单域/单技能 × 三宿主，含「只查看当前状态」）见 [user-phrases.md](references/user-phrases.md)。执行任何安装/更新前都展示计划并等客户确认；没有得到明确同意前不改动机器。
 
 ### 依赖与安装
 
@@ -71,7 +45,29 @@ updated_by: claude-opus-5
 | `soia-meta-skill-release` 脚本 | WorkBuddy 步骤 | 跳过 WorkBuddy 专家安装并给出路径说明 |
 | 网络诊断 | 可选前置 | 市场接入失败时调 `soia-env-network-diagnose` |
 
-本技能是 `soia-env-environment-setup` 的下游（环境就绪后的下一步），也可独立触发。
+本技能是 `soia-env-environment-setup` 的下游（环境就绪后的下一步），也可独立触发。8 个开源域插件（域仓、技能数、常驻成本）见 [plugins.md](references/plugins.md)。
+
+
+装整个域（Claude Code 与 Codex 共用同一份域插件）：
+
+```bash
+claude plugin marketplace add soia-team/soia-open-skills
+claude plugin install soia-env@soia
+```
+
+只装本技能：
+
+```bash
+npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-open-skills-install -y
+```
+
+### 私密信息与中间数据
+
+- 不读取、不存储任何凭据；只读检查不落盘；安装阶段脱敏进度写入 `~/.local/state/soia-skills/soia-env-open-skills-install/`；不将本地路径或用户名写入仓库。
+
+### 日志与完成回执
+
+最终输出：宿主可用性列表 + 域安装回执表 + 失败域的可重试命令 + WorkBuddy 重启提示（如有）。
 
 ## 标准流程
 
@@ -98,55 +94,19 @@ python3 scripts/inspect_soia_plugins.py --json
 
 ### 阶段 1 · 确认安装计划
 
-根据客户意图计算目标宿主 × 目标域的安装/更新矩阵，展示后等客户确认。判断规则：
-
-- **宿主**：未指定宿主时检测全部可用宿主；指定「Codex」「Claude Code」「WorkBuddy」时只操作该宿主。
-- **粒度**：「所有 SOIA 技能/插件」→ 全 8 域；「soia-dev」→ 单域；「某个技能」→ 找到所属域 → 单域。
-- **动作**：插件未安装 → install；已安装 → update（并展示当前版本和最新版本）。
+根据客户意图计算目标宿主 × 目标域的安装/更新矩阵，展示后等客户确认。判断规则：**宿主**未指定时检测全部可用宿主；**粒度**「所有 SOIA 技能/插件」→ 全 8 域、「soia-dev」→ 单域、「某个技能」→ 找到所属域 → 单域；**动作**插件未安装 → install、已安装 → update（并展示当前版本和最新版本）。
 
 ### 阶段 2 · Claude Code 安装/更新
 
-```bash
-# 市场未接入时先接入
-claude plugin marketplace add soia-team/soia-open-skills
-
-# 未安装的域：install
-claude plugin install <域名>@soia
-
-# 已安装的域：update
-claude plugin update <域名>@soia
-```
-
-逐域执行，任一域失败记录并继续；每域完成后用 `plugin list` 核对版本。
+市场未接入时先接入（命令见上方「装整个域」块），随后逐域执行：未安装的域 `claude plugin install <域名>@soia`，已安装的域 `claude plugin update <域名>@soia`；任一域失败记录并继续，每域完成后用 `plugin list` 核对版本。
 
 ### 阶段 3 · Codex 安装/更新
 
-```bash
-# 市场暂存必须刷新，否则拿到旧缓存（已知约束：2026-07-27 实际踩过）
-rm -rf ~/.codex/.tmp/marketplaces/soia
-codex plugin marketplace add soia-team/soia-open-skills
-
-# 未安装的域：add
-codex plugin add <域名>@soia
-
-# 已安装的域：remove + add（Codex 无 update 命令）
-codex plugin remove <域名>@soia
-codex plugin add <域名>@soia
-```
+市场暂存必须刷新，否则拿到旧缓存（已知约束：2026-07-27 实际踩过），随后 `codex plugin marketplace add soia-team/soia-open-skills`；未安装的域 `codex plugin add <域名>@soia`，已安装的域 `codex plugin remove + add`（Codex 无 update 命令）。完整命令见 [official-sources.md](references/official-sources.md)。
 
 ### 阶段 4 · WorkBuddy 专家安装/更新
 
-```bash
-# dry-run 先看计划
-python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbuddy_experts.py \
-  --dry-run [<域名>]
-
-# 确认后执行（无参数装全部，传域名只装指定域）
-python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbuddy_experts.py \
-  [<域名>]
-```
-
-完成后必须提示客户**重启 WorkBuddy**，否则新专家不显示。`<soia-open-skills>` 路径通过 `SOIA_SKILL_REPOS_ROOT` 环境变量或 `--repo-dir` 参数解析；两者都没有时提示客户指定路径。
+dry-run 先看计划，确认后执行 `soia-open-skills` 的 `install_workbuddy_experts.py`（无参数装全部，传域名只装指定域）；路径通过 `SOIA_SKILL_REPOS_ROOT` 环境变量或 `--repo-dir` 参数解析，两者都没有时提示客户指定路径。完成后必须提示客户**重启 WorkBuddy**，否则新专家不显示。命令见 [official-sources.md](references/official-sources.md)。
 
 ### 阶段 5 · 收尾验证
 
@@ -165,11 +125,8 @@ python3 scripts/inspect_soia_plugins.py --json
 | soia-meta | 已安装 1.8.0 | 已安装 1.8.0 | — | 2026-08-01T10:00:00+08:00 | WorkBuddy 无该域专家 |
 | soia-dev | 已安装 1.6.0 | 跳过（宿主不可用） | 已安装 | 2026-08-01T10:00:01+08:00 | — |
 
-- 宿主不可用：写「跳过（宿主不可用）」，不写「失败」
-- 已有版本未变：写「已是最新 <版本>」
-- 首次安装：写「已安装 <版本>」
-- 更新：写「已更新 <旧版本> → <新版本>」
-- `更新时间` 在该域最终验证后实时生成，格式 RFC3339 带时区
+- 宿主不可用：写「跳过（宿主不可用）」，不写「失败」；已有版本未变：写「已是最新 <版本>」；首次安装：写「已安装 <版本>」；更新：写「已更新 <旧版本> → <新版本>」。
+- `更新时间` 在该域最终验证后实时生成，格式 RFC3339 带时区。
 
 ## 关于「单个技能」粒度
 
@@ -194,27 +151,11 @@ checking → planning/waiting_confirmation → installing/updating → verifying
 
 ## 权限与回滚
 
-- `claude plugin` 和 `codex plugin` 命令均为用户级操作，不需要管理员权限
-- WorkBuddy 脚本写入 `~/.workbuddy/plugins/marketplaces/my-experts/plugins`，不需要管理员权限
-- 失败时不自动回滚；给出对应的手动卸载命令供客户选择
-
-## 私密信息与中间数据
-
-- 不读取、不存储任何凭据
-- 只读检查不落盘；安装阶段脱敏进度写入 `~/.local/state/soia-skills/soia-env-open-skills-install/`
-- 不将本地路径或用户名写入仓库
-
-## 日志与完成回执
-
-最终输出：宿主可用性列表 + 域安装回执表 + 失败域的可重试命令 + WorkBuddy 重启提示（如有）。
+- `claude plugin` 和 `codex plugin` 命令均为用户级操作，不需要管理员权限；WorkBuddy 脚本写入 `~/.workbuddy/plugins/marketplaces/my-experts/plugins`，不需要管理员权限。
+- 失败时不自动回滚；给出对应的手动卸载命令供客户选择。
 
 ## 前向测试
 
-- Mock `claude`/`codex`：未安装 / 已安装无市场 / 已接入市场各场景
-- 验证「跳过不可用宿主」不影响其他宿主
-- 验证「指定单宿主」只操作该宿主
-- 验证「指定单域」只安装/更新该域
-- 验证「已是最新版」不触发重复安装（update 输出 already at latest 时记「已是最新」）
-- 验证「单个技能触发」找到所属域并更新整个插件
-- 验证 WorkBuddy 脚本路径缺失时给出明确提示而非异常退出
-- 验证 `更新时间` 在验证后生成、非硬编码
+- Mock `claude`/`codex`：未安装 / 已安装无市场 / 已接入市场各场景；验证「跳过不可用宿主」不影响其他宿主，验证「指定单宿主」只操作该宿主。
+- 验证「指定单域」只安装/更新该域；「已是最新版」不触发重复安装（update 输出 already at latest 时记「已是最新」）；「单个技能触发」找到所属域并更新整个插件。
+- 验证 WorkBuddy 脚本路径缺失时给出明确提示而非异常退出；验证 `更新时间` 在验证后生成、非硬编码。
