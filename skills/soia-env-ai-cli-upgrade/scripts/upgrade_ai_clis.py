@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # @created_by  claude-fable-5
 # @created_at  2026-08-08 14:10:00
-# @version     2.1.1
+# @version     2.2.0
 # @description Audit and safely upgrade supported AI/developer CLIs (Python engine).
-# @changelog   Security hardening per Tencent Yunding scan (2026-08-08): rename
+# @changelog   Add DeepSeek Harness (dsh) support via npm registry package
+#              @deepseek-ai/dsh; native installs without a known channel report MANUAL.
+#              Security hardening per Tencent Yunding scan (2026-08-08): rename
 #              identifiers off the npm secret-token prefix pattern; replace
 #              pipe-to-shell suggestion strings with download-review-run wording.
 #              Previously: platform-aware paths for native Windows; agy MANUAL on Windows.
@@ -384,6 +386,7 @@ TOOL_META = {
     "qodercli": ("qodercli", ""),
     "cursor": ("cursor", ""),
     "deepcode": ("deepcode", "@vegamo/deepcode-cli"),
+    "dsh": ("dsh", "@deepseek-ai/dsh"),
     "pi": ("pi", "@earendil-works/pi-coding-agent"),
 }
 
@@ -452,7 +455,7 @@ def upgrade_tool(tool):
             print_result(tool, cmd, old_version, old_version, "FAILED",
                          f"{cmd} update failed; path={binary}")
             return
-    elif tool in ("gemini", "qwen", "opencode", "kimi", "deepcode"):
+    elif tool in ("gemini", "qwen", "opencode", "kimi", "deepcode", "dsh"):
         brew_formula = detect_brew_formula_from_bin(binary)
         if brew_formula:
             if _run(["brew", "upgrade", brew_formula]).returncode != 0:
@@ -484,6 +487,11 @@ def upgrade_tool(tool):
                 print_result(tool, cmd, old_version, old_version, "MANUAL",
                              "native install; refresh via official installer (download from "
                              f"opencode.ai/install, review, then run locally); path={binary}")
+                return
+            elif tool == "dsh":
+                print_result(tool, cmd, old_version, old_version, "MANUAL",
+                             "no known channel (official install is npm @deepseek-ai/dsh); "
+                             f"path={binary}")
                 return
     elif tool == "claude":
         install_method = detect_claude_method(binary)
@@ -583,7 +591,7 @@ def upgrade_tool(tool):
 def main():
     print_header()
     default_tools = ["codex", "claude", "agy", "kimi", "mmx", "qwen",
-                     "opencode", "qodercli", "cursor", "deepcode", "pi"]
+                     "opencode", "qodercli", "cursor", "deepcode", "dsh", "pi"]
     selector = os.environ.get("TOOLS") or os.environ.get("NPM_PACKAGES") or ""
     if selector:
         tools = [t.strip() for t in selector.split(",") if t.strip()]

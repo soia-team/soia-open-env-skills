@@ -239,6 +239,42 @@ class EngineContractTests(unittest.TestCase):
         self.assertNotIn("NOT_INSTALLED", result.stdout,
                          "~/.opencode/bin 未入 PATH 时也必须探测到")
 
+    # ---- 2.3.3 新增行为：DeepSeek Harness (dsh) --------------------------
+
+    def test_dsh_is_in_default_tool_list(self):
+        for name, argv in self.each_engine():
+            result = self.run_engine(argv, {"DRY_RUN": "1"})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            row = next((ln for ln in result.stdout.splitlines()
+                        if ln.strip().startswith("dsh ")), None)
+            self.assertIsNotNone(row, "默认批次必须包含 dsh 行")
+            self.assertIn("NOT_INSTALLED", row)
+
+    def test_dsh_dry_run_audits_stub_without_upgrading(self):
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-dsh-dry-{name}", "dsh")
+            result = self.run_engine(argv, {
+                "DRY_RUN": "1", "TOOLS": "dsh",
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("SKIP_DRY_RUN", result.stdout)
+            self.assertIn(STUB_VERSION, result.stdout)
+            version_file = stub_dir / "dsh.version"
+            self.assertEqual(version_file.read_text().strip(), STUB_VERSION,
+                             "dry-run 不得触发 dsh 升级改动状态")
+
+    def test_dsh_live_unknown_channel_reports_manual(self):
+        # 非 brew、非 npm prefix 的二进制没有已知升级通道，保守报 MANUAL 而不是误升级
+        for name, argv in self.each_engine():
+            stub_dir = make_stub(self.workdir / f"stub-dsh-live-{name}", "dsh")
+            result = self.run_engine(argv, {
+                "TOOLS": "dsh",
+                "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("MANUAL", result.stdout)
+            self.assertNotIn("FAILED", result.stdout)
+            self.assertNotIn("UPDATED", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
