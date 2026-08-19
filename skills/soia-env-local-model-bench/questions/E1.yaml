@@ -1,0 +1,26 @@
+# E1 · Agent 前置：按给定 JSON Schema 严格输出。自动 parse 并校验字段。
+# 提示词内的「今天是2026-08-18」是题面常量，保证 due 有唯一正确答案，不要改。
+qid: E1
+cat: Agent-JSON
+temp: 0.0
+max_tokens: 2000
+check:
+  type: json_expect
+  exact_keys: [title, tags, priority, due]
+  expects:
+    - path: title
+      type: str
+    - path: tags
+      type: list
+      min_len: 1
+    - path: priority
+      type: int
+      min: 4
+      max: 5
+    - path: due
+      equals: "2026-08-21"
+prompt: |
+  把下面这句话转成任务 JSON，字段：title(字符串)、tags(字符串数组)、priority(整数1-5，5最高)、due(YYYY-MM-DD)。今天是2026-08-18（周二）。只输出 JSON，不要其他文字。
+  「周五之前必须完成 nginx 限流配置的复查，这事优先级很高，属于运维和安全类工作。」
+mock_response: |
+  {"title": "复查 nginx 限流配置", "tags": ["运维", "安全"], "priority": 5, "due": "2026-08-21"}

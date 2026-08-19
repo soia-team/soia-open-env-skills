@@ -1,0 +1,15 @@
+# A1 · 速度-短生成。tok/s 自动计时，不判对错。
+qid: A1
+cat: 速度-短生成
+temp: 0.0
+max_tokens: 2000
+check:
+  type: speed
+prompt: |
+  写一个 Python 函数实现快速排序，带类型注解和 docstring。
+mock_response: |
+  ```python
+  def quicksort(items: list) -> list:
+      """Mock output for pipeline self-test."""
+      return sorted(items)
+  ```

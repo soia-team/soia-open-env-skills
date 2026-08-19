@@ -1,0 +1,13 @@
+# A3 · 速度-长生成。观察 tok/s 随生成长度的衰减。
+qid: A3
+cat: 速度-长生成
+temp: 0.0
+max_tokens: 2500
+groups: [nothink, low]
+check:
+  type: speed
+prompt: |
+  为一个图书借阅系统设计完整的 REST API，输出设计文档：资源模型、全部端点、请求/响应示例、状态码约定、分页与错误格式。
+mock_response: |
+  # 图书借阅系统 REST API（mock）
+  略。
