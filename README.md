@@ -6,13 +6,13 @@
 
 **AI 工具最会骗人的状态：命令能跑，但实际不能用**
 
-17 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
+18 个技能负责装好、验通、诊断清楚——只读诊断，破坏性操作必须你授权
 
 [English](README.en.md) · 中文 · [全生态门户](https://github.com/soia-team/soia-open-skills)
 
 <p align="center">
   <img alt="plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsoia-team%2Fsoia-open-env-skills%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=F5A623&prefix=v">
-  <img alt="skills" src="https://img.shields.io/badge/技能-17-brightgreen">
+  <img alt="skills" src="https://img.shields.io/badge/技能-18-brightgreen">
   <img alt="hosts" src="https://img.shields.io/badge/宿主-Claude%20%C2%B7%20Codex%20%C2%B7%20WorkBuddy-8A2BE2">
   <img alt="always-on cost" src="https://img.shields.io/badge/常驻-~1.5k%20tok-lightgrey">
   <img alt="license" src="https://img.shields.io/github/license/soia-team/soia-open-env-skills?color=blue">
@@ -37,7 +37,7 @@ flowchart LR
     E --> G["空间治理<br/>出清单 → 授权 → 删除 → 复核"]
 ```
 
-## 17 个技能
+## 18 个技能
 
 ### 01 规划与验证　`一台新机器 → 可用且验证过的 AI 环境`
 
@@ -76,11 +76,17 @@ flowchart LR
 |---|---|:-:|
 | [`soia-env-workbuddy-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-workbuddy-install.md) | WorkBuddy 桌面端安装、签名验证与按授权更新 | ✅ |
 
-✅ 全部 17 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
+### 05 本地模型　`裸机 → 选好引擎、测完质量与吞吐、出可横比报告`
+
+| 技能 | 职责 | 开箱 |
+|---|---|:-:|
+| [`soia-env-local-model-bench`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-local-model-bench.md) | Apple Silicon 本地 LLM 评测：环境检查与引擎选型开局，确认后才下载部署；题库判定、吞吐 TTFT、硬件采样，按口径契约出报告 | ✅ |
+
+✅ 全部 18 个技能装完即用，无需 API key。登录与系统授权由你在各官方界面完成
 
 ## 安装
 
-三个宿主任选，装整个领域插件即 17 个技能一次到位。
+三个宿主任选，装整个领域插件即 18 个技能一次到位。
 
 ```bash
 claude plugin marketplace add soia-team/soia-open-skills && claude plugin install soia-env@soia

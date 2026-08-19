@@ -1,0 +1,12 @@
+# D3b · 逻辑陷阱：过河问题变体（船能载两样，与经典题不同）。人工评审推理链。
+qid: D3b
+cat: 逻辑陷阱
+temp: 0.0
+max_tokens: 4000
+groups: [nothink, low]
+check:
+  type: manual
+prompt: |
+  农夫要带狼、羊、白菜过河。船每次能载农夫加两样东西。农夫不在场时狼吃羊、羊吃白菜。最少几次渡河能全部安全过河？
+mock_response: |
+  推理（mock）：略。

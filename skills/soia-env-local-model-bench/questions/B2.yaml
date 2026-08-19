@@ -1,0 +1,15 @@
+# B2 · 社区经典：旋转六边形内弹球。保留英文原题不改动。浏览器运行后人工评审。
+qid: B2
+cat: 社区经典
+temp: 0.7
+max_tokens: 8000
+groups: [nothink, low]
+check:
+  type: save
+  ext: html
+prompt: |
+  Write a single-file HTML page with JavaScript: a ball bouncing inside a spinning hexagon, with gravity and realistic collision against the rotating walls. No external libraries. Output only the HTML file.
+mock_response: |
+  ```html
+  <!DOCTYPE html><html><body><canvas id="c"></canvas></body></html>
+  ```

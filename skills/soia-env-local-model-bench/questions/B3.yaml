@@ -1,0 +1,15 @@
+# B3 · 社区经典：六边形扫雷单 prompt 一次成型。保留英文原题不改动。
+qid: B3
+cat: 社区经典
+temp: 0.7
+max_tokens: 8000
+groups: [nothink, low]
+check:
+  type: save
+  ext: html
+prompt: |
+  Create a hexagonal minesweeper game as a single HTML file: hexagonal grid, click to reveal, right-click to flag, numbers count mines among hex neighbors. No external libraries. Output only the HTML file.
+mock_response: |
+  ```html
+  <!DOCTYPE html><html><body><div id="grid"></div></body></html>
+  ```

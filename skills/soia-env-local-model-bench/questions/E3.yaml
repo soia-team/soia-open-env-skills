@@ -1,0 +1,21 @@
+# E3 · Agent 前置：三步指令按序执行。逐行校验（忽略空行）。
+qid: E3
+cat: Agent-多步指令
+temp: 0.0
+max_tokens: 1000
+check:
+  type: lines_expect
+  min_lines: 3
+  lines:
+    - contains: T-42
+    - contains: dlrow olleh
+    - regex: '\b15\b'
+prompt: |
+  严格按顺序执行三步，每步输出一行：
+  第一行：输出任务编号 T-42
+  第二行：把字符串 hello world 反转后输出
+  第三行：输出前两行内容的字符总数（不含换行，T-42 算 4 个字符）
+mock_response: |
+  T-42
+  dlrow olleh
+  15

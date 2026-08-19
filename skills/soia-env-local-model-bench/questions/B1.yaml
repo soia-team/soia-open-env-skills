@@ -1,0 +1,15 @@
+# B1 · 社区经典：鹈鹕骑车 SVG（Simon Willison 基准）。保留英文原题不改动，
+# 保证与社区他人结果横向可比。渲染后人工评审。
+qid: B1
+cat: 社区经典
+temp: 0.7
+max_tokens: 8000
+check:
+  type: save
+  ext: svg
+prompt: |
+  Generate an SVG of a pelican riding a bicycle.
+mock_response: |
+  ```svg
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10"/></svg>
+  ```

@@ -1,0 +1,20 @@
+# A4 · 速度-32k 长上下文。量化 KV cache 下的 prefill 与 decode 衰减。
+# 占位题：与 A2 同机制，需要一个更长的本机真实代码文件；未配置 context_file 则跳过
+# 并在回执标注 skipped。服务器需以足够上下文窗口启动（如 32k）。
+qid: A4
+cat: 速度-32k长上下文
+temp: 0.0
+max_tokens: 2000
+only_group: nothink
+context_file: null
+max_context_chars: 110000
+check:
+  type: speed
+prompt: |
+  以下是一个真实项目的完整代码（可能截断）：
+  ```
+  {context}
+  ```
+  请输出：1) 系统架构总结；2) 全部对外接口清单；3) 核心数据结构清单及关键字段；4) 你发现的一个潜在问题。
+mock_response: |
+  架构总结（mock）：略。
