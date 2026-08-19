@@ -3,6 +3,19 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.13.0 — 2026-08-19
+
+新增 soia-env-local-model-bench 本地 LLM 评测技能；ai-cli-upgrade 增 dsh 支持并拆分 providers 架构
+
+## 新增
+- feat(ai-cli-upgrade): add DeepSeek Harness (dsh) support (2.3.3) (#91)
+- feat(skills): 新增 soia-env-local-model-bench 本地 LLM 评测技能
+
+## 维护
+- chore(train): 新技能入列，列车提为 minor（claude/codex 1.13.0-SNAPSHOT，codebuddy 1.4.0-SNAPSHOT）
+- refactor(ai-cli-upgrade): split monolithic engine into entry + providers package (#92)
+- chore(release): open next train after v1.12.3 (#88)
+
 ## v1.12.3 — 2026-08-09
 
 SKILL.md 渐进式披露瘦身（7 技能 ≤200 行/≤10k 字符，细节下沉 references/）+ network-diagnose R6 安全加固
