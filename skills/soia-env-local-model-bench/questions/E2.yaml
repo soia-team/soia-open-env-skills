@@ -1,0 +1,22 @@
+# E2 · Agent 前置：OpenAI tools 风格调用一次工具。校验 JSON 合法性与参数取值。
+# path 里的 | 表示字段名兼容（模型写 arguments 或 parameters 都接受）。
+qid: E2
+cat: Agent-工具调用
+temp: 0.0
+max_tokens: 1500
+check:
+  type: json_expect
+  expects:
+    - path: name
+      equals: get_weather
+    - path: arguments|parameters.city
+      in: [北京, Beijing, beijing]
+    - path: arguments|parameters.unit
+      lower_in: [c, celsius]
+prompt: |
+  你可以调用工具。可用工具：
+  {"name":"get_weather","parameters":{"city":"string","unit":"c|f"}}
+  用户问：北京今天多少摄氏度？
+  请只输出一个表示工具调用的 JSON 对象，格式 {"name":..., "arguments":{...}}，不要其他文字。
+mock_response: |
+  {"name": "get_weather", "arguments": {"city": "北京", "unit": "c"}}

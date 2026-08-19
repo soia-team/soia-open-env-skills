@@ -1,0 +1,6 @@
+# Optional OpenAI/Codex/SOIA catalog metadata.
+# Canonical instructions live in ../SKILL.md.
+interface:
+  display_name: "Local Model Bench"
+  short_description: "Benchmark local LLMs on Apple Silicon: engine selection, download, deploy, 17-question eval, throughput and hardware profiling."
+  default_prompt: "Use soia-env-local-model-bench to check my machine, help me pick an inference engine, then benchmark a local model and report comparable numbers."

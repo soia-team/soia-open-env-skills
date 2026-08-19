@@ -17,6 +17,7 @@
     "./skills/soia-env-deepcode-cli-install",
     "./skills/soia-env-environment-setup",
     "./skills/soia-env-kimi-cli-install",
+    "./skills/soia-env-local-model-bench",
     "./skills/soia-env-network-diagnose",
     "./skills/soia-env-node-install",
     "./skills/soia-env-open-skills-install",

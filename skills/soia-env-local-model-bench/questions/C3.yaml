@@ -1,0 +1,62 @@
+# C3 · 真实代码-公开 bug：LRU 缓存修复。判定 harness 内置在 check.test，
+# 用 node 直接执行（需要本机装 node）。每轮评测可换公开题，换题即改本文件。
+qid: C3
+cat: 真实代码-公开bug
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    const c=new LRUCache(2);
+    c.put(1,1);c.put(2,2);
+    let ok=true;
+    if(c.get(1)!==1){ok=false;console.error("FAIL get(1) after put");}
+    c.put(3,3);
+    if(c.get(2)!==-1){ok=false;console.error("FAIL get(2) should be evicted, got "+c.get(2));}
+    if(c.get(3)!==3){ok=false;console.error("FAIL get(3)");}
+    if(c.get(1)!==1){ok=false;console.error("FAIL get(1) was refreshed, should stay");}
+    if(c.map && c.map.size>2){ok=false;console.error("FAIL capacity exceeded: "+c.map.size);}
+    c.put(4,4);
+    if(c.get(3)!==-1){ok=false;console.error("FAIL get(3) should be evicted after put(4)");}
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  下面这个 LRU 缓存实现有 bug。用户报告：缓存经常超出设定容量；而且刚访问过的键还是会被挤掉。
+  ```js
+  class LRUCache {
+    constructor(capacity) { this.capacity = capacity; this.map = new Map(); }
+    get(key) {
+      if (!this.map.has(key)) return -1;
+      return this.map.get(key);
+    }
+    put(key, value) {
+      if (this.map.has(key)) this.map.delete(key);
+      if (this.map.size > this.capacity) {
+        const oldest = this.map.keys().next().value;
+        this.map.delete(oldest);
+      }
+      this.map.set(key, value);
+    }
+  }
+  ```
+  找出所有 bug 并修复。只输出修复后的完整 class，一个 js 代码块。
+mock_response: |
+  ```js
+  class LRUCache {
+    constructor(capacity) { this.capacity = capacity; this.map = new Map(); }
+    get(key) {
+      if (!this.map.has(key)) return -1;
+      const value = this.map.get(key);
+      this.map.delete(key);
+      this.map.set(key, value);
+      return value;
+    }
+    put(key, value) {
+      if (this.map.has(key)) this.map.delete(key);
+      else if (this.map.size >= this.capacity) {
+        const oldest = this.map.keys().next().value;
+        this.map.delete(oldest);
+      }
+      this.map.set(key, value);
+    }
+  }
+  ```

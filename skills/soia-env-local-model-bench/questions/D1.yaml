@@ -1,0 +1,12 @@
+# D1 · 中文写作。人评准确性与措辞。
+qid: D1
+cat: 中文写作
+temp: 0.7
+max_tokens: 3000
+groups: [nothink, low]
+check:
+  type: manual
+prompt: |
+  为一个 Node.js 网站写一段面向运维新手的部署说明（约300字，中文）：nginx 反向代理到本机 3000 端口 + systemd 管理服务进程，说明为什么应用只监听 127.0.0.1。
+mock_response: |
+  部署说明（mock）：略。

@@ -2,7 +2,7 @@
 
 > Generated from `skills/*/SKILL.md` and optional `agents/openai.yaml`.
 > Do not edit by hand. Run `python3 scripts/generate_skill_catalog.py`.
-> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 17 skills.
+> Discoverable by `npx skills add soia-team/soia-open-env-skills -l`: 18 skills.
 
 ## Source Fields
 
@@ -23,6 +23,7 @@
 | [`soia-env-deepcode-cli-install`](./soia-env-deepcode-cli-install/) | Install and verify the DeepSeek-focused Deep Code CLI | Use $soia-env-deepcode-cli-install to check or install Deep Code CLI, verify ~/.deepcode/settings.json, guide DeepSeek API key setup, and run a real no-side-effect validation without updating an existing installation unless I request the latest version. |
 | [`soia-env-environment-setup`](./soia-env-environment-setup/) | Plan and coordinate beginner-friendly environment setup. | Help me set up this computer for development. |
 | [`soia-env-kimi-cli-install`](./soia-env-kimi-cli-install/) | Install and verify the standalone Kimi Code CLI | Use $soia-env-kimi-cli-install to check or install Kimi Code CLI, verify ~/.kimi-code/config.toml, and guide kimi login or /login without updating an existing installation unless I request the latest version. |
+| [`soia-env-local-model-bench`](./soia-env-local-model-bench/) | Benchmark local LLMs on Apple Silicon: engine selection, download, deploy, 17-question eval, throughput and hardware profiling. | Use soia-env-local-model-bench to check my machine, help me pick an inference engine, then benchmark a local model and report comparable numbers. |
 | [`soia-env-network-diagnose`](./soia-env-network-diagnose/) | Diagnose network access and local runtimes before installing AI tools. | Check why downloads or package installs fail, and what this machine can install. |
 | [`soia-env-node-install`](./soia-env-node-install/) | Install and verify Node.js and npm. | Install Node.js and npm for my project. |
 | [`soia-env-open-skills-install`](./soia-env-open-skills-install/) | Install SOIA open-skill plugins across Claude Code, Codex and WorkBuddy | Use $soia-env-soia-skills-install to check current SOIA plugin status and install selected domain plugins across available AI hosts. Ask the user which domains to install before making any changes. |

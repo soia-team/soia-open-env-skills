@@ -1,0 +1,28 @@
+# soia-env-local-model-bench 非秘密配置示例。
+# 复制到 ~/.config/soia-skills/soia-env-local-model-bench/config.yml
+# 或用环境变量 SOIA_ENV_LOCAL_MODEL_BENCH_CONFIG_FILE 指向自定义位置。
+# 只放非秘密偏好与路径；本技能不需要任何凭据，也不要把凭据写进来。
+# 全部键都可缺省：脚本参数 > 环境变量 > 本文件 > 内置默认。
+
+version: 1
+
+# 请求 payload 的 model 字段。mlx-lm 必须是模型完整路径（~ 会展开）。
+model: "~/mlx-models/<model-dir>"
+
+server:
+  base_url: "http://127.0.0.1:21000/v1"
+
+# 结果与输出目录（results/ 与 outputs/ 会建在下面）。
+workspace: "~/local-model-bench"
+
+# 占位题（A2/A4）的本机长代码文件；不配置则对应题跳过并在回执标 skipped。
+context_files:
+  A2: "<约 6k token 的本机真实代码文件路径>"
+  A4: "<更长的本机真实代码文件路径>"
+
+throughput:
+  # 长 prompt TTFT 用的文件；缺省时回退 context_files.A2。
+  long_context_file: "<与 A2 相同或另一个长文件>"
+
+# 私有题目录；缺省时按 question-format.md 的默认目录扫描。
+# private_questions_dir: "<私有题目录>"

@@ -1,0 +1,22 @@
+# A2 · 速度-长 prompt（约 6k token prefill）。
+# 占位题：依赖一个本机真实代码文件做长 prompt。context_file 留空时本题跳过，
+# 并在回执标注 skipped。配置方式任选其一：
+#   1) 私有题目录放一个同 qid 的 A2.yaml 覆盖本文件，写上 context_file；
+#   2) config.yml 的 context_files.A2 指向本机文件。
+qid: A2
+cat: 速度-长prompt
+temp: 0.0
+max_tokens: 1500
+groups: [nothink, low]
+context_file: null
+max_context_chars: 20000
+check:
+  type: speed
+prompt: |
+  以下是一段真实项目代码：
+  ```
+  {context}
+  ```
+  请总结这段代码的主要功能模块，列出对外暴露的接口/函数清单。
+mock_response: |
+  模块总结（mock）：略。

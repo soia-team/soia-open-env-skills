@@ -1,0 +1,85 @@
+# 评测方法论（三维度 + 吞吐专项 + Agent 集成）
+
+来源：维护者在 Apple Silicon（128GB 级）上多轮真实评测沉淀（2026-08 核对）。
+硬件或推理框架大版本升级后需复核阈值与命令。
+
+## 部署与服务配置
+
+- 模型统一放一个模型根目录（如 `~/mlx-models/<模型目录>/`），mlx-lm 建议独立 venv。
+- mlx-lm 启动模板（OpenAI 兼容端点，供评测脚本与所有 Agent 共用）：
+
+```bash
+mlx_lm.server --model <模型完整路径> --port 21000 \
+  --chat-template-args '{"reasoning_effort":"low"}'   # 按矩阵轴换档
+```
+
+- llama.cpp 启动模板（GGUF / 大 MoE CPU offload）：
+
+```bash
+llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jinja --port 21000
+```
+
+- 请求的 `model` 字段：mlx-lm 必须传模型完整路径，传别名会触发服务器去 HF 拉仓库并 404。
+- 混合推理模型默认深度档常严重过度思考（社区实测简单任务 20+ 分钟），必须显式降档；
+  thinking 内容在响应 `reasoning`（mlx-lm）或 `reasoning_content`（llama.cpp）字段，不占 `content`。
+  部分模型不关思考会全烧 token 零输出——B1 这类 8000 token 上限题是典型暴露点。
+- **资源规则：测完或暂停即停服务。** 大模型常驻几十 G 内存，不测试不挂着。
+
+## 维度一：题库
+
+题库文件是唯一真源（格式见 question-format.md），本页只记规则：
+
+- 温度按题类绑定：A/C/E 用 0，B/D 用 0.7，不做全交叉。
+- B 类保留社区原题（英文）不改动，保证与社区他人结果横向可比。
+- C 类取材：私有代码用沙盒副本（含真实业务逻辑，不含隐私数据），走私有题外置目录；
+  公开题选真实开源代码缺陷，harness 内置题目文件。
+- 判别集口径：自动判定题（C/D/E 类）全对与否是横比表第一行；速度题与人评题不计入判别集。
+
+## 维度二：配置矩阵
+
+| 配置轴 | 取值 | 绑定 |
+|---|---|---|
+| 推理深度 | 关思考 / low / medium | 三组各跑全题库（group 标签即档位） |
+| 温度 | 0 / 0.7 | 按题类绑定，见上 |
+| 上下文 | 默认 / 32k | 只测 A4 变体，量化 KV cache 速度衰减 |
+
+- 极高深度档不测：已被社区案例证明本地不可用，浪费机时。
+- 核心问题：**对代码任务，关思考 vs low，质量掉多少、速度赚多少**——这决定日常默认配置。
+
+## 维度三：Agent 集成（`run_agent.sh`）
+
+优先级顺序建议：pi → dsh → opencode。指标：完成与否、总耗时、失控行为
+（死循环/幻觉路径/改无关文件）。沙盒统一 git 仓库，每轮 `git reset --hard` 保证可比。
+
+各 Agent 指向本地 OpenAI 兼容端点的接法（2026-08 实测可用；具体字段随版本变化，以各家文档为准）：
+
+- **pi**：编辑 `~/.pi/agent/models.json`，顶层必须是 `providers` 键（`models-store.json`
+  是目录缓存，改了无效）。结构：`{"providers": {"mlx": {"baseUrl": "http://127.0.0.1:21000/v1",
+  "api": "openai-completions", "models": [{"id": "<模型完整路径>"}]}}}`（apiKey 填任意占位值）。
+  调用：`pi --provider mlx --model <模型完整路径> -p "任务"`。
+- **dsh**：不改 profile 本体，用 `--patch <文件>` 叠加。patch 是 YAML 数组，两个条目：
+  `- id: llm-pi-ai` 配 `config.providers.<名>`（同 pi 的 provider 结构），
+  `- id: agent-default-model` 配 `config.provider/model`。
+  调用：`dsh --profile headless --patch <patch文件> "任务"`。
+- **opencode**：`opencode.json` 的 `provider.<名>`（`api: openai`，`options.baseURL`）。
+  调用：`opencode run -m <名>/<模型别名> "任务"`。
+- 沙盒任务设计注意：若基线里多个失败共存，任何「让全部测试通过」的任务实际是组合任务——
+  要么按测试文件圈定范围，要么接受组合并只跑一轮。
+
+## 吞吐量专项（必测，`throughput_bench.py`）
+
+矩阵完成后，用最终推荐配置 + decode 并发 >= 最大级别重启服务再跑：
+
+1. **TTFT**：短 prompt 与长 prompt 各测冷/热两次——带 prompt cache 的服务热 TTFT 会骤降
+   （agent 循环重发上下文时是关键收益），冷热都要记录（先跑一次为冷，紧接重跑为热）。
+2. **并发聚合**：1/2/4/8 并发各一批，记录聚合 tok/s 与单流 tok/s，找饱和点。
+   dense 模型聚合上限由内存带宽决定。
+3. 口径声明必须随结果给出（脚本已固定写入结果 JSON），与他人数字对比前先对口径。
+4. 测速时排除后台重 IO；硬件画像用 `hw_sampler.py` 随测采样、`hw_summary.py` 汇总。
+
+## 收尾清单
+
+- [ ] 停掉推理服务与所有采样进程
+- [ ] 更新该模型测试档案与横比总览（落点见 report-contract.md）
+- [ ] Agent 端配置指向最终推荐配置
+- [ ] 旧模型权重**由用户自行确认后自行删除**——本技能不代删模型文件
