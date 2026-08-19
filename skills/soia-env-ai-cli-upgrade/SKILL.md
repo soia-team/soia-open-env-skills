@@ -1,9 +1,9 @@
 ---
 name: soia-env-ai-cli-upgrade
 description: 审计并按授权升级多款 AI CLI，先预演并核验结果。触发：「升级 AI CLI」「更新 Claude/Kimi」「检查 CLI 版本」。
-version: 2.3.2
+version: 2.3.3
 created_at: 2026-07-09 07:45:34
-updated_at: 2026-08-09 01:10:00
+updated_at: 2026-08-19 12:00:00
 created_by: claude opus 4.6
 updated_by: claude-fable-5
 ---
