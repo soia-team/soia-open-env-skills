@@ -180,10 +180,14 @@ def call_endpoint(base_url: str, model: str, prompt: str, temp: float,
     wall = time.time() - started
     message = response["choices"][0]["message"]
     completion_tokens = response["usage"]["completion_tokens"]
+    cached_tokens = (
+        (response["usage"].get("prompt_tokens_details") or {}).get("cached_tokens")
+    )
     return {
         "wall_s": round(wall, 1),
         "prompt_tokens": response["usage"]["prompt_tokens"],
         "completion_tokens": completion_tokens,
+        "cached_tokens": cached_tokens,
         "tok_s": round(completion_tokens / wall, 1) if wall else 0.0,
         "content": message.get("content") or "",
         "reasoning": message.get("reasoning") or message.get("reasoning_content") or "",
@@ -197,6 +201,7 @@ def mock_call(question: dict) -> dict:
         "wall_s": 0.0,
         "prompt_tokens": len(question["prompt"]) // 3,
         "completion_tokens": max(1, len(content) // 3),
+        "cached_tokens": None,
         "tok_s": 0.0,
         "content": content,
         "reasoning": "",
@@ -336,7 +341,8 @@ def main() -> int:
         append_record(dict(
             qid=qid, cat=question["cat"], group=args.group,
             wall_s=reply["wall_s"], prompt_tokens=reply["prompt_tokens"],
-            completion_tokens=reply["completion_tokens"], tok_s=reply["tok_s"],
+            completion_tokens=reply["completion_tokens"],
+            cached_tokens=reply["cached_tokens"], tok_s=reply["tok_s"],
             reasoning_chars=len(reply["reasoning"]), content_chars=len(reply["content"]),
             finish=reply["finish"], passed=verdict, note=note[:300],
             source=question["_source"], model=bc.fold_home(model)))
@@ -350,7 +356,9 @@ def main() -> int:
             ext = question["check"].get("ext") or "txt"
             (outdir / f"{qid}.{ext}").write_text(extract_code(reply["content"]), encoding="utf-8")
         print(f"[{args.group}] {qid} {STATUS_ICON[verdict]} {reply['wall_s']}s "
-              f"{reply['tok_s']}tok/s think={len(reply['reasoning'])}ch {note[:60]}", flush=True)
+              f"{reply['tok_s']}tok/s think={len(reply['reasoning'])}ch "
+              f"cache={reply['cached_tokens'] if reply['cached_tokens'] is not None else '-'} "
+              f"{note[:60]}", flush=True)
 
     print(f"\n[{args.group}] 完成回执 更新时间 {bc.now_rfc3339()}")
     print(f"  自动判定: PASS {counts['PASS']} / FAIL {counts['FAIL']} / 待人工 {counts['MANUAL']}")
