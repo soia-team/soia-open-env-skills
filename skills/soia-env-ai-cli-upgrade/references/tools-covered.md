@@ -12,7 +12,7 @@
 | OpenCode | `opencode` | 自动检测：brew formula → `brew upgrade`；npm → `npm install -g opencode-ai`；native → MANUAL（从 opencode.ai/install 下载官方安装器，审阅后本地执行刷新）；**⚑ npm 通道**：NOTE 列附官方安装器建议 |
 | Qoder CLI | `qodercli` | `qodercli update` |
 | DeepCode Agent CLI | `deepcode` | npm → `npm install -g deepcode`（`@vegamo/deepcode-cli` 已装时更新该包名） |
-| DeepSeek Harness | `dsh` | npm → `npm install -g @deepseek-ai/dsh`（官方 scoped 包；裸名 `dsh` 是被占用的无关老包，勿用） |
+| DeepSeek Harness | `dsh` | npm → `npm install -g @deepseek-ai/dsh`（官方 scoped 包；裸名 `dsh` 是被占用的无关老包，勿用）。**双轨道**：`latest`（默认，稳定）与 `next`（预发布）；`~/.dsh/profiles` 客户端包已升到 next 时，设 `DSH_TRACK=next` 对齐，避免 bootstrap 接口不匹配（rc.7 `__DSH_BOOT__` vs rc.8 `window.__ModuleLoader__`）。审计时 NOTE 列会对 CLI 与 profiles 版本做一致性提示 |
 | Pi (pi-coding-agent) | `pi` | `pi update --self`（npm 包 `@earendil-works/pi-coding-agent`） |
 | Cursor | `cursor` | 仅版本审计，除非用户自设 `CURSOR_UPGRADE_CMD` |
 

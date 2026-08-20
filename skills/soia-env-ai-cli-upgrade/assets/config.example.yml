@@ -12,5 +12,9 @@ env:
   CLAUDE_CHANNEL: "preserve"
   AGY_INSTALL: "0"
   AGY_INSTALL_DIR: "$HOME/.local/bin"
+  # dsh: latest（默认稳定）或 next（预发布）。~/.dsh/profiles 客户端包已升到
+  # next 轨道时设 next 对齐，防 bootstrap 接口不匹配（CLI/profiles 版本不一致
+  # 时审计 NOTE 会给出 MISMATCH 提示）。
+  DSH_TRACK: "latest"
   LOG_DIR: "$HOME/.local/state/soia-env-ai-cli-upgrade/logs"
   CURSOR_UPGRADE_CMD: "<optional command>"
