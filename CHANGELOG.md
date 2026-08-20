@@ -3,6 +3,18 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.15.0 — 2026-08-20
+
+本地模型评测技能：私有题 Markdown 格式支持（知识库内可读可编辑）+ GPU 占用清点与思考依赖性三态评测规范
+
+## 新增
+- feat(local-model-bench): 私有题支持 Markdown 格式（知识库内可读可编辑）
+
+## 维护
+- chore(train): dev 含 feat（md 题库支持），列车提为 minor 1.15.0-SNAPSHOT
+- docs(local-model-bench): 评测前 GPU 占用清点规范 + 思考依赖性三态测试（1.2.1）
+- chore(release): open next train after v1.14.0 (#99)
+
 ## v1.14.0 — 2026-08-20
 
 dsh 双轨道对齐 DSH_TRACK + profiles 一致性检测 + local-model-bench 增强
