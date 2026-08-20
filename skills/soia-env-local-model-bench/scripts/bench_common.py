@@ -19,7 +19,7 @@ ENV_PREFIX = "SOIA_ENV_LOCAL_MODEL_BENCH"
 DEFAULT_PORT = 21000
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 PACKAGED_QUESTIONS_DIR = SKILL_ROOT / "questions"
-QUESTION_SUFFIXES = (".yaml", ".yml", ".json")
+QUESTION_SUFFIXES = (".yaml", ".yml", ".json", ".md")
 CHECK_TYPES = {"speed", "save", "manual", "regex", "node_snippet", "json_expect", "lines_expect"}
 
 
@@ -126,6 +126,71 @@ def _question_files(directory: Path) -> list[Path]:
     return sorted(files)
 
 
+# Markdown 题目：frontmatter 放标量与 check 配置，大文本放固定名 section。
+# 只有这四个行首标题被当作分隔符，节内容里其他 "## xxx" 不会误切（代码块安全）。
+_MD_SECTIONS = ("prompt", "check.test", "check.prepend_context", "mock_response")
+
+
+def _first_code_block(text: str) -> str | None:
+    import re
+
+    m = re.search(r"```[^\n]*\n(.*?)```", text, re.S)
+    return m.group(1) if m else None
+
+
+def parse_md_question(path: Path) -> dict | None:
+    """解析 Markdown 题目文件；无 frontmatter 或无 qid 的（如目录说明文档）返回 None 跳过。
+
+    frontmatter（YAML）承载 qid/cat/temp/max_tokens 与 check 的配置字段；
+    正文中行首 `## prompt` / `## check.test` / `## check.prepend_context` /
+    `## mock_response` 四个固定 section 承载大文本：prompt 与 mock_response 取
+    section 原文（保留代码围栏，判定层自会剥离），check.* 取 section 内第一个代码块。
+    """
+    import re
+
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n?(.*)$", text, re.S)
+    if not m:
+        return None
+    try:
+        import yaml
+    except ImportError as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError(
+            f"解析 {fold_home(str(path))} 需要 PyYAML：python3 -m pip install pyyaml"
+        ) from exc
+    data = yaml.safe_load(m.group(1)) or {}
+    if not isinstance(data, dict) or not data.get("qid"):
+        return None
+    body = m.group(2)
+    section_re = re.compile(
+        r"^## +(" + "|".join(re.escape(s) for s in _MD_SECTIONS) + r")\s*$", re.M
+    )
+    marks = list(section_re.finditer(body))
+    sections: dict[str, str] = {}
+    for i, mark in enumerate(marks):
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(body)
+        sections[mark.group(1)] = body[mark.end():end].strip()
+    for key in ("prompt", "mock_response"):
+        if sections.get(key):
+            data[key] = sections[key]
+    check = data.get("check")
+    if not isinstance(check, dict):
+        check = {}
+        data["check"] = check
+    for key in ("test", "prepend_context"):
+        sec = sections.get(f"check.{key}")
+        if sec:
+            check[key] = _first_code_block(sec) or sec
+    return data
+
+
+def _load_question_file(path: Path) -> dict | None:
+    """按后缀加载一个题目文件；返回 None 表示应跳过（md 说明文档）。"""
+    if path.suffix == ".md":
+        return parse_md_question(path)
+    return load_yaml_or_json(path)
+
+
 def load_questions(
     packaged_dir: Path | None = None,
     private_dir: Path | None = None,
@@ -137,7 +202,10 @@ def load_questions(
     if not packaged.is_dir():
         raise RuntimeError(f"题库目录不存在: {fold_home(str(packaged))}")
     for path in _question_files(packaged):
-        data = _validate_question(load_yaml_or_json(path), path)
+        loaded = _load_question_file(path)
+        if loaded is None:
+            continue
+        data = _validate_question(loaded, path)
         data["_source"] = "packaged"
         questions[data["qid"]] = data
     notes.append(f"公开题 {len(questions)} 道（技能包 questions/）")
@@ -145,7 +213,10 @@ def load_questions(
         overridden = 0
         added = 0
         for path in _question_files(private_dir):
-            data = _validate_question(load_yaml_or_json(path), path)
+            loaded = _load_question_file(path)
+            if loaded is None:
+                continue
+            data = _validate_question(loaded, path)
             data["_source"] = "private"
             if data["qid"] in questions:
                 overridden += 1

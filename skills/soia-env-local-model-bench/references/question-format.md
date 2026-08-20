@@ -75,3 +75,16 @@ prompt: |
 
 新增功能类（C2 风格）把题面上下文放 `context_code`、`prepend_context: true`，
 让判定时模型输出可以合法引用题面已给出的函数。
+
+## Markdown 题目格式（知识库友好，2026-08-20 起支持）
+
+私有题常放在 Obsidian 等 Markdown 知识库中维护，`.md` 题目与 `.yaml` 等价且在库内可读可编辑：
+
+- **frontmatter**（YAML）承载标量与配置：`qid`、`cat`、`temp`、`max_tokens`、`check:`（嵌套 mapping，含 `type` 等非大文本字段）。无 frontmatter 或无 `qid` 的 md 文件（如目录说明文档）自动跳过，不报错。
+- **正文四个固定 section 承载大文本**（行首 `## ` 精确匹配这四个名字，其余行首 `## `——包括代码块里的——不会被误认为分隔符）：
+  - `## prompt`：题面原文（代码围栏保留，判定层自会剥离）
+  - `## check.test`：取本节第一个代码块作为判定脚本
+  - `## check.prepend_context`：取第一个代码块，判定时拼在模型代码前
+  - `## mock_response`：`--mock` 自检用的正确实现（原文，可含围栏）
+- section 之外的正文（标题、说明、战绩记录）不进入题面，可自由书写。
+- 同一目录同 qid 的 `.yaml` 与 `.md` 并存时后加载者覆盖（按文件名排序 md 在后）；请保持单一真源，删除旧格式。
