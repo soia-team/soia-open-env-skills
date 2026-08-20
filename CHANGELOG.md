@@ -3,6 +3,19 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.14.0 — 2026-08-20
+
+dsh 双轨道对齐 DSH_TRACK + profiles 一致性检测 + local-model-bench 增强
+
+## 新增
+- feat(ai-cli-upgrade): dsh 双轨道对齐 DSH_TRACK + profiles 版本一致性检测 (2.3.5) (#97)
+- feat(local-model-bench): 回填 2026-08-20 实战 8 缺口（1.2.0）
+- feat(local-model-bench): 采集缓存命中率 cached_tokens（1.1.0） (#96)
+
+## 维护
+- chore(train): dev 含 feat（local-model-bench 增强 + dsh-track），列车提为 minor
+- chore(release): open next train after v1.13.0 (#95)
+
 ## v1.13.0 — 2026-08-19
 
 新增 soia-env-local-model-bench 本地 LLM 评测技能；ai-cli-upgrade 增 dsh 支持并拆分 providers 架构
