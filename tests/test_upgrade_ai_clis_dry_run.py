@@ -275,6 +275,56 @@ class EngineContractTests(unittest.TestCase):
             self.assertNotIn("FAILED", result.stdout)
             self.assertNotIn("UPDATED", result.stdout)
 
+    # ---- 2.3.5 新增行为：DSH_TRACK 与 profiles 版本一致性 ------------------
+
+    def test_dsh_invalid_track_rejected(self):
+        # DSH_TRACK 非法值退出码 2（与 CLAUDE_CHANNEL 同模式）
+        for name, argv in self.each_engine():
+            result = self.run_engine(argv, {"DRY_RUN": "1", "TOOLS": "dsh",
+                                            "DSH_TRACK": "nightly"})
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("invalid DSH_TRACK", result.stderr + result.stdout)
+
+    def test_dsh_dry_run_reports_profiles_mismatch(self):
+        if IS_WINDOWS:
+            self.skipTest("~/.dsh/profiles 是 POSIX 布局")
+        py = dict(ENGINES).get("python")
+        if py is None:
+            self.skipTest("Python 引擎不在场")
+        profiles = self.workdir / "profiles"
+        pkg = profiles / "node_modules" / "@deepseek-ai" / "dsh-app-boot" / "package.json"
+        pkg.parent.mkdir(parents=True)
+        pkg.write_text('{"version":"0.1.0-rc.8"}')
+        stub_dir = make_stub(self.workdir / "stub-dsh-profiles", "dsh")
+        result = self.run_engine(py, {
+            "DRY_RUN": "1", "TOOLS": "dsh",
+            "DSH_PROFILES_DIR": str(profiles),
+            "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("SKIP_DRY_RUN", result.stdout)
+        self.assertIn("profiles=0.1.0-rc.8", result.stdout)
+        # stub 版本 9.9.9 与 profiles rc.8 不一致 → MISMATCH 提示
+        self.assertIn("MISMATCH", result.stdout)
+
+    def test_dsh_dry_run_matching_profiles_has_no_mismatch(self):
+        if IS_WINDOWS:
+            self.skipTest("~/.dsh/profiles 是 POSIX 布局")
+        py = dict(ENGINES).get("python")
+        if py is None:
+            self.skipTest("Python 引擎不在场")
+        profiles = self.workdir / "profiles"
+        pkg = profiles / "node_modules" / "@deepseek-ai" / "dsh-app-boot" / "package.json"
+        pkg.parent.mkdir(parents=True)
+        pkg.write_text('{"version":"9.9.9"}')  # 与 stub 一致
+        stub_dir = make_stub(self.workdir / "stub-dsh-match", "dsh")
+        result = self.run_engine(py, {
+            "DRY_RUN": "1", "TOOLS": "dsh",
+            "DSH_PROFILES_DIR": str(profiles),
+            "PATH": f"{stub_dir}" + os.pathsep + SYSTEM_PATH})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("profiles=9.9.9", result.stdout)
+        self.assertNotIn("MISMATCH", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

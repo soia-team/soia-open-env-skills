@@ -37,6 +37,8 @@ env:
 | `CLAUDE_CHANNEL=preserve\|latest` | 保留已装 Claude Homebrew cask，或显式迁移到 `claude-code@latest` | `preserve` |
 | `AGY_INSTALL=1` | 允许从 Google 固定官方 HTTPS 端点安装缺失的 `agy` | `0` |
 | `AGY_INSTALL_DIR=<path>` | 原生 `agy` 安装与回退探测目录 | `$HOME/.local/bin` |
+| `DSH_TRACK=latest\|next` | dsh 升级轨道；`~/.dsh/profiles` 客户端包在 next 轨道时设 `next` 对齐（防 bootstrap 接口不匹配） | `latest` |
+| `DSH_PROFILES_DIR=<path>` | dsh profiles 根目录（一致性检测读客户端版本用） | `$HOME/.dsh/profiles` |
 | `LOG_DIR=<path>` | 升级日志目录 | `${TMPDIR:-/tmp}/soia-env-ai-cli-upgrade/logs` |
 | `CURSOR_UPGRADE_CMD=<command>` | 可选的 Cursor 更新命令（用户自供代码，须用户明确批准才运行） | unset |
 

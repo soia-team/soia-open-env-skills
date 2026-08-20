@@ -405,6 +405,7 @@ class Provider:
                                  "channel-switch authorization)")
             if rec_note:
                 note += f"; {rec_note}"
+            note += self.extra_note(binary, old_version)
             print_result(tool, cmd, old_version, "N/A", "SKIP_DRY_RUN", note)
             return
 
@@ -443,6 +444,10 @@ class Provider:
         print_result(self.name, self.command, old_version, old_version, "MANUAL",
                      "no upgrader config")
         return False
+
+    def extra_note(self, binary, version=""):
+        """追加到 NOTE 末尾的补充信息（如多组件版本一致性提示）；默认无。"""
+        return ""
 
     def upgrade_brew_npm(self, binary, old_version):
         """通用渠道升级：brew formula → npm registry → native（由子类实现）。"""
@@ -500,6 +505,7 @@ class Provider:
                 note += f"; channel={final_cask}"
             if final_cask == "claude-code" and claude_channel == "preserve":
                 note += "; stable channel preserved"
+        note += self.extra_note(binary, new_version)
         print_result(tool, cmd, old_version, new_version, status, note)
 
 
