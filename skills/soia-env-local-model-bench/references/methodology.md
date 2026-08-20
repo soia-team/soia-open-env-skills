@@ -9,17 +9,22 @@
 - mlx-lm 启动模板（OpenAI 兼容端点，供评测脚本与所有 Agent 共用）：
 
 ```bash
-mlx_lm.server --model <模型完整路径> --port 21000 \
+mlx_lm.server --model <模型完整路径> --port <端口> \
   --chat-template-args '{"reasoning_effort":"low"}'   # 按矩阵轴换档
 ```
 
 - llama.cpp 启动模板（GGUF / 大 MoE CPU offload）：
 
 ```bash
-llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jinja --port 21000
+llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jinja --port <端口>
 ```
 
 - 请求的 `model` 字段：mlx-lm 必须传模型完整路径，传别名会触发服务器去 HF 拉仓库并 404。
+- **端口与服务生命周期**：起服务前先 `lsof -iTCP:<端口> -sTCP:LISTEN` 确认端口空闲。
+  换配置重启一律四步，缺一不可：**杀旧（注意进程名可能与 CLI 名不一致，如 oMLX 的
+  运行进程是 `omlx-server`，见 engines.md）→ 确认端口释放（再跑 lsof）→ 起新 → 烟测
+  一条最小请求**。端口被占（`Errno 48`）时新进程秒退、旧进程继续服务，形成「假重启」
+  ——实战真实发生过，后果见下方配置对照实验一节。
 - 混合推理模型默认深度档常严重过度思考（社区实测简单任务 20+ 分钟），必须显式降档；
   thinking 内容在响应 `reasoning`（mlx-lm）或 `reasoning_content`（llama.cpp）字段，不占 `content`。
   部分模型不关思考会全烧 token 零输出——B1 这类 8000 token 上限题是典型暴露点。
@@ -54,7 +59,7 @@ llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jin
 各 Agent 指向本地 OpenAI 兼容端点的接法（2026-08 实测可用；具体字段随版本变化，以各家文档为准）：
 
 - **pi**：编辑 `~/.pi/agent/models.json`，顶层必须是 `providers` 键（`models-store.json`
-  是目录缓存，改了无效）。结构：`{"providers": {"mlx": {"baseUrl": "http://127.0.0.1:21000/v1",
+  是目录缓存，改了无效）。结构：`{"providers": {"mlx": {"baseUrl": "http://127.0.0.1:<端口>/v1",
   "api": "openai-completions", "models": [{"id": "<模型完整路径>"}]}}}`（apiKey 填任意占位值）。
   调用：`pi --provider mlx --model <模型完整路径> -p "任务"`。
 - **dsh**：不改 profile 本体，用 `--patch <文件>` 叠加。patch 是 YAML 数组，两个条目：
@@ -76,6 +81,28 @@ llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jin
    dense 模型聚合上限由内存带宽决定。
 3. 口径声明必须随结果给出（脚本已固定写入结果 JSON），与他人数字对比前先对口径。
 4. 测速时排除后台重 IO；硬件画像用 `hw_sampler.py` 随测采样、`hw_summary.py` 汇总。
+
+## 配置对照实验规范（防假对照）
+
+真实事故：切换 MTP off 重启服务后跑对照，数字与 on 几乎一致——实际旧进程没死
+（进程名陷阱，见 engines.md oMLX 运行要点），新进程 `Errno 48` 端口占用秒退，
+对照打的还是旧服务。任何配置 A/B（投机开关、推理深度、量化档）都执行三条：
+
+1. **对照条件生效验证**：重启后核实（a）旧进程确实退出——`lsof` 看端口归属已是新 PID；
+   （b）加载日志反映新配置——如投机 backend 行随开关消失/出现。两条都过才开始计数。
+2. **物理量程检查**：decode 速度不可能超过「内存带宽 ÷ 权重大小」的理论上限。
+   若「关闭投机」的数字超过该上限，对照必然是假的（实例：15.8G 权重、上限约
+   34.5 tok/s，假对照测出 38.8 tok/s——正是它暴露了假重启）。
+3. 服务重启前后**各留独立日志文件**，不复用同一路径覆盖——生效验证与事后取证全靠它。
+
+## 投机解码：分语言 x 任务报速度
+
+draft 接受率随目标语言 token 分布剧烈变化，投机解码的速度结论不能只报英文数字。
+实测（Qwen3.8-27B oQ4e + MTP k=3，M4 Max）：英文 prose 38.5 / 英文 code 53.0 tok/s
+（对裸速 24.8 / 15.8 为净加速 1.55x / 3.35x），而**中文 chat 任务只有 14-24 tok/s**
+（中文 token 分布下 draft 接受率低）——单一英文数字会把中文日常体验高估 2 倍以上。
+规范：投机解码配置必须按**语言 x 任务四象限**（英文生成 / 英文编辑 / 中文生成 /
+中文任务）分别报 tok/s（报告格式见 report-contract.md）；采纳决策以目标语言的数字为准。
 
 ## 收尾清单
 

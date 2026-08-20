@@ -1,9 +1,9 @@
 ---
 name: soia-env-local-model-bench
 description: 在 Apple Silicon 上评测本地 LLM：先环境检查与引擎选型（mlx-lm/llama.cpp 等），确认后才下载部署；跑题库判定、吞吐 TTFT 与硬件采样，产出可横比的口径化报告。触发：「评测本地模型」「本地模型跑分」「装个本地模型」「mlx 测速」。
-version: 1.1.0
+version: 1.2.0
 created_at: 2026-08-19 16:00:00
-updated_at: 2026-08-19 17:05:00
+updated_at: 2026-08-20 13:50:00
 created_by: claude-fable-5
 updated_by: claude-fable-5
 ---
@@ -92,7 +92,7 @@ python3 scripts/env_check.py --json
 
 ### 第 1 步 · 下载（确认后才执行）
 
-按 [download.md](references/download.md)：小文件 hf 直下，权重分片 aria2c 16 连接，完整性验证必做。实测结论：hf 直连单连接约 1.6 MB/s 且会静默卡死；hf-mirror 对大文件只做 308 转发无加速；aria2c 16 连接稳定 7-8 MB/s。下载与评测不并行。
+按 [download.md](references/download.md)：小文件 hf 直下，权重分片 aria2c 16 连接，完整性验证必做（覆盖所有文件，不只权重）。实测结论：hf 直连单连接约 1.6 MB/s 且会静默卡死；hf-mirror 对大文件只做 308 转发无加速；aria2c 16 连接稳定 7-8 MB/s（2026-08 起 HF 新仓走 Xet 后端整体限速，应对与停滞看门狗规范见 download.md）。下载与评测不并行。
 
 ### 第 2 步 · 部署
 
