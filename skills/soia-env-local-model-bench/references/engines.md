@@ -63,3 +63,7 @@ macOS Metal 默认 wired limit ≈ 物理内存的 75%（128G 整机约 96G 可�
 2. **主模型多挪层到 CPU**（`--n-cpu-moe` 上调）：能进界，但基线本身会掉。
 3. **抬 wired limit**：`sudo sysctl iogpu.wired_limit_mb=<MB>`（需管理员密码，重启后恢复默认）。
    最有效，但必须给系统侧留足内存；属改机动作，先向客户展示计划并确认。
+
+## 思考依赖性三态测试（llama.cpp 的 reasoning-budget）
+
+不同模型对 thinking 的依赖方向相反（实测 Qwen 关掉快 3-5 倍不掉分；Nemotron 关掉判别集反从 8/9 崩到 5/9）。评测新模型时把 thinking 当三态变量测：**全开 / 全关 / 开+预算受控**。llama.cpp 的预算受控用 `--reasoning-budget <N>`（如 2000：允许思考但注入 end-of-thinking 防止思考吃光输出预算——Nemotron 实测三态里它最优）；注意 `--reasoning-budget 0`（立即结束）对部分模型模板不生效，必须按「配置对照实验规范」验证 reasoning_content 实际长度再采信。mlx-lm 无预算参数，只有模板开关（--chat-template-args）。
