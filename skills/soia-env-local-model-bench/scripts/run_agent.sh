@@ -77,7 +77,9 @@ TEST_OUT=$(npm test 2>&1)
 FAILS=$(echo "$TEST_OUT" | grep -cE "^✖ " || true)
 PASSES=$(echo "$TEST_OUT" | grep -cE "^✔ " || true)
 TOUCHED_TESTS=$(git diff --name-only | grep -c "^tests/" || true)
-DIFF_STAT=$(git diff --stat | tail -1)
+UNTRACKED=$(git status --porcelain | grep -c "^??" || true)
+DIFF_STAT="$(git diff --stat | tail -1)"
+[ "$UNTRACKED" -gt 0 ] && DIFF_STAT="$DIFF_STAT untracked_new_files:$UNTRACKED"
 
 AGENT_NAME=$AGENT TASK_NAME=$TASK_ID WALL=$((T1-T0)) AGENT_EXIT=$EXIT_CODE \
 PASSES=$PASSES FAILS=$FAILS TOUCHED=$TOUCHED_TESTS DIFF_STAT=$DIFF_STAT \
