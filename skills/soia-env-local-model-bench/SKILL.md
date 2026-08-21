@@ -1,9 +1,9 @@
 ---
 name: soia-env-local-model-bench
 description: 在 Apple Silicon 上评测本地 LLM：先环境检查与引擎选型（mlx-lm/llama.cpp 等），确认后才下载部署；跑题库判定、吞吐 TTFT 与硬件采样，产出可横比的口径化报告。触发：「评测本地模型」「本地模型跑分」「装个本地模型」「mlx 测速」。
-version: 1.2.1
+version: 1.3.0
 created_at: 2026-08-19 16:00:00
-updated_at: 2026-08-20 21:35:00
+updated_at: 2026-08-21 11:00:00
 created_by: claude-fable-5
 updated_by: claude-fable-5
 ---
@@ -105,7 +105,15 @@ python3 scripts/run_bench.py nothink --model <模型完整路径>   # 按矩阵�
 python3 scripts/run_bench.py nothink --list                  # 先看题目与可跑状态
 ```
 
-题库 = 内置公开题 + 私有题外置合并（见下节）。支持断点续跑（同 group 已有结果的题自动跳过）、`--only` 单题重测。配置矩阵（推理深度 x 温度 x 上下文）见 [methodology.md](references/methodology.md)。
+题库 = 内置公开题 + 私有题外置合并（见下节）。支持断点续跑（同 group 已有结果的题自动跳过；同 group 锁定同一模型，换模型续跑会被拒绝，换新 group 名即可）、`--only` 单题重测。结果 jsonl 每题归档完整 request/response 原文，outputs md 的 content/reasoning 全量不截断。配置矩阵（推理深度 x 温度 x 上下文）见 [methodology.md](references/methodology.md)。
+
+跨 group 质量对比不许拿总分直接比，先跑逐题翻转分析：
+
+```bash
+python3 scripts/flip_report.py <workdir> <groupA> <groupB>   # 翻转清单 + 双侧精确 McNemar p 值
+```
+
+差异结论受 [report-contract.md](references/report-contract.md)「统计资格」约束：不显著一律写「本轮未观察到有统计资格的差异」。
 
 ### 第 4 步 · 吞吐专项 + 硬件画像（必测）
 
@@ -164,6 +172,8 @@ BENCH_SANDBOX=<沙盒git仓> BENCH_TASK='<任务文本>' BENCH_MODEL=<模型路�
 python3 -m py_compile scripts/*.py                      # 语法
 python3 scripts/run_bench.py nothink --mock --workdir <临时目录>  # 全管线：题库加载→判定→落盘→回执
 python3 scripts/run_bench.py nothink --list             # 题目清单与占位题跳过状态
+python3 scripts/run_bench.py low --mock --workdir <临时目录>      # 第二组 mock 结果
+python3 scripts/flip_report.py <临时目录> nothink low   # 两组配对翻转（预期：无差异）
 python3 scripts/env_check.py --json                     # 真实只读探测
 ```
 

@@ -8,8 +8,11 @@
 
 group 只是结果标签；推理深度等真实配置由启动引擎时的参数决定（见 SKILL.md）。
 题库 = 技能包 questions/ 与私有题目录合并，qid 冲突私有覆盖；题库文件为唯一真源。
-结果: <workdir>/results/<group>.jsonl 与 <workdir>/outputs/<group>/<qid>.md
+结果: <workdir>/results/<group>.jsonl（每题含完整 request/response 原文）与
+      <workdir>/outputs/<group>/<qid>.md（content 与 reasoning 全量，不截断）。
 速度口径: 端到端 HTTP（含 prefill），tok/s = completion_tokens / 墙钟。
+断点续跑: 同 group 锁定同一模型；结果文件中的 model 与当前模型不一致时拒绝启动，
+          防止旧模型数据静默冒充新模型（换新 group 名重跑即可）。
 """
 
 from __future__ import annotations
@@ -162,17 +165,19 @@ def run_check(question: dict, content: str):
 
 # ---------- 请求 ----------
 
-def call_endpoint(base_url: str, model: str, prompt: str, temp: float,
-                  max_tokens: int, timeout: float) -> dict:
-    payload = {
-        "model": model,
+def build_payload(prompt: str, temp: float, max_tokens: int) -> dict:
+    """请求 payload（不含 model 字段）；同一对象原样归档进结果 jsonl 的 request 字段。"""
+    return {
         "messages": [{"role": "user", "content": prompt}],
         "temperature": temp,
         "max_tokens": max_tokens,
     }
+
+
+def call_endpoint(base_url: str, model: str, payload: dict, timeout: float) -> dict:
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
-        data=json.dumps(payload).encode(),
+        data=json.dumps({"model": model, **payload}).encode(),
         headers={"Content-Type": "application/json"},
     )
     started = time.time()
@@ -282,17 +287,33 @@ def main() -> int:
     resdir.mkdir(parents=True, exist_ok=True)
     resfile = resdir / f"{args.group}.jsonl"
 
-    if not args.mock:
-        print(f"[{args.group}] 预热（触发模型加载，不计时）...", flush=True)
-        call_endpoint(base_url, model, "hi", 0.0, 5, timeout=600)
-
     done: set[str] = set()
+    seen_models: set[str] = set()
     if resfile.exists():
         for line in resfile.read_text(encoding="utf-8").splitlines():
             try:
-                done.add(json.loads(line)["qid"])
-            except (json.JSONDecodeError, KeyError):
-                pass
+                record = json.loads(line)
+                done.add(record["qid"])
+            except (json.JSONDecodeError, TypeError, KeyError):
+                continue
+            if record.get("model"):
+                seen_models.add(record["model"])
+    current_model = bc.fold_home(model)
+    if seen_models and seen_models != {current_model}:
+        raise SystemExit(
+            f"[{args.group}] 续跑冲突：{bc.fold_home(str(resfile))} 已有模型 "
+            f"{sorted(seen_models)} 的结果，当前模型为 {current_model}。"
+            "同一 group 只对应一个模型（防止旧模型数据冒充新模型的结果）；"
+            "请换一个新 group 名重跑，或移走旧结果文件。"
+            "若确为同一模型只是路径写法不同，请沿用旧写法。"
+        )
+    if done and not seen_models:
+        print(f"[{args.group}] 警告：既有结果缺 model 字段（旧格式），"
+              "无法校验续跑模型一致性，请自行确认未换模型", flush=True)
+
+    if not args.mock:
+        print(f"[{args.group}] 预热（触发模型加载，不计时）...", flush=True)
+        call_endpoint(base_url, model, build_payload("hi", 0.0, 5), timeout=600)
 
     only = {q.strip() for q in args.only.split(",")} if args.only else None
     counts = {"PASS": 0, "FAIL": 0, "MANUAL": 0, "skipped": 0, "error": 0}
@@ -322,18 +343,18 @@ def main() -> int:
             skipped_items.append(f"{qid}（{skip_reason}）")
             append_record(dict(qid=qid, cat=question["cat"], group=args.group,
                                skipped=True, reason=skip_reason,
-                               source=question["_source"], model=bc.fold_home(model)))
+                               source=question["_source"], model=current_model))
             print(f"[{args.group}] {qid} SKIPPED {skip_reason}", flush=True)
             continue
+        payload = build_payload(prompt, float(question["temp"]), int(question["max_tokens"]))
         try:
             reply = mock_call(question) if args.mock else call_endpoint(
-                base_url, model, prompt, float(question["temp"]),
-                int(question["max_tokens"]), args.timeout)
+                base_url, model, payload, args.timeout)
         except Exception as exc:
             counts["error"] += 1
             append_record(dict(qid=qid, cat=question["cat"], group=args.group,
                                error=str(exc)[:300], source=question["_source"],
-                               model=bc.fold_home(model)))
+                               model=current_model, request=payload))
             print(f"[{args.group}] {qid} 错误: {exc}", flush=True)
             continue
         verdict, note = run_check(question, reply["content"])
@@ -345,12 +366,14 @@ def main() -> int:
             cached_tokens=reply["cached_tokens"], tok_s=reply["tok_s"],
             reasoning_chars=len(reply["reasoning"]), content_chars=len(reply["content"]),
             finish=reply["finish"], passed=verdict, note=note[:300],
-            source=question["_source"], model=bc.fold_home(model)))
+            source=question["_source"], model=current_model,
+            request=payload,
+            response={"content": reply["content"], "reasoning": reply["reasoning"]}))
         (outdir / f"{qid}.md").write_text(
             f"# {qid} · {question['cat']} · {args.group}\n\n"
             f"耗时 {reply['wall_s']}s | 生成 {reply['completion_tokens']} tok | "
             f"{reply['tok_s']} tok/s | thinking {len(reply['reasoning'])} 字符 | 判定 {verdict}\n\n"
-            f"## content\n\n{reply['content']}\n\n## reasoning\n\n{reply['reasoning'][:3000]}\n",
+            f"## content\n\n{reply['content']}\n\n## reasoning\n\n{reply['reasoning']}\n",
             encoding="utf-8")
         if question["check"]["type"] == "save":
             ext = question["check"].get("ext") or "txt"
