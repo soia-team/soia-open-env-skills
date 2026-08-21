@@ -3,6 +3,24 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.17.0 — 2026-08-21
+
+local-model-bench 1.5.0：两入口场景+市场发现+报告版本化+Apple Silicon 带宽谱系；题库 B 组扩容 36 题（自动判定 27 道）+分维度报告
+
+## 新增
+- feat(local-model-bench): 评测报告按维度分层输出（B3）
+- feat(soia-env-local-model-bench): 题库 B 组扩容批次1——新增代码题 C4-C8 与结构化题 E4-E6
+- feat(bench): B 组扩容批次 1 数学组新增 7 题（D4-D8 原创 + D2b/D2c 扰动变体）
+- feat(local-model-bench): 两个入口场景 + 市场发现流程 + 报告版本化 + 带宽谱系（1.4.0）
+
+## 修复
+- fix(ci): target Dependabot updates at dev (#101)
+
+## 维护
+- chore(train): dev 含 feat（两入口场景/市场发现/报告版本化/B 组题库扩容 36 题），列车提为 minor 1.17.0-SNAPSHOT
+- chore(local-model-bench): B 组扩容收口——题库 36 题/前向预期 27/隔离陷阱/温度绑定实况化（1.5.0）
+- chore(release): open next train after v1.16.0 (#104)
+
 ## v1.16.0 — 2026-08-21
 
 正式发布本地模型基准评测：新增 F 维度实用场景题、翻转检验报告、全量 trace 与续跑模型守卫，并同步 WorkBuddy 安装说明。
