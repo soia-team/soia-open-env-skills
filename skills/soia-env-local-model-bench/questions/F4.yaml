@@ -1,0 +1,13 @@
+# F4 · 实用场景-中译英。译文质量自动判定不可靠，save 落盘人工评审
+# （评审要点：术语准确、语义无丢失、倍数关系不错译）。
+qid: F4
+cat: 实用-翻译
+temp: 0.0
+max_tokens: 300
+check:
+  type: save
+  ext: md
+prompt: |
+  把这句话翻译成英文：投机解码的加速比强烈依赖任务的语言和类型，只报英文数字的评测会把中文日常体验高估两倍以上。
+mock_response: |
+  The speedup of speculative decoding depends heavily on the language and type of the task.

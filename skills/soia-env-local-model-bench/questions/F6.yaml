@@ -1,0 +1,26 @@
+# F6 · 实用场景-格式转换。非结构化中文描述 → JSON，自动 parse 校验字段与值（通用假想数据）。
+qid: F6
+cat: 实用-格式转换
+temp: 0.0
+max_tokens: 300
+check:
+  type: json_expect
+  exact_keys: [name, port, model, status]
+  expects:
+    - path: name
+      type: str
+      regex: 'web-api'
+    - path: port
+      type: int
+      min: 8080
+      max: 8080
+    - path: model
+      type: str
+      regex: 'demo-7b'
+    - path: status
+      type: str
+      min_len: 1
+prompt: |
+  把下面的信息转成 JSON（字段：name, port, model, status）：服务 web-api 跑在 8080 端口，用的模型是 demo-7b，状态正常。只输出 JSON。
+mock_response: |
+  {"name": "web-api", "port": 8080, "model": "demo-7b", "status": "正常"}
