@@ -19,7 +19,7 @@
 ```yaml
 qid: C1                  # 必填，唯一标识；横比表按 qid 对齐
 cat: 真实代码-私有bug      # 分类标签
-temp: 0.0                # 温度（A/C/E/F 用 0，B/D 用 0.7）
+temp: 0.0                # 温度（判定题一律 0；创意写作类 B1-B3/D1 用 0.7）
 max_tokens: 6000
 groups: [nothink, low]   # 可选：只在这些 group 跑
 only_group: nothink      # 可选：只在这一个 group 跑

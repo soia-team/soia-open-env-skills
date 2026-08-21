@@ -1,9 +1,9 @@
 ---
 name: soia-env-local-model-bench
 description: 在 Apple Silicon 上评测本地 LLM：先环境检查与引擎选型（mlx-lm/llama.cpp 等），确认后才下载部署；跑题库判定、吞吐 TTFT 与硬件采样，产出可横比的口径化报告。触发：「评测本地模型」「本地模型跑分」「装个本地模型」「mlx 测速」。
-version: 1.4.0
+version: 1.5.0
 created_at: 2026-08-19 16:00:00
-updated_at: 2026-08-21 16:00:00
+updated_at: 2026-08-21 15:20:00
 created_by: claude-fable-5
 updated_by: claude-fable-5
 ---
@@ -169,7 +169,7 @@ BENCH_SANDBOX=<沙盒git仓> BENCH_TASK='<任务文本>' BENCH_MODEL=<模型路�
 
 ## 题库分层（题库文件为唯一真源）
 
-- **公开题内置**：`questions/` 共 21 题——A1/A2/A3/A4（速度，A2/A4 为占位题）、B1/B2/B3（社区经典，保留英文原题保证横向可比）、C3（公开代码修 bug，判定 harness 内置题目文件）、D1/D2/D3a/D3b（中文写作/数学/逻辑陷阱）、E1/E2/E3（Agent 前置）、F1-F6（实用场景维度：日期推算/缺信息拒编/幻觉抵抗/翻译/摘要/格式转换——F1-F3+F6 自动判定，F4/F5 落盘人工；源自速度层模型实用化对位，临时快测固化为可复跑题目）。
+- **公开题内置**：`questions/` 共 36 题（2026-08-21 B 组扩容后）——A1-A4（速度，A2/A4 为占位题）、B1-B3（社区经典，保留英文原题保证横向可比）、C3-C8（公开代码题：C3 修 bug，C4-C8 HumanEval+ 风格原创函数实现，node 判定含边界用例）、D1-D8+D2b/D2c（中文写作/数学/逻辑：D4-D8 为 GSM-Symbolic 风格原创应用题，D2b/D2c 为 D2 参数扰动变体防记忆污染）、E1-E6（Agent 前置：JSON Schema/工具调用/多步指令/结构化抽取/定格式清单/单位归一化）、F1-F6（实用场景维度：日期推算/缺信息拒编/幻觉抵抗/翻译/摘要/格式转换——F1-F3+F6 自动判定，F4/F5 落盘人工）。自动判定题 27 道，配对统计功效达「6 题单向翻转即显著」。
 - **私有题外置**：本机私有题目录运行时合并加载，**qid 冲突私有覆盖**；目录解析顺序与题目字段规范见 [question-format.md](references/question-format.md)。
 - **占位题设计**：A2/A4 依赖本机真实长代码文件，`context_file` 未配置时自动跳过并在回执标注 skipped 与原因，不算失败。
 - 改题=改题目文件；文档与知识库只保留概览与意图说明。
@@ -206,4 +206,4 @@ python3 scripts/flip_report.py <临时目录> nothink low   # 两组配对翻转
 python3 scripts/env_check.py --json                     # 真实只读探测
 ```
 
-`--mock` 用题目内置 `mock_response` 走真实判定引擎，干净环境预期（`--config` 指向空 yaml；注意环境变量指向不存在的文件会静默回落本机配置目录）：自动判定题全 PASS（12 题）、人评题待人工（7 题：B1-B3/D1/D3b/F4/F5）、A2/A4 标 skipped、结果写入 `results/nothink.jsonl` 且带 `"mock": true` 标记。私有题目录放一个覆盖同 qid 的文件重跑 `--list`，应看到「覆盖 1 道」。
+`--mock` 用题目内置 `mock_response` 走真实判定引擎，干净环境预期（`--config` 指向空 yaml、`--private-questions` 指向**存在的空目录**——两者传不存在的路径都会静默回落本机配置/私有题目录，不是隔离）：自动判定题全 PASS（27 题）、人评题待人工（7 题：B1-B3/D1/D3b/F4/F5）、A2/A4 标 skipped、回执含分维度行 `A 2/2 | C 6/6 | D 9/9 | E 6/6 | F 4/4`、结果写入 `results/nothink.jsonl` 且带 `"mock": true` 标记。私有题目录放一个覆盖同 qid 的文件重跑 `--list`，应看到「覆盖 1 道」。
