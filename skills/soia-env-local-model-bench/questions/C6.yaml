@@ -1,0 +1,48 @@
+# C6 · 真实代码-公开：HumanEval+ 风格原创题（区间运算）——时间段并集总分钟数。
+# 边界：空数组、零长区间、首尾相接、部分重叠（拦不合并直接求和）、完全包含（拦漏 Math.max 的合并）、无序输入。
+qid: C6
+cat: 真实代码-公开
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    const cases=[
+      [[],0],
+      [["09:00-10:30"],90],
+      [["09:00-10:00","10:00-11:00"],120],
+      [["09:00-11:00","10:00-12:00"],180],
+      [["09:00-12:00","10:00-10:30","11:00-13:00"],240],
+      [["12:00-12:00"],0],
+      [["23:00-23:59","00:00-00:30"],89],
+      [["08:30-09:15","07:45-08:30","09:15-09:20"],95]
+    ];
+    let ok=true;
+    for(const [x,exp] of cases){
+      const got=coveredMinutes(x);
+      if(got!==exp){ok=false;console.error("FAIL "+JSON.stringify(x)+" got "+got+" want "+exp);}
+    }
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  实现一个 js 函数，签名 coveredMinutes(intervals)：输入字符串数组，每项形如 "HH:MM-HH:MM"
+  （24 小时制，同一天内，保证开始<=结束），数组可能无序、区间之间可能重叠或包含。
+  返回这些时间段在时间轴上覆盖的总分钟数，重叠部分只算一次；空数组返回 0。
+  例：coveredMinutes(["09:00-11:00","10:00-12:00"]) === 180。
+  只输出这一个函数，一个 js 代码块，不要解释。
+mock_response: |
+  ```js
+  function coveredMinutes(intervals) {
+    const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+    const parsed = intervals
+      .map(s => { const [a, b] = s.split("-"); return [toMin(a), toMin(b)]; })
+      .sort((x, y) => x[0] - y[0]);
+    let total = 0, curS = null, curE = null;
+    for (const [s, e] of parsed) {
+      if (curS === null) { curS = s; curE = e; continue; }
+      if (s <= curE) { curE = Math.max(curE, e); }
+      else { total += curE - curS; curS = s; curE = e; }
+    }
+    if (curS !== null) total += curE - curS;
+    return total;
+  }
+  ```

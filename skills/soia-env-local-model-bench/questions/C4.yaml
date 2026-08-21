@@ -1,0 +1,45 @@
+# C4 · 真实代码-公开：HumanEval+ 风格原创题（字符串处理）——URL slug 归一化。
+# 边界：空串、全分隔符串、撇号例外（删除不分隔）、首尾分隔符折叠、纯数字。
+qid: C4
+cat: 真实代码-公开
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    const cases=[
+      ["Hello, World!","hello-world"],
+      ["  A  B  ","a-b"],
+      ["C++ 2.0 (beta)","c-2-0-beta"],
+      ["already-good-slug","already-good-slug"],
+      ["",""],
+      ["---",""],
+      ["__init__","init"],
+      ["007","007"],
+      ["Don't Panic","dont-panic"],
+      ["Rock 'n' Roll","rock-n-roll"],
+      ["'''",""],
+      ["a'-'b","a-b"]
+    ];
+    let ok=true;
+    for(const [x,exp] of cases){
+      const got=titleSlug(x);
+      if(got!==exp){ok=false;console.error("FAIL "+JSON.stringify(x)+" got "+JSON.stringify(got)+" want "+JSON.stringify(exp));}
+    }
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  实现一个 js 函数，签名 titleSlug(s)，把字符串转成 URL slug：
+  1. 输入只含 ASCII 可打印字符。
+  2. 大写字母转小写，字母和数字保留。
+  3. 撇号 ' 直接删除，不产生分隔（如 Don't → dont）。
+  4. 其余所有字符都是分隔符：连续一段分隔符折叠成一个连字符 "-"。
+  5. 结果开头和结尾不得有 "-"；没有任何字母数字时返回空字符串 ""。
+  例：titleSlug("C++ 2.0 (beta)") === "c-2-0-beta"。
+  只输出这一个函数，一个 js 代码块，不要解释。
+mock_response: |
+  ```js
+  function titleSlug(s) {
+    const parts = s.replace(/'/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    return parts.join("-");
+  }
+  ```

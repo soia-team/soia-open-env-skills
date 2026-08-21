@@ -1,0 +1,28 @@
+# E6 · Agent 前置：杂乱输入归一化（干扰信息 + 天/小时、TB/GB/MB 单位混杂）。
+# 校验数值换算：3天4小时=76h、16GB=16384MB、0.5TB=512GB；隔壁机器 8GB 与"2 杯咖啡"是干扰项。
+qid: E6
+cat: Agent-归一化
+temp: 0.0
+max_tokens: 2000
+check:
+  type: json_expect
+  exact_keys: [uptime_hours, mem_total_mb, mem_free_mb, disk_free_gb]
+  expects:
+    - path: uptime_hours
+      equals: 76
+    - path: mem_total_mb
+      equals: 16384
+    - path: mem_free_mb
+      equals: 512
+    - path: disk_free_gb
+      equals: 512
+prompt: |
+  下面是运维群里的一段闲聊，从中提取那台测试机的数据并归一化，输出一个 JSON 对象，
+  字段严格为：uptime_hours(整数，小时)、mem_total_mb(整数)、mem_free_mb(整数)、
+  disk_free_gb(整数)。换算规则：1天=24小时，1TB=1024GB，1GB=1024MB。
+  只输出 JSON，不要其他文字。
+  「那台测试机已经连续开机 3 天 4 小时了，装了 16GB 内存但现在可用只剩 512MB，
+  磁盘还空着 0.5TB。隔壁那台 8GB 内存的构建机没毛病，不用管。晚上聚餐记得叫我，
+  另外帮我带 2 杯咖啡～」
+mock_response: |
+  {"uptime_hours": 76, "mem_total_mb": 16384, "mem_free_mb": 512, "disk_free_gb": 512}

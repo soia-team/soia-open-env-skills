@@ -1,0 +1,59 @@
+# C7 · 真实代码-公开：HumanEval+ 风格原创题（简单状态机）——文档审批流转。
+# 边界：空事件序列、终态后事件全无效、未知事件名计无效（拦只认已知事件的实现）、非法转移不改状态、驳回重提循环。
+qid: C7
+cat: 真实代码-公开
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    const cases=[
+      [[], "draft", 0],
+      [["submit"], "review", 0],
+      [["submit","approve"], "approved", 0],
+      [["submit","reject","revise","submit","approve"], "approved", 0],
+      [["approve"], "draft", 1],
+      [["submit","submit"], "review", 1],
+      [["submit","approve","reject","submit"], "approved", 2],
+      [["submit","cancel","approve"], "approved", 1],
+      [["revise"], "draft", 1],
+      [["submit","reject","reject"], "rejected", 1]
+    ];
+    let ok=true;
+    for(const [ev,st,inv] of cases){
+      const got=runApproval(ev);
+      if(!got||got.state!==st||got.invalid!==inv){
+        ok=false;console.error("FAIL "+JSON.stringify(ev)+" got "+JSON.stringify(got)+" want state="+st+" invalid="+inv);
+      }
+    }
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  实现一个 js 函数，签名 runApproval(events)：文档审批状态机，初始状态 "draft"。
+  合法转移只有四条：
+  - draft    + "submit"  → review
+  - review   + "approve" → approved
+  - review   + "reject"  → rejected
+  - rejected + "revise"  → draft
+  approved 是终态，进入后任何事件都无效。其余任何（状态,事件）组合——包括未知事件名——
+  都是无效事件：状态不变，无效计数 +1。
+  依次处理 events（字符串数组），返回对象 {state: 最终状态, invalid: 无效事件总数}。
+  例：runApproval(["submit","cancel","approve"]) 返回 {state:"approved", invalid:1}。
+  只输出这一个函数，一个 js 代码块，不要解释。
+mock_response: |
+  ```js
+  function runApproval(events) {
+    const transitions = {
+      draft: { submit: "review" },
+      review: { approve: "approved", reject: "rejected" },
+      rejected: { revise: "draft" },
+      approved: {}
+    };
+    let state = "draft", invalid = 0;
+    for (const ev of events) {
+      const next = transitions[state][ev];
+      if (next) state = next;
+      else invalid++;
+    }
+    return { state, invalid };
+  }
+  ```
