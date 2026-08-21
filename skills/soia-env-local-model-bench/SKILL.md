@@ -1,9 +1,9 @@
 ---
 name: soia-env-local-model-bench
 description: 在 Apple Silicon 上评测本地 LLM：先环境检查与引擎选型（mlx-lm/llama.cpp 等），确认后才下载部署；跑题库判定、吞吐 TTFT 与硬件采样，产出可横比的口径化报告。触发：「评测本地模型」「本地模型跑分」「装个本地模型」「mlx 测速」。
-version: 1.3.0
+version: 1.4.0
 created_at: 2026-08-19 16:00:00
-updated_at: 2026-08-21 11:00:00
+updated_at: 2026-08-21 16:00:00
 created_by: claude-fable-5
 updated_by: claude-fable-5
 ---
@@ -35,6 +35,31 @@ updated_by: claude-fable-5
 3. 下载、装引擎、启停服务都属于改机动作：先展示计划（装什么、放哪、占多少磁盘）再执行。
 4. 评测执行中 Agent 边跑边报每题结果；结束按「日志与完成回执」格式收口。
 5. 涉及把结论写入客户知识库或发布 Artifact 时，先确认落点再写。
+
+### 两个入口场景
+
+本技能的本质：评测开源 LLM 是否适合本地机器——有无合适配型、能否当日常辅助、能否为了安全（隐私）把数据留在本机处理。客户最常见的两种进门方式：
+
+**场景一 · 「帮我找适合本机的开源模型」（如：日常编码助手）**
+
+1. 第 0 步 env_check 探测机器（芯片/内存/磁盘/已装引擎）。
+2. 需求访谈四问——**问在下载之前，不是之后**：
+   - 用途：编码 / 写作 / 翻译 / agent？
+   - 主语言：中文还是英文？——投机解码加速比强依赖语言，中文用户不能拿英文数字做决定（见 [methodology.md](references/methodology.md)）。
+   - 速度优先还是质量优先？
+   - 隐私敏感度：哪些数据不出本机？
+3. 按带宽物理学给简单结论（见 [engines.md](references/engines.md) 带宽谱系）：本机能跑的档位与预期速度区间。配置不符合就到此为止，如实说不适合，不硬推。
+4. 市场发现（见 [model-discovery.md](references/model-discovery.md)）给候选清单：模型 x 量化版本 x 预检结果 x 预期速度。
+5. 客户确认候选后进入既有 下载 → 部署 → 评测 → 报告 流程（第 1-6 步）。
+
+**场景二 · 「我要安装 xxx 模型，帮我找合适的版本」**
+
+1. 同样先第 0 步 env_check。
+2. 按 [model-discovery.md](references/model-discovery.md) 在市场上找该模型的各量化/格式版本（HF / ModelScope 同名仓、mlx-community / unsloth 打包——注意 ModelScope 多为 lmstudio-community 打包，核对格式），并做本机架构支持预检。
+3. 按内存门槛公式 + 需求推荐具体版本，引擎 x 量化选型对照 [engines.md](references/engines.md)。
+4. 客户确认后安装评测。
+
+两个场景共同纪律：**反问需求在下载之前**；结论先答「能不能日常用」，再给性能数字——真的可以使用 > 速度跑分。
 
 ### 依赖与安装
 
@@ -91,6 +116,8 @@ python3 scripts/env_check.py --json
 ```
 
 探测芯片/内存/磁盘/OS + 已装引擎（mlx-lm/llama.cpp/Ollama/vLLM/LM Studio/oMLX）+ 辅助工具（aria2c/node/PyYAML）。拿到事实后对照 [engines.md](references/engines.md) 给出**引擎选型对比表与场景推荐**，并核对内存/磁盘门槛（权重 + KV cache + 系统余量）。**客户确认引擎与模型之前，不下载任何东西。**
+
+模型还没定的客户（找模型 / 找某模型的合适版本）：按 [model-discovery.md](references/model-discovery.md) 走市场发现（需求画像 → 候选来源 → 架构预检 → 量化选择 → 速度预估），拿到客户确认的候选再进第 1 步；入口话术见「两个入口场景」。
 
 ### 第 1 步 · 下载（确认后才执行）
 
