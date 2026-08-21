@@ -23,12 +23,19 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 from pathlib import Path
 
 import bench_common as bc
 
 ALPHA = 0.05
 MIN_FLIPS = 6  # 低于此翻转数，双侧精确 McNemar 数学上不可能显著
+
+
+def dim_of(qid: str) -> str:
+    """qid 的维度 = 大写字母前缀（A1→A、D2b→D、C10→C）。"""
+    match = re.match(r"^([A-Z]+)", qid)
+    return match.group(1) if match else "?"
 
 
 def mcnemar_exact_p(b: int, c: int) -> float:
@@ -141,6 +148,14 @@ def main() -> int:
     print(f"- A对B错(regression): {b_count}" + (f" —— {','.join(regressions)}" if regressions else ""))
     print(f"- A错B对(improvement): {c_count}" + (f" —— {','.join(improvements)}" if improvements else ""))
     print(f"- 翻转数 n = b + c = {flips}")
+
+    print("\n## 分维度翻转（维度行仅定位差异所在，统计资格只看全局 n）")
+    dim_cells: dict[str, list[int]] = {}  # 维度 -> [同对, 同错, A对B错, A错B对]
+    cell_index = {(True, True): 0, (False, False): 1, (True, False): 2, (False, True): 3}
+    for qid, verdict_a, verdict_b in paired:
+        dim_cells.setdefault(dim_of(qid), [0, 0, 0, 0])[cell_index[(verdict_a, verdict_b)]] += 1
+    for dim, (same_pass, same_fail, reg, imp) in sorted(dim_cells.items()):
+        print(f"- {dim}: 同对{same_pass} 同错{same_fail} A对B错{reg} A错B对{imp}")
 
     print("\n## 结论")
     if flips == 0:

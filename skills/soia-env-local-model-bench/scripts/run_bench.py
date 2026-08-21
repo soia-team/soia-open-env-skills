@@ -30,6 +30,12 @@ import bench_common as bc
 STATUS_ICON = {True: "PASS", False: "FAIL", None: "MANUAL"}
 
 
+def dim_of(qid: str) -> str:
+    """qid 的维度 = 大写字母前缀（A1→A、D2b→D、C10→C）。"""
+    match = re.match(r"^([A-Z]+)", qid)
+    return match.group(1) if match else "?"
+
+
 # ---------- 输出抽取 ----------
 
 def extract_code(text: str) -> str:
@@ -321,6 +327,7 @@ def main() -> int:
     only = {q.strip() for q in args.only.split(",")} if args.only else None
     counts = {"PASS": 0, "FAIL": 0, "MANUAL": 0, "skipped": 0, "error": 0}
     skipped_items: list[str] = []
+    dim_auto: dict[str, list[int]] = {}  # 维度 -> [自动判定通过数, 自动判定总数]
 
     def append_record(record: dict) -> None:
         record["checked_at"] = bc.now_rfc3339()
@@ -362,6 +369,10 @@ def main() -> int:
             continue
         verdict, note = run_check(question, reply["content"])
         counts[STATUS_ICON[verdict]] += 1
+        if verdict is not None:  # MANUAL/skipped/error 不进分维度分母
+            stats = dim_auto.setdefault(dim_of(qid), [0, 0])
+            stats[1] += 1
+            stats[0] += int(verdict)
         append_record(dict(
             qid=qid, cat=question["cat"], group=args.group,
             wall_s=reply["wall_s"], prompt_tokens=reply["prompt_tokens"],
@@ -388,6 +399,9 @@ def main() -> int:
 
     print(f"\n[{args.group}] 完成回执 更新时间 {bc.now_rfc3339()}")
     print(f"  自动判定: PASS {counts['PASS']} / FAIL {counts['FAIL']} / 待人工 {counts['MANUAL']}")
+    if dim_auto:
+        cells = " | ".join(f"{dim} {p}/{t}" for dim, (p, t) in sorted(dim_auto.items()))
+        print(f"  分维度: {cells}（自动判定题 通过/总数；人工与 skipped 不计入）")
     print(f"  skipped: {counts['skipped']}"
           + (f" —— {'；'.join(skipped_items)}" if skipped_items else ""))
     print(f"  请求错误: {counts['error']}")
