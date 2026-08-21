@@ -25,6 +25,11 @@ llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jin
   运行进程是 `omlx-server`，见 engines.md）→ 确认端口释放（再跑 lsof）→ 起新 → 烟测
   一条最小请求**。端口被占（`Errno 48`）时新进程秒退、旧进程继续服务，形成「假重启」
   ——实战真实发生过，后果见下方配置对照实验一节。
+- **推理深度不必锁死在服务端（2026-08-21 实测）**：mlx_lm.server 支持请求级
+  `chat_template_kwargs`（请求体字段，覆盖启动级 `--chat-template-args`）——服务端可锁
+  日常默认档（如 nothink），评测换档用 `run_bench.py --chat-template-kwargs
+  '{"enable_thinking": true}'` 免重启（throughput_bench.py 同参）；参数原样归档进
+  request 字段，报告可复核。实测同一端点 nothink 87 tok/s / think 24 tok/s。
 - 混合推理模型默认深度档常严重过度思考（社区实测简单任务 20+ 分钟），必须显式降档；
   thinking 内容在响应 `reasoning`（mlx-lm）或 `reasoning_content`（llama.cpp）字段，不占 `content`。
   部分模型不关思考会全烧 token 零输出——B1 这类 8000 token 上限题是典型暴露点。

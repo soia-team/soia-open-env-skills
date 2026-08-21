@@ -1,9 +1,9 @@
 ---
 name: soia-env-local-model-bench
 description: 在 Apple Silicon 上评测本地 LLM：先环境检查与引擎选型（mlx-lm/llama.cpp 等），确认后才下载部署；跑题库判定、吞吐 TTFT 与硬件采样，产出可横比的口径化报告。触发：「评测本地模型」「本地模型跑分」「装个本地模型」「mlx 测速」。
-version: 1.5.0
+version: 1.5.1
 created_at: 2026-08-19 16:00:00
-updated_at: 2026-08-21 15:20:00
+updated_at: 2026-08-21 15:40:00
 created_by: claude-fable-5
 updated_by: claude-fable-5
 ---

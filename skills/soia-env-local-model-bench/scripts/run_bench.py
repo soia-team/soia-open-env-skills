@@ -174,13 +174,19 @@ def run_check(question: dict, content: str):
 
 # ---------- 请求 ----------
 
-def build_payload(prompt: str, temp: float, max_tokens: int) -> dict:
-    """请求 payload（不含 model 字段）；同一对象原样归档进结果 jsonl 的 request 字段。"""
-    return {
+def build_payload(prompt: str, temp: float, max_tokens: int,
+                  chat_template_kwargs: dict | None = None) -> dict:
+    """请求 payload（不含 model 字段）；同一对象原样归档进结果 jsonl 的 request 字段。
+    chat_template_kwargs 走 mlx_lm.server 的请求级模板参数（覆盖启动级），
+    深度矩阵换档免重启服务（如 {"enable_thinking": true}）。"""
+    payload = {
         "messages": [{"role": "user", "content": prompt}],
         "temperature": temp,
         "max_tokens": max_tokens,
     }
+    if chat_template_kwargs:
+        payload["chat_template_kwargs"] = chat_template_kwargs
+    return payload
 
 
 def call_endpoint(base_url: str, model: str, payload: dict, timeout: float) -> dict:
@@ -270,6 +276,8 @@ def main() -> int:
     parser.add_argument("--private-questions", help="私有题目录（默认按配置目录扫描）")
     parser.add_argument("--only", help="只跑这些 qid，逗号分隔")
     parser.add_argument("--timeout", type=float, default=1500, help="单题超时秒数，默认 1500")
+    parser.add_argument("--chat-template-kwargs", default=None,
+                        help='请求级模板参数 JSON（mlx_lm.server 支持，覆盖启动级），如 \'{"enable_thinking": true}\'——深度换档免重启服务')
     parser.add_argument("--mock", action="store_true", help="不发 HTTP，用题目 mock_response 自测管线")
     parser.add_argument("--list", action="store_true", help="只列出题目与可跑状态")
     args = parser.parse_args()
@@ -320,9 +328,11 @@ def main() -> int:
         print(f"[{args.group}] 警告：既有结果缺 model 字段（旧格式），"
               "无法校验续跑模型一致性，请自行确认未换模型", flush=True)
 
+    ctk = json.loads(args.chat_template_kwargs) if args.chat_template_kwargs else None
+
     if not args.mock:
         print(f"[{args.group}] 预热（触发模型加载，不计时）...", flush=True)
-        call_endpoint(base_url, model, build_payload("hi", 0.0, 5), timeout=600)
+        call_endpoint(base_url, model, build_payload("hi", 0.0, 5, ctk), timeout=600)
 
     only = {q.strip() for q in args.only.split(",")} if args.only else None
     counts = {"PASS": 0, "FAIL": 0, "MANUAL": 0, "skipped": 0, "error": 0}
@@ -356,7 +366,7 @@ def main() -> int:
                                source=question["_source"], model=current_model))
             print(f"[{args.group}] {qid} SKIPPED {skip_reason}", flush=True)
             continue
-        payload = build_payload(prompt, float(question["temp"]), int(question["max_tokens"]))
+        payload = build_payload(prompt, float(question["temp"]), int(question["max_tokens"]), ctk)
         try:
             reply = mock_call(question) if args.mock else call_endpoint(
                 base_url, model, payload, args.timeout)

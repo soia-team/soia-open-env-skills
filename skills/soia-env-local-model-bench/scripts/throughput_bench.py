@@ -22,13 +22,14 @@ import urllib.request
 
 import bench_common as bc
 
+CTK_EXTRA: dict = {}
 SHORT_PROMPT = "写一段 300 字左右的说明文，解释为什么数据库需要索引，举一个具体例子。"
 TTFT_SHORT_PROMPT = "你好，请自我介绍。"
 CALIBER = "端到端 HTTP 含 prefill；聚合 = 批次总生成 token / 批次墙钟；每流 max_tokens 固定"
 
 
 def one_request(base_url: str, model: str, max_tokens: int, results: dict, idx: int) -> None:
-    payload = {"model": model, "messages": [{"role": "user", "content": SHORT_PROMPT}],
+    payload = {**CTK_EXTRA, "model": model, "messages": [{"role": "user", "content": SHORT_PROMPT}],
                "temperature": 0.0, "max_tokens": max_tokens}
     request = urllib.request.Request(
         f"{base_url}/chat/completions", data=json.dumps(payload).encode(),
@@ -43,7 +44,7 @@ def one_request(base_url: str, model: str, max_tokens: int, results: dict, idx: 
 
 
 def ttft_streaming(base_url: str, model: str, prompt: str, label: str):
-    payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
+    payload = {**CTK_EXTRA, "model": model, "messages": [{"role": "user", "content": prompt}],
                "temperature": 0.0, "max_tokens": 50, "stream": True}
     request = urllib.request.Request(
         f"{base_url}/chat/completions", data=json.dumps(payload).encode(),
@@ -76,7 +77,11 @@ def main() -> int:
     parser.add_argument("--long-context-file", help="长 prompt TTFT 用的本地代码文件；"
                         "默认取 config 的 throughput.long_context_file 或 context_files.A2")
     parser.add_argument("--mock", action="store_true", help="不发 HTTP，用假数据自测管线")
+    parser.add_argument("--chat-template-kwargs", default=None,
+                        help='请求级模板参数 JSON（覆盖启动级），如 \'{"enable_thinking": true}\'')
     args = parser.parse_args()
+    global CTK_EXTRA
+    CTK_EXTRA = {"chat_template_kwargs": json.loads(args.chat_template_kwargs)} if args.chat_template_kwargs else {}
 
     config, _ = bc.load_config(args.config)
     model = bc.resolve_model(args.model, config, mock=args.mock)
