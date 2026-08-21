@@ -122,6 +122,9 @@ def _check_regex(spec: dict, content: str):
     scope = content[-tail:] if tail else content
     matched = any(re.search(p, scope) for p in spec.get("any_patterns") or [])
     rejected = bool(spec.get("reject")) and bool(re.search(spec["reject"], content))
+    if matched and rejected:
+        # 正确与错误表述并存（典型：辟谣式讲解原文引用错误说法）——正则无法裁决真实结论，转人工
+        return None, f"any 与 reject 同时命中（矛盾信号），转人工复核。结尾: ...{scope[-80:]}"
     return (matched and not rejected, f"结尾: ...{scope[-80:]}")
 
 
