@@ -50,7 +50,7 @@ echo "$FILES" | xargs cat | shasum -a 256 | cut -c1-8   # 内容 hash 短码
 | 行 | 定义 |
 |---|---|
 | 引擎 | mlx-lm / llama.cpp / 其他 |
-| 判别集（n 题） | 自动判定题全对与否，写 `x/n`；n 随题库版本走 |
+| 判别集（n 题） | 自动判定题全对与否，写 `x/n`；n 随题库版本走。题库 ≥25 题起，判别集行按维度分行出 `x/n`（如 `C 4/5`），总行保留；分维度数字来自 run_bench 回执的分维度行 |
 | decode tok/s | 单流生成速度（题库 A 类计时结果区间） |
 | 并发聚合峰值 | throughput 结果中最大聚合 tok/s（注明并发级别） |
 | 长 prompt prefill | A2/6k prompt 的 prefill 吞吐（未配置则记「未测」） |

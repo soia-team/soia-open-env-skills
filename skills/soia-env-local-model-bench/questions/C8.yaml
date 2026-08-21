@@ -1,0 +1,59 @@
+# C8 · 真实代码-公开：HumanEval+ 风格原创题（数据聚合）——订单按商品聚合并排序。
+# 边界：空数组、同名多单价聚合、revenue 并列走名称升序（拦漏 tie-break）、负数量退货净零仍保留、qty 为 0。
+qid: C8
+cat: 真实代码-公开
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    function eq(got,exp){
+      if(!Array.isArray(got)||got.length!==exp.length)return false;
+      for(let i=0;i<exp.length;i++){
+        const g=got[i],e=exp[i];
+        if(!g||g.product!==e.product||g.qty!==e.qty||g.revenue!==e.revenue)return false;
+      }
+      return true;
+    }
+    const cases=[
+      [[],[]],
+      [[{product:"tea",qty:2,price:500},{product:"tea",qty:1,price:600}],
+       [{product:"tea",qty:3,revenue:1600}]],
+      [[{product:"b",qty:1,price:100},{product:"a",qty:1,price:100}],
+       [{product:"a",qty:1,revenue:100},{product:"b",qty:1,revenue:100}]],
+      [[{product:"pen",qty:3,price:200},{product:"pen",qty:-3,price:200}],
+       [{product:"pen",qty:0,revenue:0}]],
+      [[{product:"ink",qty:0,price:900}],[{product:"ink",qty:0,revenue:0}]],
+      [[{product:"a",qty:1,price:300},{product:"b",qty:2,price:100},{product:"a",qty:2,price:50}],
+       [{product:"a",qty:3,revenue:400},{product:"b",qty:2,revenue:200}]],
+      [[{product:"z",qty:1,price:50},{product:"m",qty:1,price:300},{product:"k",qty:1,price:50}],
+       [{product:"m",qty:1,revenue:300},{product:"k",qty:1,revenue:50},{product:"z",qty:1,revenue:50}]]
+    ];
+    let ok=true;
+    for(const [x,exp] of cases){
+      const got=summarize(x);
+      if(!eq(got,exp)){ok=false;console.error("FAIL input "+JSON.stringify(x)+" got "+JSON.stringify(got)+" want "+JSON.stringify(exp));}
+    }
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  实现一个 js 函数，签名 summarize(orders)：orders 是订单数组，每项形如
+  {product: 商品名(ASCII 小写字符串), qty: 数量(整数，可为负表示退货), price: 单价(整数，单位:分)}。
+  按 product 聚合：qty 求和；revenue 为各订单 qty*price 之和（同一商品不同订单单价可能不同）。
+  返回数组 [{product, qty, revenue}, ...]：按 revenue 从大到小排序，revenue 相同按 product
+  字典序升序；所有出现过的商品都要保留（即使净 qty 为 0）；空数组返回 []。
+  只输出这一个函数，一个 js 代码块，不要解释。
+mock_response: |
+  ```js
+  function summarize(orders) {
+    const acc = new Map();
+    for (const o of orders) {
+      if (!acc.has(o.product)) acc.set(o.product, { product: o.product, qty: 0, revenue: 0 });
+      const item = acc.get(o.product);
+      item.qty += o.qty;
+      item.revenue += o.qty * o.price;
+    }
+    return [...acc.values()].sort(
+      (x, y) => y.revenue - x.revenue || (x.product < y.product ? -1 : x.product > y.product ? 1 : 0)
+    );
+  }
+  ```

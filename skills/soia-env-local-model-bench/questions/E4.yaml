@@ -1,0 +1,39 @@
+# E4 · Agent 前置：中文非结构化描述抽取成指定 schema 的 JSON（含嵌套对象与数组）。
+# 校验 exact_keys + 类型 + 值域 + 嵌套字段；contacts 用 equals 整体钉死数组内容与顺序。
+qid: E4
+cat: Agent-JSON
+temp: 0.0
+max_tokens: 2000
+check:
+  type: json_expect
+  exact_keys: [service, level, cpu_pct, memory_mb, contacts, window]
+  expects:
+    - path: service
+      equals: order-api
+    - path: level
+      lower_in: [critical]
+    - path: cpu_pct
+      type: int
+      equals: 87
+      min: 0
+      max: 100
+    - path: memory_mb
+      equals: 1536
+    - path: contacts
+      type: list
+      min_len: 2
+      equals: [alice, bob]
+    - path: window.start
+      equals: "14:00"
+    - path: window.end
+      equals: "14:30"
+prompt: |
+  从下面这段描述里抽取信息，输出一个 JSON 对象，字段严格为：
+  service(字符串)、level(字符串，critical/warning/info 之一)、cpu_pct(整数，0-100)、
+  memory_mb(整数)、contacts(字符串数组，按文中出现顺序)、window(对象，含 start 和 end 两个
+  字段，值为 HH:MM 格式字符串)。只输出 JSON，不要其他文字。
+  「监控平台在 2026-08-20 的 14:00 到 14:30 窗口里发现订单服务 order-api 异常：
+  CPU 占用率飙到 87%，内存吃掉 1536 MB，告警级别定为 critical。请通知值班同学
+  alice 和 bob 跟进。」
+mock_response: |
+  {"service": "order-api", "level": "critical", "cpu_pct": 87, "memory_mb": 1536, "contacts": ["alice", "bob"], "window": {"start": "14:00", "end": "14:30"}}

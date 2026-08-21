@@ -1,0 +1,43 @@
+# C5 · 真实代码-公开：HumanEval+ 风格原创题（数组变换）——整数去重合并为连续区间。
+# 边界：空数组、单元素、重复元素、无序输入、负数跨零、两位数混负数（拦默认字典序 sort）。
+qid: C5
+cat: 真实代码-公开
+temp: 0.0
+max_tokens: 6000
+check:
+  type: node_snippet
+  test: |
+    const cases=[
+      [[1,2,3,5,7,8],[[1,3],[5,5],[7,8]]],
+      [[],[]],
+      [[4],[[4,4]]],
+      [[3,3,4],[[3,4]]],
+      [[5,1,3,2],[[1,3],[5,5]]],
+      [[-2,-1,0,1],[[-2,1]]],
+      [[10,-1,11,-2,10],[[-2,-1],[10,11]]],
+      [[0],[[0,0]]]
+    ];
+    let ok=true;
+    for(const [x,exp] of cases){
+      const got=JSON.stringify(toRanges(x)),want=JSON.stringify(exp);
+      if(got!==want){ok=false;console.error("FAIL input "+JSON.stringify(x)+" got "+got+" want "+want);}
+    }
+    console.log(ok?"PASS":"FAIL");
+prompt: |
+  实现一个 js 函数，签名 toRanges(nums)：输入整数数组（可能无序、可能有重复），
+  先去重，再把连续整数合并成区间，返回按区间起点升序的二元数组列表 [[start,end],...]；
+  孤立整数记为 [x,x]，空数组返回 []。
+  例：toRanges([1,2,3,5,7,8]) 返回 [[1,3],[5,5],[7,8]]。
+  只输出这一个函数，一个 js 代码块，不要解释。
+mock_response: |
+  ```js
+  function toRanges(nums) {
+    const uniq = [...new Set(nums)].sort((a, b) => a - b);
+    const res = [];
+    for (const n of uniq) {
+      if (res.length && n === res[res.length - 1][1] + 1) res[res.length - 1][1] = n;
+      else res.push([n, n]);
+    }
+    return res;
+  }
+  ```
