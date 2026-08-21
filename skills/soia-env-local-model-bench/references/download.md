@@ -59,10 +59,20 @@ aria2c 预分配（prealloc）后文件表面大小从一开始就是全尺寸�
   4 字节 bitfield 长度 + bitfield；数 bitfield 置位 bit x piece 长度即已完成字节。
 - 重启阈值给宽：**持续 15 分钟零进度再重启**——慢不等于死，Xet 限速期尤其如此。
 
-## 其他来源
+## 其他来源与跨源续传（HF 限速/断流时的第一杠杆）
 
 - ModelScope 是备选（Qwen 系官方多有同步），但注意多为 lmstudio-community 打包，
   非 mlx-community 官方量化——引擎格式要对上。
+- **同名仓跨源续传（两次实战验证，2026-08）**：HF 限速或断流时，若 ModelScope 存在同
+  发布方的同名仓，先逐文件比对两源字节数（ModelScope API
+  `/api/v1/models/<org>/<name>/repo/files?Recursive=true` 的 `Size` vs HF API `size`）——
+  **全部相等才允许切源**；aria2c 的 `.aria2` 控制文件只绑定本地文件不绑 URL，改 input
+  清单里的 URL 为 `modelscope.cn/models/<org>/<name>/resolve/master/<file>` 后原地续传，
+  断点无损。实测从 HF 断流的 0 恢复到 8-10 MiB/s。字节数任何一个不等就不切（可能是
+  不同修订），老老实实等原源。
+- **连接僵死是独立故障形态**：进程活着、`--timeout`/`--retry-wait` 配了、但十几分钟零流量
+  零写入（nettop 可证）——aria2c 不会自愈，杀进程重启即恢复。看门狗必须监控文件写入
+  （mtime/bitfield 进度），只盯进程存活挡不住这一种。
 - 下载与评测不要并行：大文件下载抢内存带宽，实测拖慢推理单流 40% 以上。
 
 ## 安全边界

@@ -43,7 +43,7 @@ check:                   # 必填；type 决定判定方式
 | `speed` | 只计时不判对错 | 无 |
 | `save` | 抽出代码块存为文件，待人工评审 | `ext`: svg/html |
 | `manual` | 待人工评审 | 无 |
-| `regex` | 结尾 `tail` 字符内命中任一 `any_patterns` 且全文不命中 `reject` 则过（启发式，含糊时人工复核） | `tail`、`any_patterns`、`reject` |
+| `regex` | 三态：结尾 `tail` 字符内命中任一 `any_patterns` 且全文不命中 `reject` = PASS；只命中 `reject`（或都不中）= FAIL；**两者同时命中 = 转 MANUAL**（矛盾信号，典型：辟谣式输出正确结论时原文引用了错误说法——正则无法裁决真实结论） | `tail`、`any_patterns`、`reject` |
 | `node_snippet` | 抽出 js 代码块 + `test` 拼成脚本用 node 执行，stdout 出现 PASS 则过 | `test`（必填）、`prepend_context`（true 时把 `context_code` 拼在模型代码前） |
 | `json_expect` | 解析 JSON 后逐条校验 | `exact_keys`、`expects[]`（`path` 支持 `a|b.c` 字段名兼容；规则：`equals`/`in`/`lower_in`/`type`/`min`/`max`/`min_len`/`regex`） |
 | `lines_expect` | 去空行后逐行校验 | `min_lines`、`lines[]`（`contains`/`regex`） |
