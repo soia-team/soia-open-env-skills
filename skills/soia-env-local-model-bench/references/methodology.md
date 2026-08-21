@@ -53,7 +53,9 @@ llama-server -m <首个分片路径> -ngl 999 --n-cpu-moe <层数> -c 8192 --jin
 
 ## 维度三：Agent 集成（`run_agent.sh`）
 
-优先级顺序建议：pi → dsh → opencode。指标：完成与否、总耗时、失控行为
+**接入配置与派发纪律先查 `soia-dev-agent-cli-dispatch` 技能**（references/ 下 dsh-cli.md/pi-cli.md/dispatch-contract.md）——各 CLI 的 provider 配置层级、已知限制（如 pi 中文×工具死循环、dsh patch 被 settings 持久层压制）与"验证请求真到被测端点"纪律以该技能为真源，本节只记评测侧要点。手工接入不走该技能会重踩已修的坑。
+
+优先级顺序建议：pi → dsh → opencode（受上述已知限制约束）。指标：完成与否、总耗时、失控行为
 （死循环/幻觉路径/改无关文件）。沙盒统一 git 仓库，每轮 `git reset --hard` 保证可比。
 
 各 Agent 指向本地 OpenAI 兼容端点的接法（2026-08 实测可用；具体字段随版本变化，以各家文档为准）：
