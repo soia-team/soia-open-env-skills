@@ -69,6 +69,8 @@ claude plugin install soia-env@soia
 npx skills add soia-team/soia-open-env-skills -g -a '*' -s soia-env-local-model-bench -y
 ```
 
+**WorkBuddy** 的装载单位是角色化专家而不是插件，`npx skills add -a '*'` 覆盖不到它，需要单独安装，见 [docs/install/workbuddy.md](https://github.com/soia-team/soia-open-skills/blob/main/docs/install/workbuddy.md)。
+
 ### 私密信息与中间数据
 
 - 本技能不需要任何 API key/token；下载走公开仓库，脚本请求本机端点，**不上传评测结果**。私有仓库鉴权走 provider 官方登录流程，不代管、不回显。
@@ -177,4 +179,4 @@ python3 scripts/flip_report.py <临时目录> nothink low   # 两组配对翻转
 python3 scripts/env_check.py --json                     # 真实只读探测
 ```
 
-`--mock` 用题目内置 `mock_response` 走真实判定引擎，预期：自动判定题全 PASS（8 题）、B/D 人评题待人工（5 题）、A2/A4 标 skipped、结果写入 `results/nothink.jsonl` 且带 `"mock": true` 标记。私有题目录放一个覆盖同 qid 的文件重跑 `--list`，应看到「覆盖 1 道」。
+`--mock` 用题目内置 `mock_response` 走真实判定引擎，干净环境预期（`--config` 指向空 yaml；注意环境变量指向不存在的文件会静默回落本机配置目录）：自动判定题全 PASS（12 题）、人评题待人工（7 题：B1-B3/D1/D3b/F4/F5）、A2/A4 标 skipped、结果写入 `results/nothink.jsonl` 且带 `"mock": true` 标记。私有题目录放一个覆盖同 qid 的文件重跑 `--list`，应看到「覆盖 1 道」。
