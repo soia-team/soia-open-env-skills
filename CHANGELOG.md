@@ -3,6 +3,27 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.16.0 — 2026-08-21
+
+正式发布本地模型基准评测：新增 F 维度实用场景题、翻转检验报告、全量 trace 与续跑模型守卫，并同步 WorkBuddy 安装说明。
+
+## 新增
+- feat(local-model-bench): 题库新增 F 维度实用场景六题（日期/拒编/幻觉抵抗/翻译/摘要/格式）
+- feat(local-model-bench): 翻转检验 flip_report + 全量 trace 落盘 + 续跑模型守卫 + 统计资格表述规范（1.3.0）
+
+## 修复
+- fix(release): reopen CodeBuddy version train (#102)
+- fix(local-model-bench): run_agent.sh 的 diff_stat 计入 untracked 新文件
+- fix(local-model-bench): 补 WorkBuddy 安装说明（跨仓门禁违规）+ 前向测试预期同步 F 维度
+- fix(local-model-bench): regex 判定三态化——any 与 reject 同时命中转 MANUAL
+
+## 维护
+- docs(local-model-bench): 维度三加 agent-cli-dispatch 技能交叉引用（接入与纪律以其为真源）
+- docs(local-model-bench): 补漏——字段示例注释的温度绑定同步 F 类
+- docs(local-model-bench): references 与真源对账修复四处漂移
+- chore(train): dev 含 feat（local-model-bench 统计资格），列车提为 minor 1.16.0-SNAPSHOT
+- chore(release): open next train after v1.15.0
+
 ## v1.15.0 — 2026-08-20
 
 本地模型评测技能：私有题 Markdown 格式支持（知识库内可读可编辑）+ GPU 占用清点与思考依赖性三态评测规范
