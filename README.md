@@ -44,7 +44,7 @@ flowchart LR
 | 技能 | 职责 | 开箱 |
 |---|---|:-:|
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | 从零规划并验证开发环境，协调所需的安装技能 | ✅ |
-| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | 在三个宿主上安装或更新 SOIA 开源技能，支持全量、单插件与指定宿主 | ✅ |
+| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | 在 Claude Code、Codex、WorkBuddy 上按项目/全局、宿主和单技能/整域/全量选择安装；默认先出计划并确认 | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | 审计并按授权升级多款 AI CLI，先预演再核验结果 | ✅ |
 | [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | 只读诊断 DNS、HTTPS、代理、证书与官方源，并按类别盘点本机运行时、推导能装哪些 AI CLI，按固定七列汇报 | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | 统计受管配置、状态、缓存占用，出清单；授权后才删，事后复核 | ✅ |
@@ -105,7 +105,7 @@ python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbu
 装完重启客户端，在【专家中心 → 我的专家】召唤 **Soia · 环境安装工程师**。
 
 > **常驻成本 ~1.5k tok**。装完环境后可以 `claude plugin disable soia-env@soia` 收起来，下次配机器再开。
-> 只想要单个技能可走 npx：`npx skills add soia-team/soia-open-env-skills -g -a '*' -s <技能名> -y`——与插件二选一，并存会产生双份索引且各自漂移。
+> 单技能可走 npx：项目范围不带 `-g`，全局范围显式加 `-g`，并按确认计划选择 `-a <Agent>`；整域/全量或多宿主先看 dry-run。与插件二选一，并存会产生双份索引且各自漂移。
 
 ## 不负责什么
 

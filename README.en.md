@@ -44,7 +44,7 @@ flowchart LR
 | Skill | Responsibility | Ready |
 |---|---|:-:|
 | [`soia-env-environment-setup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-environment-setup.md) | Plans and verifies a development environment from scratch, coordinating the install skills it needs | ✅ |
-| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | Installs or updates SOIA open skills across the three hosts, at full, per-plugin or per-host scope | ✅ |
+| [`soia-env-open-skills-install`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-open-skills-install.md) | Installs SOIA skills across Claude Code, Codex and WorkBuddy by explicit project/global, host and skill/domain/all selection; plans first by default | ✅ |
 | [`soia-env-ai-cli-upgrade`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-ai-cli-upgrade.md) | Audits and upgrades several AI CLIs under authorization, dry-running first and verifying after | ✅ |
 | [`soia-env-network-diagnose`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-network-diagnose.md) | Read-only diagnosis of DNS, HTTPS, proxy, certificates and official sources, plus a categorized local runtime inventory that derives which AI CLIs this machine can install, reported in a fixed seven-column table | ✅ |
 | [`soia-env-storage-cleanup`](https://github.com/soia-team/soia-open-skills/blob/main/docs/skills/soia-env-storage-cleanup.md) | Measures managed config, state and cache usage and produces a list; deletes only after consent, then rechecks | ✅ |
@@ -105,7 +105,7 @@ python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbu
 Restart the client, then summon **Soia · 环境安装工程师** under Experts → My Experts.
 
 > **Always-on cost ~1.5k tok**. Once the machine is set up, `claude plugin disable soia-env@soia` puts it away until the next one.
-> For a single skill use npx: `npx skills add soia-team/soia-open-env-skills -g -a '*' -s <skill-name> -y` — pick one route or the other; running both puts the same skill in the index twice and the copies drift apart.
+> For a single skill use npx: omit `-g` for project scope, add `-g` explicitly for global scope, and choose `-a <agent>` from the confirmed plan; show a dry-run first for domain/all or multiple hosts. Pick one route or the other; running both puts the same skill in the index twice and the copies drift apart.
 
 ## What it does not do
 
