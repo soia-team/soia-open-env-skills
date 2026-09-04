@@ -10,8 +10,22 @@
 
 ## 接入命令
 
+以下命令只是已选计划的执行候选，不能绕过 selection/confirmation gate。先用当前 CLI 的 `--help` 验证参数，再按计划列出的宿主和目标运行。
+
+### 项目级单技能（npx）
+```bash
+# 不带 -g 表示项目范围；宿主和技能必须来自已确认计划
+npx skills add <skill-repo> --agent <agent> --skill <skill>
+```
+
+### 全局单技能（npx）
+```bash
+npx skills add <skill-repo> --global --agent <agent> --skill <skill>
+```
+
 ### Claude Code
 ```bash
+# 用户级域插件；不是项目安装
 claude plugin marketplace add soia-team/soia-open-skills
 claude plugin install <domain>@soia
 claude plugin update <domain>@soia   # 已有版本时
@@ -19,7 +33,7 @@ claude plugin update <domain>@soia   # 已有版本时
 
 ### Codex
 ```bash
-rm -rf ~/.codex/.tmp/marketplaces/soia   # 必须清暂存，否则拉旧缓存
+# 用户级域插件；不是项目安装
 codex plugin marketplace add soia-team/soia-open-skills
 codex plugin add <domain>@soia
 ```
@@ -29,6 +43,7 @@ codex plugin add <domain>@soia
 python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbuddy_experts.py --dry-run
 python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbuddy_experts.py
 ```
+该脚本写用户级专家目录；不支持项目范围。执行前必须 dry-run 和确认。
 
 ## 8 个开源域插件
 
