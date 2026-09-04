@@ -3,6 +3,18 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.18.0 — 2026-09-04
+
+升级 SOIA 技能安装范围选择与计划矩阵
+
+## 新增
+- feat(env): add explicit SOIA skill install planning (#107)
+- feat(local-model-bench): 请求级推理深度参数——深度矩阵免重启服务（1.5.1）
+
+## 维护
+- chore(release): promote train to v1.18.0 (#108)
+- chore(release): open next train after v1.17.0 (#106)
+
 ## v1.17.0 — 2026-08-21
 
 local-model-bench 1.5.0：两入口场景+市场发现+报告版本化+Apple Silicon 带宽谱系；题库 B 组扩容 36 题（自动判定 27 道）+分维度报告
