@@ -3,6 +3,14 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.18.1 — 2026-09-05
+
+Reuse explicitly approved installation plans without weakening confirmation gates
+
+## 维护
+- docs: clarify autonomy and preserve explicit approval gates (#111)
+- chore(release): open next train after v1.18.0 (#110)
+
 ## v1.18.0 — 2026-09-04
 
 升级 SOIA 技能安装范围选择与计划矩阵
