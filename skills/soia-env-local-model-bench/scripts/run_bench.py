@@ -276,6 +276,10 @@ def main() -> int:
     parser.add_argument("--private-questions", help="私有题目录（默认按配置目录扫描）")
     parser.add_argument("--only", help="只跑这些 qid，逗号分隔")
     parser.add_argument("--timeout", type=float, default=1500, help="单题超时秒数，默认 1500")
+    parser.add_argument("--max-tokens-scale", type=float, default=1.0,
+                        help="题目 max_tokens 的放大倍数。**开思考档必须放大**（建议 3-4）："
+                             "题库的 max_tokens 按不思考校准，思考内容同样吃这份预算，"
+                             "不放大会把'预算不够'测成'能力变差'（实测 F1 预算 200：思考 578 字符→正文 0 字符→FAIL）")
     parser.add_argument("--chat-template-kwargs", default=None,
                         help='请求级模板参数 JSON（mlx_lm.server 支持，覆盖启动级），如 \'{"enable_thinking": true}\'——深度换档免重启服务')
     parser.add_argument("--mock", action="store_true", help="不发 HTTP，用题目 mock_response 自测管线")
@@ -329,6 +333,10 @@ def main() -> int:
               "无法校验续跑模型一致性，请自行确认未换模型", flush=True)
 
     ctk = json.loads(args.chat_template_kwargs) if args.chat_template_kwargs else None
+    if ctk and any(str(v).lower() not in ("false", "none", "0") for v in ctk.values()) and args.max_tokens_scale == 1.0:
+        print("[警告] 看起来开了思考档但没放大 token 预算——思考内容与正文共用 max_tokens，"
+              "预算不够会让正文为空并被判 FAIL（测的是预算不是能力）。"
+              "建议加 --max-tokens-scale 3", flush=True)
 
     if not args.mock:
         print(f"[{args.group}] 预热（触发模型加载，不计时）...", flush=True)
@@ -366,7 +374,8 @@ def main() -> int:
                                source=question["_source"], model=current_model))
             print(f"[{args.group}] {qid} SKIPPED {skip_reason}", flush=True)
             continue
-        payload = build_payload(prompt, float(question["temp"]), int(question["max_tokens"]), ctk)
+        max_tokens = int(round(int(question["max_tokens"]) * args.max_tokens_scale))
+        payload = build_payload(prompt, float(question["temp"]), max_tokens, ctk)
         try:
             reply = mock_call(question) if args.mock else call_endpoint(
                 base_url, model, payload, args.timeout)
