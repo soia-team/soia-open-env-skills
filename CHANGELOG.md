@@ -3,6 +3,18 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.19.0 — 2026-09-05
+
+Benchmark token-budget scaling and scoped installation reference repair
+
+## 新增
+- feat(bench): scale generation budgets and broaden F3 matching (#114)
+
+## 维护
+- docs(install): link scoped installation reference from setup section (#116)
+- chore(release): prepare Env 1.19.0 capability train (#115)
+- chore(release): open next train after v1.18.1 (#113)
+
 ## v1.18.1 — 2026-09-05
 
 Reuse explicitly approved installation plans without weakening confirmation gates
