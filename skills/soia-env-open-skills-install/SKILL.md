@@ -3,9 +3,9 @@ name: soia-env-open-skills-install
 description: 在 Claude Code、Codex、WorkBuddy 上按确认范围安装或更新 SOIA 开源技能；默认项目级单技能，支持全局、整域和全量。触发：「安装 SOIA 技能」「在 Codex 下装」「更新 soia-dev」
 dependencies:
   optional: [soia-env-claude-cli-install, soia-env-codex-install, soia-env-workbuddy-install, soia-env-network-diagnose]
-version: 1.1.0
+version: 1.1.1
 created_at: 2026-08-01 15:47:43
-updated_at: 2026-09-04 17:16:01
+updated_at: 2026-09-05 09:07:18
 created_by: claude sonnet 4.6
 updated_by: gpt-5.6-luna
 ---
@@ -24,7 +24,7 @@ updated_by: gpt-5.6-luna
 
 ### 客户如何使用
 
-请明确说明安装范围、宿主和粒度，例如“在这个项目给 Codex 装单个技能”“全局给 Claude Code 更新 `soia-dev`”。范围、宿主或粒度任一缺失时只检查并返回 `selection_required`，先询问，不检测全部后默认全域执行。要扩大到全局、整域、多宿主或 `*` 全量，必须明确选择；先展示 dry-run/安装矩阵，再等待确认。
+请明确说明安装范围、宿主和粒度，例如“在这个项目给 Codex 装单个技能”“全局给 Claude Code 更新 `soia-dev`”。范围、宿主或粒度任一缺失时只检查并返回 `selection_required`，先询问，不检测全部后默认全域执行。要扩大到全局、整域、多宿主或 `*` 全量，必须明确选择；先展示 dry-run/安装矩阵，再等待确认。仅选择字段齐全不等于写入批准；只有已展示影响并获客户明确批准、且包含 source、具体 target、action 以及删除/替换影响的完整计划，才可由 Finder、Sync 或 Release 传递而不重复询问。计划字段变化时重新确认受影响部分。
 
 ### 依赖与安装
 
@@ -48,7 +48,7 @@ python3 scripts/plan_install.py --scope project --agents codex --target-kind ski
 ## 核心流程
 
 1. **检查（只读）**：运行 `inspect_soia_plugins.py --json`，确认宿主可用性和已安装状态；不要因为请求模糊就扩大范围。
-2. **选择与计划**：归一化 `scope`、`agents` 和 `target.kind/name`，运行 `plan_install.py`。缺任一选择返回 `selection_required: true`；能力不支持返回逐项 `blocked`。
+2. **选择与计划**：归一化 `scope`、`agents` 和 `target.kind/name`，运行 `plan_install.py`。缺任一选择返回 `selection_required: true`；能力不支持返回逐项 `blocked`。仅选择字段齐全仍须展示安装矩阵并进入确认门；完整计划已展示影响并获客户明确批准后可直接执行，不重复询问。目标、宿主、粒度、source、action 或删除/替换影响变化时重新确认。
 3. **确认门**：展示 scope × Agent × target kind/name × action 的安装矩阵、能力降级、影响范围和回滚路径。没有客户对该计划的明确确认，不执行任何安装、更新、市场接入、remove+add 或 WorkBuddy 写入。
 4. **执行与验证**：确认后只调用 [references/official-sources.md](references/official-sources.md) 中当前已核实的命令；项目级优先使用已验证的 npx project + agent/skill 选择，用户级域插件使用对应宿主命令。每个目标独立记录、验证版本/实际技能或专家存在性，再汇总回执；失败不扩大范围、不自动回滚。
 
