@@ -3,6 +3,14 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.19.1 — 2026-09-07
+
+Clarify instruction autonomy and preserve explicit approval gates
+
+## 维护
+- docs: clarify scoped autonomy and preserve approval gates (#119)
+- chore(release): open next train after v1.19.0 (#118)
+
 ## v1.19.0 — 2026-09-05
 
 Benchmark token-budget scaling and scoped installation reference repair
