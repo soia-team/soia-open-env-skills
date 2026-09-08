@@ -45,22 +45,13 @@ python3 <soia-open-skills>/skills/soia-meta-skill-release/scripts/install_workbu
 ```
 该脚本写用户级专家目录；不支持项目范围。执行前必须 dry-run 和确认。
 
-## 8 个开源域插件
+## 开源域插件
 
-| 插件名 | 域仓 |
-|---|---|
-| soia-meta | soia-open-skills |
-| soia-dev | soia-open-dev-skills |
-| soia-dev-design | soia-open-dev-design-skills |
-| soia-pkm-vault | soia-open-pkm-vault-skills |
-| soia-media-content | soia-open-media-content-skills |
-| soia-cwork-office | soia-open-cwork-office-skills |
-| soia-env | soia-open-env-skills |
-| soia-edu-course | soia-open-edu-course-skills |
+使用[插件目录](plugins.md)的现行映射；设计能力已并入 dev。既有旧插件的迁移或卸载须另有明确目标和影响确认。
 
 ## 已知约束
 
-- Codex 的 `plugin marketplace add` 会复用旧克隆，必须先 `rm -rf ~/.codex/.tmp/marketplaces/soia`。
+- Codex 若因旧克隆导致市场更新失败，先核实当前 CLI 行为和精确缓存目录；只有证明确为可丢弃缓存、展示影响并获确认后才清理，不默认删除缓存。
 - Claude 的 `plugin details <name>` 对私有市场要带后缀 `@soia`，不带会报「not installed」。
 - WorkBuddy 专家安装后**必须重启应用**，否则不显示。
 - `soia-meta-skill-release` 的 `install_workbuddy_experts.py` 要求 Python 3 且需找到 soia-open-skills checkout 路径（通过 `SOIA_SKILL_REPOS_ROOT` 或 `--repo-dir` 传入）。
