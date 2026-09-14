@@ -7,7 +7,7 @@
 5. Add a fixture or forward test for deterministic scripts and document a safe manual check.
 6. Regenerate `skills/README.md` instead of editing it by hand.
 7. Run the repository validation commands.
-8. Open a PR to `main`; the `audit` workflow must pass before merge.
+8. Open a PR to `dev`; the `audit` workflow must pass before merge. `main` advances only through the authorized formal-release fast-forward.
 
 For environment changes, explain the detected OS/architecture, official source,
 requested permissions, rollback path, and verification evidence. Do not silently
