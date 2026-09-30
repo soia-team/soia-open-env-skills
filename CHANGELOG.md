@@ -3,6 +3,14 @@
 本文件由 soia-meta-skill-release 在每次正式发版时自动更新，与 GitHub Release 同源；
 更早的版本演进见 git 提交历史与 GitHub Releases。
 
+## v1.19.4 — 2026-09-30
+
+技能按强模型精简正文与 references
+
+## 维护
+- refactor(skills): slim SKILL.md and references for strong models (2026-09-30)
+- chore(release): reopen snapshot after rules delivery (#127)
+
 ## v1.19.3 — 2026-09-14
 
 交付渐进加载仓库规则：缩小常驻指令与强制读取范围，保留安全、权限、测试及正式发布门禁；技能正文与行为不变。
