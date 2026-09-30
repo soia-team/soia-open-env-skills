@@ -1,6 +1,6 @@
 # 阶段命令与回执细则
 
-本文件是旧路径的兼容入口。请先读取 [SKILL.md](../SKILL.md)，再按 [selection-plan.md](selection-plan.md) 生成选择计划；不再把缺省宿主或粒度解释为全量。
+先读取 [SKILL.md](../SKILL.md)，再按 [selection-plan.md](selection-plan.md) 生成选择计划；缺省宿主或粒度返回 `selection_required`。
 
 只读：
 

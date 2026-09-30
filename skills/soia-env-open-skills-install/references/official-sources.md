@@ -1,4 +1,4 @@
-# Official Sources — soia-env-soia-skills-install
+# Official Sources — soia-env-open-skills-install
 
 ## SOIA 开源技能市场
 
